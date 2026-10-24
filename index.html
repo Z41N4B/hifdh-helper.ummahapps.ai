@@ -804,8 +804,11 @@ function changeNew(st, logs, l, v){
 
 // How the pace is set: by a finish date, or by an amount each week (pages or lines).
 function weeklyPages(st){ var a = num(st.weeklyAmount); return st.weeklyUnit === 'lines' ? a / LINES : a; }
+// A study day is one of the chosen days of the week, on or after the start date if one is set.
+function studyOn(st, x){ return !!st.days[parse(x).getDay()] && !(st.startDate && x < st.startDate); }
 function targetInfo(st, remaining, dateIso){
   var kk = Math.max(1, activeCount(st.days));
+  if (st.startDate && st.startDate > dateIso) dateIso = st.startDate;
   if (st.targetMode === 'weekly'){
     var w = weeklyPages(st), per = w / kk;
     if (remaining <= 0 || per <= 0) return { req: 0, left: 0, finish: null, overdue: false, weekly: true };
@@ -835,9 +838,9 @@ function perDay(st, logs, dateIso){
 // New hifz for the week is fixed on the first day of the week (Monday unless changed in Settings). Each study day gets what is left of it,
 // shared over the study days left, so doing extra one day means less on the days after, not a new weekly target.
 function weekNew(st, logs, dateIso){
-  var wd = weekDates(dateIso, st.weekStart), p0 = perDay(st, logs, wd[0]);
+  var wd = weekDates(dateIso, st.weekStart), p0 = perDay(st, logs, st.startDate && st.startDate > wd[0] ? st.startDate : wd[0]);
   if (p0.state !== 'ok') return null;
-  var act = wd.filter(function(x){ return st.days[parse(x).getDay()] && (st.targetMode === 'weekly' || x <= st.goalDate); });
+  var act = wd.filter(function(x){ return studyOn(st, x) && (st.targetMode === 'weekly' || x <= st.goalDate); });
   var plan = Math.min(p0.remaining, p0.n * act.length), before = 0, t = todayIso();
   var daysFrom = function(x){ return act.filter(function(y){ return y >= x; }).length; };
   wd.forEach(function(x){
@@ -852,7 +855,8 @@ function weekNew(st, logs, dateIso){
 }
 function dayTargets(st, logs, dateIso){
   var p = perDay(st, logs, dateIso);
-  var active = !!st.days[parse(dateIso).getDay()];
+  var active = studyOn(st, dateIso);
+  p.notStarted = !!(st.startDate && dateIso < st.startDate);
   if (p.state === 'ok'){ p.wk = weekNew(st, logs, dateIso); if (p.wk) p.n = Math.min(p.remaining, p.wk.n); }
   p.active = active;
   p.tn = active ? p.n : 0; p.tr = active ? p.r : 0; p.to = active ? p.o : 0;
@@ -885,7 +889,7 @@ function weekDates(dateIso, ws){
 }
 function weekStats(st, logs, dateIso, todayIso, p){
   var wd = weekDates(dateIso, st.weekStart);
-  var act = wd.filter(function(x){ return st.days[parse(x).getDay()]; });
+  var act = wd.filter(function(x){ return studyOn(st, x); });
   var done = { n: 0, r: 0, o: 0 };
   wd.forEach(function(x){ var l = logs[x]; if (l){ done.n += num(l.n); done.r += num(l.r); done.o += num(l.o) + oxOf(l); } });
   var activeLeft = act.filter(function(x){ return x >= todayIso; }).length;
@@ -943,7 +947,7 @@ function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function defaults(){
   return { startPages: 60, base: [[0, 60]], next: { x: 60, dir: 1 }, goalPages: 604, goalDate: iso(addDays(new Date(), 730)),
            targetMode: 'date', weeklyAmount: 7, weeklyUnit: 'pages',
-           cycleDays: 30, recentDays: 5, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', revMode: 'spaced', srSteps: SR_DEFAULT.slice(), srDaily: 21, weekStart: 1 };
+           cycleDays: 30, recentDays: 5, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', revMode: 'spaced', srSteps: SR_DEFAULT.slice(), srDaily: 21, weekStart: 1, startDate: null };
 }
 var TINTS = ['Sage', 'Rose', 'Sky', 'Lavender', 'Peach', 'Aqua', 'Sunshine', 'Bubblegum', 'Ocean', 'Lime', 'Midnight', 'Plum', 'Daisy'];
 function newPerson(name, tint){
@@ -961,6 +965,7 @@ function normPerson(p, i){
   if (s.revMode !== 'window') s.revMode = 'spaced';
   if (!(Number.isInteger(s.srDaily) && s.srDaily >= 0 && s.srDaily <= 90)) s.srDaily = 21;
   if (!(Number.isInteger(s.weekStart) && s.weekStart >= 0 && s.weekStart <= 6)) s.weekStart = 1;
+  if (!(typeof s.startDate === 'string' && /^\d{4}-\d\d-\d\d$/.test(s.startDate))) s.startDate = null;
   if (srParse(Array.isArray(s.srSteps) ? s.srSteps.join(',') : '').err) s.srSteps = SR_DEFAULT.slice();
   // One-time update: the old default 1, 3, 7, 14, 30 becomes 3, 7, 14, 30 (a 1-day gap repeats the every-day weeks).
   if (!s.srV){ if (s.srSteps.join(',') === '1,3,7,14,30') s.srSteps = SR_DEFAULT.slice(); s.srV = 2; }
@@ -1291,7 +1296,7 @@ function card(sd, target, done, why, active, extra, noAdd, lines, also){
   var pr = target > 0 ? Math.min(1, tot / target) : (tot > 0 ? 1 : 0);
   var rem = fq(target - tot), one = target - tot <= 1 + 1 / 30;
   var togo = target > 0 ? (tot >= target - 0.001 ? 'Target met' : rem + ' ' + (one ? uw.slice(0, -1) : uw) + ' to go')
-    : (tot > 0 ? 'Extra logged' : (active ? '' : 'Rest day'));
+    : (tot > 0 ? 'Extra logged' : (active ? '' : restWord));
   var k = sd.key;
   return '<section class="card s-' + sd.cls + '" aria-labelledby="h-' + k + '">' +
     '<div class="card-h"><div class="ttl"><h2 id="h-' + k + '">' + sd.name + '</h2></div>' +
@@ -1314,21 +1319,24 @@ function card(sd, target, done, why, active, extra, noAdd, lines, also){
     '</div></section>';
 }
 
+// What an inactive day is called on the cards: a rest day, or a day before the plan starts.
+var restWord = 'Rest day';
 function viewToday(){
   var P = cur(), st = P.settings, d = viewDate, t = todayIso();
   var p = dayTargets(st, P.logs, d);
+  restWord = p.notStarted ? 'Not started' : 'Rest day';
   var lg = P.logs[d] || { n: 0, r: 0, o: 0 };
   var sl = slicesFor(st, P.logs, d, t, p, lg);
   var wd = weekDates(d, st.weekStart);
   var strip = wd.map(function(x){
-    var l = P.logs[x], has = l && (l.n || l.r || l.o || oxOf(l)), act = st.days[parse(x).getDay()];
+    var l = P.logs[x], has = l && (l.n || l.r || l.o || oxOf(l)), act = studyOn(st, x);
     return '<button class="dbtn' + (has ? ' has' : '') + (act ? '' : ' rest') + (x === t ? ' today' : '') + '" data-a="day" data-date="' + x + '" aria-pressed="' + (x === d) + '" aria-label="' +
       fmtDate(x, { weekday: 'long', day: 'numeric', month: 'long' }) + (x === t ? ', today' : '') + (act ? '' : ', rest day') + '">' +
       '<span class="dow">' + fmtDate(x, { weekday: 'short' }).slice(0, 3) + '</span><span class="dn">' + parse(x).getDate() + '</span><span class="dot"></span></button>';
   }).join('');
 
   var head = '<div class="daybar"><div class="daylabel">' + fmtDate(d, { weekday: 'long', day: 'numeric', month: 'long' }) +
-    '<small>' + (d === t ? 'Today' : (d < t ? 'Earlier' : 'Coming up')) + ' · ' + (p.active ? 'Study day' : 'Rest day') + '</small></div>' +
+    '<small>' + (d === t ? 'Today' : (d < t ? 'Earlier' : 'Coming up')) + ' · ' + (p.notStarted ? 'Before your start date' : p.active ? 'Study day' : 'Rest day') + '</small></div>' +
     '<div class="stepper"><button class="icon" data-a="wk" data-step="-7" aria-label="Previous week">‹</button>' +
     (d !== t ? '<button class="icon txt" data-a="today">Today</button>' : '') +
     '<button class="icon" data-a="wk" data-step="7" aria-label="Next week">›</button></div></div>';
@@ -1346,6 +1354,7 @@ function viewToday(){
   var hero = '<section class="card" aria-label="Today in total">' +
     (p.active
       ? '<div class="hero-n"><b>' + fmtQ(td) + '</b><span>of about ' + fmtQ(tt) + ' pages today</span></div>'
+      : p.notStarted ? '<div class="hero-n"><b>Not started</b><span>Your plan starts on ' + fmtDate(st.startDate, { weekday: 'long', day: 'numeric', month: 'long' }) + '. Anything you log still counts.</span></div>'
       : '<div class="hero-n"><b>Rest day</b><span>Anything you log still counts.</span></div>') +
     '<div class="seg" aria-hidden="true">' + segs + '</div>' +
     '<div class="legend"><span><i class="sw new"></i>New hifz</span><span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span></div></section>';
@@ -1452,6 +1461,7 @@ function viewPlan(){
   var paceNote = pc ? '<p class="wnote">Pace is measured over the last ' + pc.spanDays + (pc.spanDays === 1 ? ' day' : ' days') + (pc.spanDays < 7 ? ', so treat it as an early estimate.' : '.') + '</p>' : '';
   var paceCard = '<section class="card" aria-label="New hifz pace"><div class="row-h"><h2 class="h">New hifz pace</h2><span class="pill ' + status.c + '">' + status.t + '</span></div>' +
     '<dl class="kv">' +
+    (st.startDate && st.startDate > t ? '<dt>Starts</dt><dd>' + fmtDate(st.startDate, dFmt) + '</dd>' : '') +
     '<dt>Pace</dt><dd>' + (pc ? fmt1(pc.perActive) + ' pages per study day' : '—') + '</dd>' +
     (info.weekly ? '<dt>Weekly target</dt><dd>' + weeklyLabel + '</dd>' : '') +
     '<dt>' + (info.weekly ? 'Planned per study day' : 'Needed to finish on time') + '</dt><dd>' + (req > 0 ? fmt1(req) + ' pages per study day' : '—') + '</dd>' +
@@ -1584,6 +1594,7 @@ function viewSettings(){
 
     '<section class="card"><h2 class="h">' + (first ? 'Set targets' : 'Targets') + '</h2>' +
     '<div class="field"><label for="f-goal">Goal, in pages</label><input class="inp" id="f-goal" type="number" inputmode="decimal" min="1" max="604" step="1" value="' + val(f.goalPages) + '"><small class="hint">604 pages is the whole Quran in the Madinah mushaf, 15 lines to a page.</small></div>' +
+    '<div class="field"><label for="f-start">Start on</label><input class="inp" id="f-start" type="date" value="' + (f.startDate || todayIso()) + '"><small class="hint">The day you begin. Your weeks then start on that day of the week too. Days before it have no targets.</small></div>' +
     '<div class="field"><span class="lab" id="lab-mode">Set the pace by</span><div class="chips" role="group" aria-labelledby="lab-mode">' +
     '<button type="button" class="chip" data-a="mode" data-m="date" aria-pressed="' + !wk + '">Finish date</button>' +
     '<button type="button" class="chip" data-a="mode" data-m="weekly" aria-pressed="' + wk + '">Amount a week</button></div></div>' +
@@ -1906,6 +1917,11 @@ document.addEventListener('input', function(e){
 document.addEventListener('change', function(e){
   var id = e.target.id;
   if (e.target.classList && e.target.classList.contains('num')){ if (typing && typing.el === e.target){ clearTimeout(typing.timer); typing = null; } var ev = parseFloat(e.target.value) || 0; if (e.target.dataset.u === 'lines') ev = Math.round(ev) / LINES; setLog(e.target.dataset.k, ev, pressing); return; }
+  if (id === 'f-start' && draft){
+    draft.startDate = e.target.value || null;
+    if (draft.startDate) draft.weekStart = parse(draft.startDate).getDay();
+    render(); return;
+  }
   if (id === 'ox-s'){ oxr.s = Number(e.target.value); oxr.f = String(STARTS[oxr.s]); oxr.t = String(ENDS[oxr.s]); $('#ox-f').value = oxr.f; $('#ox-t').value = oxr.t; }
   else if (id === 'r-fs'){ rng.fs = Number(e.target.value); rng.fp = STARTS[rng.fs]; $('#r-fp').value = rng.fp; }
   else if (id === 'r-ts'){ rng.ts = Number(e.target.value); rng.tp = ENDS[rng.ts]; $('#r-tp').value = rng.tp; }
