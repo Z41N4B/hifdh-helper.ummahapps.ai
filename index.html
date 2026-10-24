@@ -144,6 +144,7 @@
   --old:#3B5CAD; --old-ink:#2E4C98; --old-soft:#DAE2F4;
   --good-bg:#D3EBDD; --good-ink:#14503D;
   --t-0:#E2E9DF; --t-1:#F0DCE1; --t-2:#D8E6F3; --t-3:#E5DCF0; --t-4:#F2E2D0; --t-5:#D5E9ED; --t-6:#FFE27A; --t-7:#FFB6D5; --t-8:#8FD3FF; --t-9:#BDF07A; --t-10:#152A5E; --t-11:#3A1A4A;
+  --t-12:radial-gradient(circle, #F6C628 0 26%, #FFFFFF 30%);
   --warn-bg:#F7E2B0; --warn-ink:#6B4500;
   --bad-bg:#F5D4D0; --bad-ink:#8A1F17;
   --f-display:'Bricolage Grotesque','Avenir Next','Segoe UI',system-ui,sans-serif;
@@ -212,6 +213,21 @@ body[data-tint="11"]{
   --good-bg:#1F4A45; --good-ink:#8FE3C2; --warn-bg:#52401E; --warn-ink:#F3CE82; --bad-bg:#5A2A2A; --bad-ink:#F5ADA6;
   color-scheme:dark;
 }
+/* Daisy: always light. Cream like the petals, sunny yellow like the centre for what is selected, leaf green for text. */
+body[data-tint="12"]{
+  --page:#FFF9E8; --bg:#FFF6DA; --surface:#FFFFFF; --track:#F5EBC8; --ink:#1F3A1E; --muted:#56694D; --line:#EEE0B2;
+  --accent:#3C7A2C; --on-accent:#FFFFFF; --sun:#F6C628; --sun-line:#E2AE0B;
+  --new:#C8820F; --new-ink:#8A5300; --new-soft:#FBEBC4;
+  --rec:#A23B6B; --rec-ink:#8A2C58; --rec-soft:#F6E0EA;
+  --old:#3B5CAD; --old-ink:#2E4C98; --old-soft:#E0E7F6;
+  --good-bg:#DCEFD2; --good-ink:#245A1A; --warn-bg:#FBE7A6; --warn-ink:#5E4300; --bad-bg:#F8D9D3; --bad-ink:#8A1F17;
+  color-scheme:light;
+  background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><g id='d'><g fill='%23fff' stroke='%23E4D08F' stroke-width='1'><ellipse cy='-10' rx='4.6' ry='9' transform='rotate(0)'/><ellipse cy='-10' rx='4.6' ry='9' transform='rotate(45)'/><ellipse cy='-10' rx='4.6' ry='9' transform='rotate(90)'/><ellipse cy='-10' rx='4.6' ry='9' transform='rotate(135)'/><ellipse cy='-10' rx='4.6' ry='9' transform='rotate(180)'/><ellipse cy='-10' rx='4.6' ry='9' transform='rotate(225)'/><ellipse cy='-10' rx='4.6' ry='9' transform='rotate(270)'/><ellipse cy='-10' rx='4.6' ry='9' transform='rotate(315)'/></g><circle r='5.4' fill='%23F6C628' stroke='%23E2AE0B' stroke-width='.8'/></g></defs><g opacity='.5'><use href='%23d' transform='translate(40 46)'/><use href='%23d' transform='translate(150 112) scale(.8) rotate(20)'/><use href='%23d' transform='translate(72 162) scale(.6) rotate(10)'/></g></svg>");
+}
+body[data-tint="12"] .btn.solid, body[data-tint="12"] .chip[aria-pressed="true"], body[data-tint="12"] .dbtn[aria-pressed="true"], body[data-tint="12"] .pchip[aria-pressed="true"]{background:var(--sun); border-color:var(--sun-line); color:var(--ink)}
+body[data-tint="12"] .dbtn[aria-pressed="true"].has .dot{background:var(--ink)}
+body[data-tint="12"] .pchip[aria-pressed="true"] .pdot{border-color:var(--ink)}
+body[data-tint="12"] .dbtn.today{border-color:var(--sun-line)}
 button,input{font-family:inherit; touch-action:manipulation}
 :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 .wrap{max-width:560px; margin-inline:auto; display:flex; flex-direction:column; gap:14px}
@@ -929,7 +945,7 @@ function defaults(){
            targetMode: 'date', weeklyAmount: 7, weeklyUnit: 'pages',
            cycleDays: 30, recentDays: 5, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', revMode: 'spaced', srSteps: SR_DEFAULT.slice(), srDaily: 21, weekStart: 1 };
 }
-var TINTS = ['Sage', 'Rose', 'Sky', 'Lavender', 'Peach', 'Aqua', 'Sunshine', 'Bubblegum', 'Ocean', 'Lime', 'Midnight', 'Plum'];
+var TINTS = ['Sage', 'Rose', 'Sky', 'Lavender', 'Peach', 'Aqua', 'Sunshine', 'Bubblegum', 'Ocean', 'Lime', 'Midnight', 'Plum', 'Daisy'];
 function newPerson(name, tint){
   var s = defaults(); s.startPages = 0; s.base = []; s.next = { x: 0, dir: 1 };
   return { id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, tint: tint, settings: s, logs: {}, hard: [], reads: {} };
