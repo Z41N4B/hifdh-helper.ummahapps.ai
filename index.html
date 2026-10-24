@@ -1,0 +1,1781 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hifdh Helper · Free Quran Memorisation (Hifz) Tracker and Planner</title>
+<meta name="description" content="Hifdh Helper is a free Quran memorisation tracker. Set a goal and get daily targets for new hifz (sabaq), new revision (sabqi) and older revision (manzil), with spaced repetition and hard-page reviews, page by page in the 604-page Madinah mushaf.">
+<meta name="keywords" content="hifz tracker, hifdh tracker, Quran memorization app, Quran memorisation planner, hifz planner, sabaq sabqi manzil, Quran revision schedule, spaced repetition Quran, hifz revision, memorize Quran">
+<meta name="author" content="UmmahApps">
+<meta name="application-name" content="Hifdh Helper">
+<meta name="apple-mobile-web-app-title" content="Hifdh Helper">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#EEF1EC">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0E1815">
+<link rel="canonical" href="https://hifdh-helper.ummahapps.ai/">
+
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="LLM summary">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hifdh Helper">
+<meta property="og:title" content="Hifdh Helper · Free Quran Memorisation Tracker">
+<meta property="og:description" content="Turn your hifz goal into a daily plan: new hifz, new revision and older revision, with spaced repetition. Free, no sign-up.">
+<meta property="og:url" content="https://hifdh-helper.ummahapps.ai/">
+<meta property="og:image" content="https://hifdh-helper.ummahapps.ai/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Hifdh Helper: plan your Quran memorisation day by day">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hifdh Helper · Free Quran Memorisation Tracker">
+<meta name="twitter:description" content="Daily targets for new hifz, new revision and older revision, with spaced repetition. Free, no sign-up.">
+<meta name="twitter:image" content="https://hifdh-helper.ummahapps.ai/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://ummahapps.ai/#org",
+      "name": "UmmahApps",
+      "url": "https://ummahapps.ai/"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://hifdh-helper.ummahapps.ai/#website",
+      "url": "https://hifdh-helper.ummahapps.ai/",
+      "name": "Hifdh Helper",
+      "inLanguage": "en",
+      "publisher": { "@id": "https://ummahapps.ai/#org" }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://hifdh-helper.ummahapps.ai/#app",
+      "name": "Hifdh Helper",
+      "alternateName": ["Hifz Tracker", "Hifdh Tracker", "Quran memorisation planner"],
+      "url": "https://hifdh-helper.ummahapps.ai/",
+      "description": "A free Quran memorisation (hifz) tracker and planner. It turns a goal into daily targets for new hifz (sabaq), new revision (sabqi) and older revision (manzil), using spaced repetition and the 604-page Madinah mushaf.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any (runs in a web browser)",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "inLanguage": "en",
+      "image": "https://hifdh-helper.ummahapps.ai/og-image.png",
+      "dateModified": "2026-10-24",
+      "publisher": { "@id": "https://ummahapps.ai/#org" },
+      "featureList": [
+        "Daily targets for new hifz, new revision and older revision",
+        "Pace set by a finish date or by an amount each week, in pages or lines",
+        "Spaced repetition for new hifz: every study day for 21 days, then reviews after 3, 7, 14 and 30 days",
+        "Older revision cycle over everything memorised",
+        "Extra reviews for hard pages the next day, 3 days and 7 days later",
+        "Shows the exact surahs and page numbers to learn and revise each day",
+        "Juz-by-juz progress and projected finish date",
+        "Several people on one device, such as a family or a class",
+        "Daily reading tick with a streak"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://hifdh-helper.ummahapps.ai/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Hifdh Helper?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Hifdh Helper is a free web app for memorising the Quran. You enter what you already know and your goal, and it works out how much new hifz, new revision and older revision to do on each study day, with the exact surahs and page numbers." }
+        },
+        {
+          "@type": "Question",
+          "name": "What are sabaq, sabqi and manzil?",
+          "acceptedAnswer": { "@type": "Answer", "text": "They are the three parts of a traditional hifz routine. Sabaq is the new lesson you memorise today. Sabqi is revision of what you memorised recently. Manzil is revision of everything older, in a cycle. Hifdh Helper calls them New hifz, New revision and Revision." }
+        },
+        {
+          "@type": "Question",
+          "name": "How does the spaced repetition schedule work?",
+          "acceptedAnswer": { "@type": "Answer", "text": "By default each day of new hifz is revised every study day for 21 days, then comes back 3, 7, 14 and 30 days after that. Once those reviews are done it joins the older revision cycle. Missed reviews carry over to the next study day. Both the every-day period and the review gaps can be changed in Settings." }
+        },
+        {
+          "@type": "Question",
+          "name": "How are the daily amounts worked out?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Choose a finish date or an amount to memorise each week, in pages or lines. The remaining pages are spread over the days of the week you choose to study. Older revision is your older pages divided across your revision cycle, 30 days by default." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which mushaf does it use?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The 604-page Madinah mushaf with 15 lines to a page, and 30 juz of about 20 pages each." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I track more than one person?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Add a person for each child or student. Each person has their own goal, schedule, logs and colour." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it free, and where is my data stored?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It is free and needs no account. Your plan and logs are saved in your browser on your own device." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400..700&display=swap">
+<style>
+/* Layout: one narrow column with three tabs (Today, Plan, Settings).
+   Each stream has its own hue (new hifz = saffron, new revision = plum, revision = lapis);
+   the chrome stays a quiet green-grey so the three colours carry the meaning. */
+:root{
+  color-scheme:light;
+  --bg:#EEF1EC; --surface:#FAFBF8; --track:#E0E6DE; --ink:#12241D; --muted:#46574F; --line:#D0D9CF;
+  --accent:#1B5E48; --on-accent:#F4F8F5;
+  --new:#C8820F; --new-ink:#8A5300; --new-soft:#F4E6C8;
+  --rec:#A23B6B; --rec-ink:#8A2C58; --rec-soft:#F2DCE7;
+  --old:#3B5CAD; --old-ink:#2E4C98; --old-soft:#DAE2F4;
+  --good-bg:#D3EBDD; --good-ink:#14503D;
+  --t-0:#E2E9DF; --t-1:#F0DCE1; --t-2:#D8E6F3; --t-3:#E5DCF0; --t-4:#F2E2D0; --t-5:#D5E9ED; --t-6:#FFE27A; --t-7:#FFB6D5; --t-8:#8FD3FF; --t-9:#BDF07A; --t-10:#152A5E; --t-11:#3A1A4A;
+  --warn-bg:#F7E2B0; --warn-ink:#6B4500;
+  --bad-bg:#F5D4D0; --bad-ink:#8A1F17;
+  --f-display:'Bricolage Grotesque','Avenir Next','Segoe UI',system-ui,sans-serif;
+  --f-body:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
+  --f-arabic:'Amiri','Geeza Pro','Traditional Arabic',serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1815; --surface:#15231F; --track:#22332D; --ink:#E7EFEA; --muted:#97A99F; --line:#2A3B35;
+    --accent:#5CC6A0; --on-accent:#07140F;
+    --new:#E0A23A; --new-ink:#EDB85A; --new-soft:#3A2D12;
+    --rec:#D488AE; --rec-ink:#E3A3C3; --rec-soft:#3D2030;
+    --old:#7F9BEA; --old-ink:#A3B8F2; --old-soft:#1D2A4D;
+    --good-bg:#17382D; --good-ink:#86DDBA;
+    --t-0:#0E1815; --t-1:#1D1417; --t-2:#0F1822; --t-3:#17131F; --t-4:#1D1610; --t-5:#0C1A1D; --t-6:#3F3407; --t-7:#42162F; --t-8:#0A3047; --t-9:#20380C; --t-10:#152A5E; --t-11:#3A1A4A;
+    --warn-bg:#46361A; --warn-ink:#F0C778;
+    --bad-bg:#4A2321; --bad-ink:#F2A29B;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1815; --surface:#15231F; --track:#22332D; --ink:#E7EFEA; --muted:#97A99F; --line:#2A3B35;
+  --accent:#5CC6A0; --on-accent:#07140F;
+  --new:#E0A23A; --new-ink:#EDB85A; --new-soft:#3A2D12;
+  --rec:#D488AE; --rec-ink:#E3A3C3; --rec-soft:#3D2030;
+  --old:#7F9BEA; --old-ink:#A3B8F2; --old-soft:#1D2A4D;
+  --good-bg:#17382D; --good-ink:#86DDBA;
+  --t-0:#0E1815; --t-1:#1D1417; --t-2:#0F1822; --t-3:#17131F; --t-4:#1D1610; --t-5:#0C1A1D; --t-6:#3F3407; --t-7:#42162F; --t-8:#0A3047; --t-9:#20380C; --t-10:#152A5E; --t-11:#3A1A4A;
+  --warn-bg:#46361A; --warn-ink:#F0C778;
+  --bad-bg:#4A2321; --bad-ink:#F2A29B;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+img{max-width:100%}
+[hidden]:not([hidden=until-found i]){display:none!important}
+body{
+  margin:0;
+  background:var(--page, var(--bg)); color:var(--ink);
+  font-family:var(--f-body); font-size:15px; line-height:1.45;
+  padding-top:calc(16px + env(safe-area-inset-top, 0px));
+  padding-bottom:calc(40px + env(safe-area-inset-bottom, 0px));
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+body[data-tint="0"]{--page:var(--t-0)} body[data-tint="1"]{--page:var(--t-1)} body[data-tint="2"]{--page:var(--t-2)}
+body[data-tint="6"]{--page:var(--t-6)} body[data-tint="7"]{--page:var(--t-7)} body[data-tint="8"]{--page:var(--t-8)} body[data-tint="9"]{--page:var(--t-9)}
+body[data-tint="3"]{--page:var(--t-3)} body[data-tint="4"]{--page:var(--t-4)} body[data-tint="5"]{--page:var(--t-5)}
+/* Midnight: a full dark-navy look, whatever the system theme, so text and cards stay readable. */
+body[data-tint="10"]{
+  --page:#152A5E; --bg:#101F4A; --surface:#1F3A7A; --track:#2C4B96; --ink:#EEF3FF; --muted:#B4C3E6; --line:#3A5CA6;
+  --accent:#7FB0FF; --on-accent:#06122B;
+  --new:#E8B04A; --new-ink:#F0C26E; --new-soft:#4A3A18;
+  --rec:#E394BD; --rec-ink:#EDAECF; --rec-soft:#4F2A48;
+  --old:#8FA9F5; --old-ink:#AEC0F8; --old-soft:#2A3E80;
+  --good-bg:#14403A; --good-ink:#86DDBA; --warn-bg:#46361A; --warn-ink:#F0C778; --bad-bg:#4A2321; --bad-ink:#F2A29B;
+  color-scheme:dark;
+}
+body[data-tint="11"]{
+  --page:#3A1A4A; --bg:#2E1440; --surface:#4A2860; --track:#5A3774; --ink:#F6EEFB; --muted:#CDB8DA; --line:#6A4687;
+  --accent:#E0A8F5; --on-accent:#2A0F38;
+  --new:#E8B04A; --new-ink:#F0C26E; --new-soft:#5A431C;
+  --rec:#F09AC4; --rec-ink:#F5B4D3; --rec-soft:#6A2D55;
+  --old:#9DB4F7; --old-ink:#B9C9FA; --old-soft:#3A4690;
+  --good-bg:#1F4A45; --good-ink:#8FE3C2; --warn-bg:#52401E; --warn-ink:#F3CE82; --bad-bg:#5A2A2A; --bad-ink:#F5ADA6;
+  color-scheme:dark;
+}
+button,input{font-family:inherit; touch-action:manipulation}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.wrap{max-width:560px; margin-inline:auto; display:flex; flex-direction:column; gap:14px}
+#app{display:flex; flex-direction:column; gap:14px}
+h1,h2,p,ul,dl{margin:0}
+.muted{color:var(--muted)}
+
+.top{display:flex; align-items:center; justify-content:space-between; gap:12px}
+.brand{font:700 24px/1.1 var(--f-display); letter-spacing:-.015em; display:flex; align-items:center; gap:10px}
+.brand img{width:32px; height:32px; border-radius:8px; flex:none}
+.tagline{font-size:14px; color:var(--muted); margin-top:-6px}
+.ayah{margin:6px 0 -4px; text-align:center}
+.dua{margin:28px 0 8px; text-align:center; display:flex; flex-direction:column; gap:6px; align-items:center}
+.dua .ar{font:400 23px/1.9 var(--f-arabic); color:var(--accent); margin:0}
+.dua .tr{font-style:italic; font-size:14px; margin:0; max-width:34em}
+.dua .en{font-size:14px; margin:0; max-width:34em}
+.dua figcaption{font-size:12px; color:var(--muted)}
+@media (max-width:380px){ .dua .ar{font-size:20px} }
+.ayah p{font:400 24px/1.9 var(--f-arabic); color:var(--accent); margin:0}
+.ayah figcaption{font-size:12px; color:var(--muted); margin-top:2px}
+@media (max-width:380px){ .ayah p{font-size:21px} }
+.bsm{font:400 26px/1.6 var(--f-arabic); color:var(--accent); text-align:center; margin:0 0 4px}
+@media (max-width:380px){ .bsm{font-size:22px} }
+
+.people{display:flex; flex-wrap:wrap; gap:6px}
+.pchip{appearance:none; border:1px solid var(--line); background:var(--surface); color:var(--ink); font:600 14px var(--f-body); padding:8px 14px; border-radius:999px; cursor:pointer; min-height:40px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pchip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.pdot{display:inline-block; width:12px; height:12px; border-radius:50%; border:1px solid var(--line); margin-right:8px; vertical-align:-1px}
+.pchip[aria-pressed="true"] .pdot{border-color:var(--bg)}
+.swatch{appearance:none; width:44px; height:44px; border-radius:50%; border:2px solid var(--line); cursor:pointer}
+.swatch[aria-pressed="true"]{border:3px solid var(--ink)}
+.where{display:flex; flex-direction:column; gap:6px; background:var(--bg); border-radius:10px; padding:10px 12px}
+.where-h{display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-weight:600; font-size:13px}
+.where-h span:last-child{text-align:right; font-variant-numeric:tabular-nums}
+.where ul,.known{list-style:none; padding:0; margin:0}
+.where li{display:flex; justify-content:space-between; gap:10px; padding:2px 0}
+.where li span{min-width:0}
+.where li small{display:block; color:var(--muted); font-size:12px}
+.where li.ok span{color:var(--muted)}
+.where li b{font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; color:var(--ci)}
+.where summary{cursor:pointer; color:var(--ci); font-weight:600; padding:6px 0}
+.linkb{appearance:none; border:0; background:none; color:var(--ink); font:600 13px var(--f-body); text-decoration:underline; cursor:pointer; padding:6px 2px}
+.known li{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line)}
+.known li:last-child{border-bottom:0}
+.known small{display:block; color:var(--muted)}
+.rng{display:grid; grid-template-columns:auto minmax(0,1fr) 92px; gap:8px; align-items:center}
+.rng2{display:grid; grid-template-columns:minmax(0,1fr) 92px; gap:8px}
+.jzb{appearance:none; padding:0; cursor:pointer; font-family:inherit}
+.hint.err{color:var(--bad-ink); font-weight:600}
+.pchip.add{border-style:dashed; color:var(--muted)}
+.tabs{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; background:var(--track); padding:4px; border-radius:12px}
+.tab{appearance:none; border:0; background:transparent; color:var(--muted); font:600 14px var(--f-body); padding:10px 0; border-radius:9px; cursor:pointer; min-height:44px}
+.tab[aria-selected="true"]{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgb(0 0 0 / .14)}
+
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px; min-width:0}
+.h{font:700 17px/1.2 var(--f-display); letter-spacing:-.005em}
+.label{font:600 11px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+
+/* date bar + week strip */
+.daybar{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.daylabel{font:700 20px/1.15 var(--f-display); letter-spacing:-.01em}
+.daylabel small{display:block; font:500 13px var(--f-body); color:var(--muted); letter-spacing:0; margin-top:2px}
+.stepper{display:flex; gap:6px; align-items:center}
+.icon{appearance:none; border:1px solid var(--line); background:var(--surface); color:var(--ink); width:40px; height:40px; border-radius:10px; font:600 20px/1 var(--f-body); cursor:pointer}
+.icon.txt{width:auto; padding:0 12px; font-size:13px}
+.wk{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px}
+.dbtn{appearance:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0 7px; border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:10px; cursor:pointer; min-height:56px}
+.dbtn .dow{font-size:11px; letter-spacing:.06em; text-transform:uppercase; opacity:.7}
+.dbtn .dn{font:700 17px/1.1 var(--f-display); font-variant-numeric:tabular-nums}
+.dbtn .dot{width:5px; height:5px; border-radius:50%; background:transparent}
+.dbtn.has .dot{background:var(--accent)}
+.dbtn.rest{opacity:.6}
+.dbtn.today{border-color:var(--accent); border-width:2px; padding:7px 0 6px}
+.dbtn[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.dbtn[aria-pressed="true"].has .dot{background:var(--bg)}
+
+/* today summary */
+.hero-n{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.hero-n b{font:700 40px/1 var(--f-display); letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.hero-n span{color:var(--muted)}
+.seg{display:flex; gap:4px}
+.seg>div{height:10px; background:var(--track); border-radius:999px; overflow:hidden; min-width:6px}
+.seg i{display:block; height:100%}
+.seg .s1 i{background:var(--new)} .seg .s2 i{background:var(--rec)} .seg .s3 i{background:var(--old)}
+.legend{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:13px; color:var(--muted)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.sw{display:inline-block; width:9px; height:9px; border-radius:50%; flex:none}
+.sw.new{background:var(--new)} .sw.rec{background:var(--rec)} .sw.old{background:var(--old)}
+
+.note{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:var(--warn-bg); color:var(--warn-ink); border-radius:12px; padding:12px 14px; font-weight:500}
+
+/* stream cards */
+.s-new{--c:var(--new); --ci:var(--new-ink); --cs:var(--new-soft)}
+.s-rec{--c:var(--rec); --ci:var(--rec-ink); --cs:var(--rec-soft)}
+.s-old{--c:var(--old); --ci:var(--old-ink); --cs:var(--old-soft)}
+.s-hard{--c:var(--accent); --ci:var(--accent); --cs:var(--bg)}
+.s-read{--ci:var(--accent)}
+.btn.read{min-height:48px; font-size:15px}
+.btn.read.solid{background:var(--accent); border-color:var(--accent); color:#fff}
+.rdots{display:grid; grid-template-columns:repeat(7, 1fr); gap:6px}
+.rd{display:flex; flex-direction:column; align-items:center; gap:3px}
+.rd i{display:grid; place-items:center; width:30px; height:30px; border-radius:50%; border:1.5px solid var(--line); font-style:normal; font-weight:700; font-size:14px; color:#fff}
+.rd.on i{background:var(--accent); border-color:var(--accent)}
+.rd.fut i{border-style:dashed; opacity:.6}
+.rd.cur i{box-shadow:0 0 0 2px var(--surface), 0 0 0 4px var(--ink)}
+.rd small{font-size:11px; color:var(--muted)}
+.hlist{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px}
+.where .hlist li,.hlist li{display:block; padding:2px 0}
+.hall .hl{align-items:center}
+.hl{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
+.hl span{min-width:0; flex:1}
+.hl small{display:block; color:var(--muted); font-size:12px}
+.hl b{font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; color:var(--ci)}
+.hb{display:flex; gap:8px; margin-top:6px}
+.hb .btn{flex:1}
+.xbtn{appearance:none; border:0; background:none; color:var(--muted); font:400 20px/1 var(--f-body); width:32px; height:32px; border-radius:8px; cursor:pointer; align-self:center}
+.hall summary{cursor:pointer; color:var(--ci); font-weight:600; padding:8px 0}
+.hall .hlist{padding-bottom:6px}
+.hadd{display:flex; flex-direction:column; gap:6px}
+.hadd label{font-weight:600; font-size:14px}
+.hrow{display:flex; gap:8px}
+.hrow .inp{flex:1; min-width:0}
+.hrow .btn{white-space:nowrap}
+.pgrp{display:flex; flex-direction:column; gap:4px; margin:4px 0 8px}
+.pchips{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.pchips .chip{min-width:44px; justify-content:center}
+.card-h{display:flex; justify-content:space-between; align-items:flex-start; gap:12px}
+.ttl{display:flex; flex-direction:column; align-items:flex-start; gap:6px; min-width:0}
+.ttl h2{font:700 19px/1.1 var(--f-display); letter-spacing:-.01em}
+.term{font:600 11px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--ci); background:var(--cs); padding:3px 9px; border-radius:999px}
+.target{display:flex; align-items:baseline; gap:5px; flex:none}
+.target b{font:700 40px/1 var(--f-display); letter-spacing:-.02em; color:var(--ci); font-variant-numeric:tabular-nums}
+.target span{color:var(--muted); font-size:13px}
+.why{color:var(--muted); font-size:14px}
+.bar{height:10px; background:var(--track); border-radius:999px; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--c); border-radius:999px}
+.done{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.done label{color:var(--muted); font-size:14px}
+.num{width:92px; font:700 18px var(--f-display); padding:7px 10px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); font-variant-numeric:tabular-nums}
+.togo{margin-left:auto; font-weight:600; color:var(--ci); text-align:right}
+.btns{display:grid; grid-template-columns:1fr 1fr 1fr 1.5fr; gap:8px}
+.btn{appearance:none; border:1px solid var(--line); background:var(--surface); color:var(--ink); font:600 14px var(--f-body); padding:10px 4px; border-radius:10px; cursor:pointer; min-height:44px}
+.btn:active{transform:translateY(1px)}
+.btn.solid{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.btn.sm{min-height:36px; padding:6px 12px}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.4; cursor:default}
+
+/* week card */
+.wrow{display:flex; flex-direction:column; gap:6px}
+.wrow+.wrow{padding-top:12px; border-top:1px solid var(--line)}
+.wtop{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
+.wtop b{display:inline-flex; align-items:center; gap:8px; font-weight:600}
+.wtop span{font-variant-numeric:tabular-nums; font-weight:600}
+.wnote{font-size:13px; color:var(--muted)}
+
+/* plan */
+.big{font:700 40px/1 var(--f-display); letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.big small{font:500 15px var(--f-body); color:var(--muted); letter-spacing:0; margin-left:6px}
+.juz{display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:4px}
+.jz{position:relative; height:34px; border:1px solid var(--line); border-radius:8px; background:var(--bg); display:flex; align-items:center; justify-content:center; font:600 12px var(--f-body); color:var(--muted); overflow:hidden; font-variant-numeric:tabular-nums}
+.jz span{position:relative}
+.jz i{position:absolute; left:0; bottom:0; height:5px; background:var(--accent)}
+.jz.full{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.jz.full i{display:none}
+.jz.beyond{border-style:dashed; opacity:.45}
+.kv{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px 14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0; text-align:right; font-weight:600; font-variant-numeric:tabular-nums; min-width:0}
+.pill{display:inline-block; padding:3px 11px; border-radius:999px; font:700 12px var(--f-body); background:var(--track); color:var(--ink)}
+.pill.good{background:var(--good-bg); color:var(--good-ink)}
+.pill.warn{background:var(--warn-bg); color:var(--warn-ink)}
+.pill.bad{background:var(--bad-bg); color:var(--bad-ink)}
+.row-h{display:flex; justify-content:space-between; align-items:center; gap:10px}
+.tblw{overflow-x:auto}
+.tbl{width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums}
+.tbl th{font:600 11px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); text-align:left; padding:0 8px 8px 0; border-bottom:1px solid var(--line); white-space:nowrap}
+.tbl td{padding:10px 8px 10px 0; border-bottom:1px solid var(--line); vertical-align:top}
+.tbl tr:last-child td{border-bottom:0; padding-bottom:0}
+.tbl th:last-child,.tbl td:last-child{text-align:right; padding-right:0}
+.tbl td small{display:block; color:var(--muted)}
+
+/* settings */
+.field{display:flex; flex-direction:column; gap:6px}
+.field>label,.field>.lab{font-weight:600}
+.inp{font:500 16px var(--f-body); padding:11px 12px; border:1px solid var(--line); border-radius:10px; background:var(--bg); color:var(--ink); width:100%; min-width:0; font-variant-numeric:tabular-nums}
+.hint{color:var(--muted); font-size:13px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{appearance:none; border:1px solid var(--line); background:var(--surface); color:var(--ink); font:600 14px var(--f-body); padding:9px 13px; border-radius:999px; cursor:pointer; min-height:40px}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.ulist{display:flex; flex-direction:column; gap:6px}
+.uday{border:1px solid var(--line); border-radius:10px; padding:0 12px}
+.uday summary,.uday.none{display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:11px 0; cursor:pointer; list-style:none}
+.uday summary::-webkit-details-marker{display:none}
+.uday summary b::before{content:'▸ '; color:var(--muted)}
+.uday[open] summary b::before{content:'▾ '}
+.uday summary span,.uday.none span{color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums}
+.uday.none{cursor:default; opacity:.7}
+.uday .where{margin-bottom:10px}
+.chip.xs{min-height:32px; padding:5px 11px; font-size:13px}
+.uchips{display:flex; gap:4px}
+.pv{list-style:none; padding:0; display:flex; flex-direction:column; gap:12px}
+.pv li{display:flex; gap:10px; align-items:flex-start}
+.pv .sw{margin-top:6px}
+.pv small{color:var(--muted)}
+.errs{list-style:none; padding:0; display:flex; flex-direction:column; gap:4px; color:var(--bad-ink); font-weight:500}
+.errs:empty{display:none}
+.foot{font-size:13px; color:var(--muted); text-align:center; min-height:1.4em}
+
+/* about + FAQ: plain HTML so search engines and AI assistants can read it without running the app */
+.about{margin-top:18px}
+.about h2{font:700 20px/1.2 var(--f-display); letter-spacing:-.01em}
+.about h3{font:700 15px/1.3 var(--f-display); margin:0}
+.about p,.about ul{color:var(--muted); font-size:14px}
+.about ul{padding-left:18px; display:flex; flex-direction:column; gap:4px}
+.about strong{color:var(--ink)}
+.faq{display:flex; flex-direction:column; gap:14px}
+.faq>div{display:flex; flex-direction:column; gap:4px}
+.site-foot{font-size:13px; color:var(--muted); text-align:center; display:flex; flex-direction:column; gap:4px; margin-top:4px}
+.site-foot a{color:var(--ink)}
+.noscript{background:var(--warn-bg); color:var(--warn-ink); border-radius:12px; padding:12px 14px; font-weight:500}
+@media (max-width:380px){
+  .target b,.hero-n b{font-size:34px}
+  .btn{font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="bsm" lang="ar" dir="rtl">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+  <header class="top">
+    <h1 class="brand"><img src="/favicon.svg" alt="" width="32" height="32">Hifdh Helper</h1>
+  </header>
+  <p class="tagline">A free hifz tracker that plans your Quran memorisation and revision, day by day.</p>
+  <noscript><p class="noscript">Hifdh Helper needs JavaScript to build your plan. Please turn it on, or read how it works below.</p></noscript>
+  <div class="people" id="people" role="group" aria-label="People"></div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" id="tab-today" data-a="tab" data-tab="today">Today</button>
+    <button class="tab" role="tab" id="tab-plan" data-a="tab" data-tab="plan">Plan</button>
+    <button class="tab" role="tab" id="tab-settings" data-a="tab" data-tab="settings">Settings</button>
+  </nav>
+  <main id="app"></main>
+  <figure class="dua" id="dua" aria-label="Dua of the day"></figure>
+  <p class="foot" id="sync"></p>
+
+  <section class="card about" id="about" aria-labelledby="about-h">
+    <h2 id="about-h">About Hifdh Helper</h2>
+    <p><strong>Hifdh Helper</strong> is a free Quran memorisation (hifz) planner and tracker. Enter what you already know and your goal, and it works out what to do on each study day, with the exact surahs and page numbers in the 604-page Madinah mushaf.</p>
+    <h3>Three parts to every day</h3>
+    <ul>
+      <li><strong>New hifz (sabaq):</strong> the new pages or lines to memorise today, spread evenly to reach your finish date or weekly amount.</li>
+      <li><strong>New revision (sabqi):</strong> recent new hifz on a spaced repetition schedule. By default it is revised every study day for 21 days, then 3, 7, 14 and 30 days after that.</li>
+      <li><strong>Revision (manzil):</strong> everything older, revised in a full cycle, every 30 days by default.</li>
+    </ul>
+    <h3>Also included</h3>
+    <ul>
+      <li>Hard pages come back the next day, 3 days later and 7 days later, on top of normal revision.</li>
+      <li>A daily reading tick with a streak, for reading pages not yet memorised.</li>
+      <li>Juz-by-juz progress, your current pace and a projected finish date.</li>
+      <li>Several people on one device, for a family or a class.</li>
+    </ul>
+  </section>
+
+  <section class="card about" id="faq" aria-labelledby="faq-h">
+    <h2 id="faq-h">Questions</h2>
+    <div class="faq">
+      <div><h3>What are sabaq, sabqi and manzil?</h3><p>The three parts of a traditional hifz routine. Sabaq is today’s new lesson, sabqi is revision of recent lessons, and manzil is revision of everything older in a cycle.</p></div>
+      <div><h3>How are the daily amounts worked out?</h3><p>Choose a finish date or an amount each week, in pages or lines. The remaining pages are spread over the days of the week you study. Older revision is your older pages divided across your revision cycle.</p></div>
+      <div><h3>Can I change the revision schedule?</h3><p>Yes. In Settings you can change the every-day period, the spaced review gaps, the length of the older revision cycle, or switch to revising the last few days of new hifz every day.</p></div>
+      <div><h3>Can I start from the end of the Quran?</h3><p>Yes. Mark any juz or page range as already known, then choose where new hifz continues from and whether it goes forward or backwards, for example from Juz Amma.</p></div>
+      <div><h3>Is it free, and where is my data stored?</h3><p>It is free and needs no account. Your plan and logs are saved in your browser on your own device.</p></div>
+    </div>
+  </section>
+
+  <footer class="site-foot">
+    <span>Hifdh Helper is made by <a href="https://ummahapps.ai/">UmmahApps</a>.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// <calc>
+var PAGES = 604, JUZ = PAGES / 30, LINES = 15, EPS = 1e-6;
+function pad(n){ return String(n).padStart(2, '0'); }
+function iso(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function parse(s){ var p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+function addDays(d, n){ var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; }
+function diffDays(a, b){ return Math.round((parse(b) - parse(a)) / 864e5); }
+function num(v){ v = Number(v); return isFinite(v) ? v : 0; }
+function activeCount(days){ return days.filter(Boolean).length; }
+function countActive(days, fromIso, toIso){
+  var c = 0; if (toIso < fromIso) return 0;
+  var d = parse(fromIso), end = parse(toIso);
+  while (d <= end){ if (days[d.getDay()]) c++; d = addDays(d, 1); }
+  return c;
+}
+function sumN(logs, pred){ var t = 0; for (var k in logs){ if (pred(k)) t += num(logs[k].n); } return t; }
+
+function fmtQ(v){
+  if (!(v > 0)) return '0';
+  if (v < 0.125) return '<¼';
+  var q = Math.round(v * 4), w = Math.floor(q / 4), f = q % 4;
+  return (w ? String(w) : '') + ['', '¼', '½', '¾'][f];
+}
+function fmtL(v){ v = num(v); if (!(v > 0)) return '0'; var n = Math.round(v * LINES); return n < 1 ? '<1' : String(n); }
+function fmt1(v){ v = Math.round(num(v) * 10) / 10; return String(v).replace(/\.0$/, ''); }
+
+// ----- Quran map (Madinah mushaf, 604 pages). Page p covers x in [p-1, p). -----
+var NAMES = ["Al-Fatihah","Al-Baqarah","Aal-Imran","An-Nisa","Al-Ma'idah","Al-An'am","Al-A'raf","Al-Anfal","At-Tawbah","Yunus","Hud","Yusuf","Ar-Ra'd","Ibrahim","Al-Hijr","An-Nahl","Al-Isra","Al-Kahf","Maryam","Ta-Ha","Al-Anbiya","Al-Hajj","Al-Mu'minun","An-Nur","Al-Furqan","Ash-Shu'ara","An-Naml","Al-Qasas","Al-Ankabut","Ar-Rum","Luqman","As-Sajdah","Al-Ahzab","Saba","Fatir","Ya-Sin","As-Saffat","Sad","Az-Zumar","Ghafir","Fussilat","Ash-Shura","Az-Zukhruf","Ad-Dukhan","Al-Jathiyah","Al-Ahqaf","Muhammad","Al-Fath","Al-Hujurat","Qaf","Adh-Dhariyat","At-Tur","An-Najm","Al-Qamar","Ar-Rahman","Al-Waqi'ah","Al-Hadid","Al-Mujadila","Al-Hashr","Al-Mumtahanah","As-Saff","Al-Jumu'ah","Al-Munafiqun","At-Taghabun","At-Talaq","At-Tahrim","Al-Mulk","Al-Qalam","Al-Haqqah","Al-Ma'arij","Nuh","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyamah","Al-Insan","Al-Mursalat","An-Naba","An-Nazi'at","Abasa","At-Takwir","Al-Infitar","Al-Mutaffifin","Al-Inshiqaq","Al-Buruj","At-Tariq","Al-A'la","Al-Ghashiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Ad-Duha","Ash-Sharh","At-Tin","Al-Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-Adiyat","Al-Qari'ah","At-Takathur","Al-Asr","Al-Humazah","Al-Fil","Quraysh","Al-Ma'un","Al-Kawthar","Al-Kafirun","An-Nasr","Al-Masad","Al-Ikhlas","Al-Falaq","An-Nas"];
+var STARTS = [1,2,50,77,106,128,151,177,187,208,221,235,249,255,262,267,282,293,305,312,322,332,342,350,359,367,377,385,396,404,411,415,418,428,434,440,446,453,458,467,477,483,489,496,499,502,507,511,515,518,520,523,526,528,531,534,537,542,545,549,551,553,554,556,558,560,562,564,566,568,570,572,574,575,577,578,580,582,583,585,586,587,587,589,590,591,591,592,593,594,595,595,596,596,597,597,598,598,599,599,600,600,601,601,601,602,602,602,603,603,603,604,604,604];
+var ENDS = [1,49,76,106,127,150,176,186,207,221,235,248,255,261,267,281,293,304,312,321,331,341,349,359,366,376,385,396,404,410,414,417,427,434,440,445,452,458,467,476,482,489,495,498,502,506,510,515,517,520,523,525,528,531,534,537,541,545,548,551,552,554,555,557,559,561,564,566,568,570,571,573,575,577,578,580,581,583,584,585,586,587,589,589,590,591,592,592,594,594,595,596,596,596,597,597,598,599,599,600,600,600,601,601,601,602,602,602,603,603,603,604,604,604];
+var JS0 = [1]; for (var jj = 1; jj < 30; jj++) JS0.push(2 + jj * 20);
+function juzIv(i){ return [JS0[i] - 1, (i < 29 ? JS0[i + 1] : 605) - 1]; }
+function juzOf(p){ return Math.min(30, Math.max(1, Math.floor((p - 2) / 20) + 1)); }
+function surahsFor(p1, p2){
+  var out = [];
+  for (var i = 0; i < 114; i++){
+    if (STARTS[i] <= p2 && ENDS[i] >= p1) out.push({ i: i, name: NAMES[i], a: Math.max(p1, STARTS[i]), b: Math.min(p2, ENDS[i]) });
+  }
+  return out;
+}
+
+// ----- interval sets over x in [0, 604] -----
+function normIv(list){
+  var a = list.map(function(r){ return [Math.max(0, Math.min(PAGES, r[0])), Math.max(0, Math.min(PAGES, r[1]))]; })
+    .filter(function(r){ return r[1] - r[0] > EPS; }).sort(function(x, y){ return x[0] - y[0]; });
+  var out = [];
+  a.forEach(function(r){
+    var last = out[out.length - 1];
+    if (last && r[0] <= last[1] + EPS) last[1] = Math.max(last[1], r[1]); else out.push([r[0], r[1]]);
+  });
+  return out;
+}
+function measure(list){ return list.reduce(function(t, r){ return t + (r[1] - r[0]); }, 0); }
+function unionIv(a, b){ return normIv((a || []).concat(b || [])); }
+function subtractIv(a, b){
+  var out = [], bb = normIv(b || []);
+  normIv(a || []).forEach(function(r){
+    var lo = r[0];
+    bb.forEach(function(s){
+      if (s[1] <= lo + EPS || s[0] >= r[1] - EPS) return;
+      if (s[0] > lo + EPS) out.push([lo, s[0]]);
+      lo = Math.max(lo, s[1]);
+    });
+    if (r[1] - lo > EPS) out.push([lo, r[1]]);
+  });
+  return out;
+}
+function overlapIv(a, lo, hi){
+  return measure(normIv((a || []).map(function(r){ return [Math.max(r[0], lo), Math.min(r[1], hi)]; })));
+}
+function takeIv(pool, f, t){
+  var out = [], acc = 0;
+  for (var i = 0; i < pool.length; i++){
+    var L = pool[i][1] - pool[i][0], lo = Math.max(f, acc), hi = Math.min(t, acc + L);
+    if (hi - lo > EPS) out.push([pool[i][0] + (lo - acc), pool[i][0] + (hi - acc)]);
+    acc += L;
+  }
+  return out;
+}
+function sliceIv(pool, off, len){
+  var total = measure(pool);
+  if (total < EPS || len < EPS) return [];
+  len = Math.min(len, total); off = ((off % total) + total) % total;
+  if (off + len <= total + EPS) return takeIv(pool, off, off + len);
+  return takeIv(pool, off, total).concat(takeIv(pool, 0, off + len - total));
+}
+// Whole-page ranges [p1, p2] for display, in the order given, merging touching neighbours.
+function pageRanges(ivs){
+  var out = [];
+  ivs.forEach(function(r){
+    var p1 = Math.floor(r[0] + EPS) + 1, p2 = Math.max(p1, Math.ceil(r[1] - EPS));
+    var last = out[out.length - 1];
+    if (last && p1 <= last[1] + 1 && p2 >= last[0] - 1){ last[0] = Math.min(last[0], p1); last[1] = Math.max(last[1], p2); }
+    else out.push([p1, p2]);
+  });
+  return out;
+}
+// Learn the next n unknown pages from x in a direction, skipping what is already known.
+function advance(known, x, dir, n){
+  var k = normIv(known || []), segs = [], got = 0, guard = 0;
+  while (n > EPS && guard++ < 1000){
+    var iv, lim;
+    if (dir > 0){
+      if (x >= PAGES - EPS) break;
+      iv = k.filter(function(r){ return r[0] <= x + EPS && r[1] > x + EPS; })[0];
+      if (iv){ x = iv[1]; continue; }
+      var nx = k.filter(function(r){ return r[0] > x + EPS; })[0];
+      lim = nx ? nx[0] : PAGES;
+      var t = Math.min(n, lim - x);
+      segs.push({ a: x, b: x + t, d: 1 }); x += t; n -= t; got += t;
+    } else {
+      if (x <= EPS) break;
+      iv = k.filter(function(r){ return r[0] < x - EPS && r[1] >= x - EPS; })[0];
+      if (iv){ x = iv[0]; continue; }
+      var pv = k.filter(function(r){ return r[1] < x - EPS; }); pv = pv[pv.length - 1];
+      lim = pv ? pv[1] : 0;
+      var t2 = Math.min(n, x - lim);
+      segs.push({ a: x - t2, b: x, d: -1 }); x -= t2; n -= t2; got += t2;
+    }
+  }
+  return { segs: segs, x: x, got: got };
+}
+
+// ----- what is known, what is recent, what is older (all from settings + logs) -----
+function segsOf(logs, pred){
+  var out = [];
+  Object.keys(logs).sort().forEach(function(k){
+    if (pred(k) && logs[k].segs) logs[k].segs.forEach(function(s){ out.push([s.a, s.b]); });
+  });
+  return out;
+}
+function allKnown(st, logs){ return unionIv(st.base || [], segsOf(logs, function(){ return true; })); }
+function knownBefore(st, logs, dateIso){ return unionIv(st.base || [], segsOf(logs, function(k){ return k < dateIso; })); }
+function recentIv(st, logs, dateIso){
+  var rFrom = iso(addDays(parse(dateIso), -st.recentDays));
+  return segsOf(logs, function(k){ return k >= rFrom && k < dateIso; });
+}
+function oldPool(st, logs, dateIso){
+  var recent = st.revMode === 'window' ? recentIv(st, logs, dateIso) : srAt(st, logs, dateIso).pool;
+  return subtractIv(knownBefore(st, logs, dateIso), recent);
+}
+
+// ----- New revision by spaced repetition -----
+// Each day's new hifz is one batch. It comes back for review a set number of days after it was learned
+// (1, 3, 7, 14 and 30 by default). Once every review is done it moves into the older revision cycle.
+// Reviews that are missed or only partly done carry over until they are finished.
+var SR_DEFAULT = [3, 7, 14, 30];
+// A hard page gets extra reviews this many days apart, then leaves the list.
+var HARD_STEPS = [1, 3, 7];
+function hardOf(P){ return Array.isArray(P.hard) ? P.hard : (P.hard = []); }
+function hardDue(h){ return iso(addDays(parse(h.last || h.m), HARD_STEPS[h.st])); }
+// Dates each hard page is expected back, assuming each extra review is done on the day it is due.
+function hardForecast(P, from, to){
+  var out = {};
+  hardOf(P).forEach(function(h){
+    var x = hardDue(h); if (x < from) x = from;
+    for (var st = h.st; st < HARD_STEPS.length && x <= to; st++){
+      (out[x] = out[x] || []).push({ h: h, st: st });
+      if (st + 1 < HARD_STEPS.length) x = iso(addDays(parse(x), HARD_STEPS[st + 1]));
+    }
+  });
+  Object.keys(out).forEach(function(k){ out[k].sort(function(a, b){ return a.h.pg - b.h.pg; }); });
+  return out;
+}
+function srSteps(st){ return Array.isArray(st.srSteps) && st.srSteps.length ? st.srSteps : SR_DEFAULT; }
+// Days of every-day review before spaced reviews start (0 = straight to spaced).
+function srDaily(st){ var d = Math.round(num(st.srDaily)); return d > 0 ? Math.min(90, d) : 0; }
+function srBatches(st, logs){
+  var steps = srSteps(st), D = srDaily(st);
+  return Object.keys(logs).sort().map(function(k){
+    var l = logs[k], iv = l.segs ? normIv(l.segs.map(function(x){ return [x.a, x.b]; })) : [];
+    return { d: k, iv: iv, size: measure(iv), step: 0, prog: 0,
+             dailyEnd: iso(addDays(parse(k), D)), dues: steps.map(function(n){ return iso(addDays(parse(k), D + n)); }) };
+  }).filter(function(b){ return b.size > EPS; });
+}
+var srMemo = null;
+// Day by day up to `until`. Up to today it uses the amounts logged; after today it assumes each study day's reviews get done.
+function srRun(st, logs, until, todayStr){
+  var steps = srSteps(st);
+  var sig = Object.keys(logs).sort().map(function(k){ var l = logs[k]; return k + ':' + num(l.n) + ':' + num(l.r) + ':' + (l.segs ? l.segs.length : 0); }).join('|') +
+    '#' + steps.join(',') + '#' + srDaily(st) + '#' + st.days.join(',') + '#' + todayStr;
+  if (srMemo && srMemo.sig === sig && srMemo.until >= until) return srMemo;
+  var bs = srBatches(st, logs), days = {}, last = steps.length;
+  if (bs.length){
+    var X = bs[0].d, live = [];
+    var bi = 0;
+    while (X <= until){
+      while (bi < bs.length && bs[bi].d < X) live.push(bs[bi++]);
+      live = live.filter(function(b){ return b.step < last; });
+      var due = [], daily = [], studyDay = !!st.days[parse(X).getDay()];
+      live.forEach(function(b){
+        if (X <= b.dailyEnd){
+          // Every-day phase: due on each study day; a missed day is simply missed, not carried over.
+          if (studyDay) daily.push({ b: b, due: X, daily: true, day: diffDays(b.d, X), rem: b.size, got: 0, done: false });
+          return;
+        }
+        var dd = b.dues[b.step]; if (dd <= X) due.push({ b: b, due: dd, step: b.step, rem: b.size - b.prog, got: 0, done: false });
+      });
+      due.sort(function(a, c){ return a.due < c.due ? -1 : a.due > c.due ? 1 : (a.b.d < c.b.d ? -1 : 1); });
+      due = daily.concat(due); // the every-day block first, then spaced reviews, oldest due first
+      var pool = normIv([].concat.apply([], live.map(function(b){ return b.iv; })));
+      var total = due.reduce(function(t, it){ return t + it.rem; }, 0);
+      var amt = X <= todayStr ? num(logs[X] && logs[X].r) : (st.days[parse(X).getDay()] ? Infinity : 0);
+      due.forEach(function(it){
+        var take = Math.min(it.rem, amt); if (!(take > 0)) return;
+        amt -= take; it.got = take;
+        if (it.daily){ it.done = take >= it.b.size - Math.min(0.125, it.b.size / 2); return; }
+        it.b.prog += take;
+        if (it.b.prog >= it.b.size - Math.min(0.125, it.b.size / 2)){ it.done = true; it.b.step++; it.b.prog = 0; }
+      });
+      days[X] = { due: due, total: total, pool: pool, poolSize: measure(pool) };
+      X = iso(addDays(parse(X), 1));
+    }
+  }
+  srMemo = { sig: sig, until: until, days: days };
+  return srMemo;
+}
+function srUntil(dateIso){ var t = todayIso(), m = dateIso > t ? dateIso : t; return iso(addDays(parse(m), 45)); }
+function srAt(st, logs, dateIso){
+  var r = srRun(st, logs, srUntil(dateIso), todayIso());
+  return r.days[dateIso] || { due: [], total: 0, pool: [], poolSize: 0 };
+}
+// What New revision adds to the week: what was carried in, plus everything that falls due during it.
+function srWeekPlan(st, logs, wd){
+  var r = srRun(st, logs, srUntil(wd[6]), todayIso()), tot = 0;
+  wd.forEach(function(x, i){
+    var rec = r.days[x]; if (!rec) return;
+    rec.due.forEach(function(it){ if (it.due === x || (i === 0 && it.due < x)) tot += it.rem; });
+  });
+  return tot;
+}
+// Next day after dateIso with reviews due, assuming today's are done.
+function srNext(st, logs, dateIso){
+  var r = srRun(st, logs, srUntil(dateIso), todayIso()), x = iso(addDays(parse(dateIso), 1)), end = srUntil(dateIso);
+  while (x <= end){ var rec = r.days[x]; if (rec && rec.total > EPS) return { date: x, total: rec.total }; x = iso(addDays(parse(x), 1)); }
+  return null;
+}
+// Typical load once things are running, for planning: New revision per study day and the pages still in it.
+function revLoad(st, n){
+  var kk = Math.max(1, activeCount(st.days));
+  if (st.revMode === 'window'){ var w = n * st.recentDays * kk / 7; return { daily: w, pool: w }; }
+  var sp = srSteps(st), D = srDaily(st);
+  return { daily: n * sp.length + n * D * kk / 7, pool: n * (D + sp[sp.length - 1]) * kk / 7 };
+}
+function oldOffset(logs, dateIso, pool){
+  var t = measure(pool); if (t < EPS) return 0;
+  var done = 0; Object.keys(logs).forEach(function(k){ if (k < dateIso) done += num(logs[k].o); });
+  return done % t;
+}
+function nextPage(nx){ return nx.dir > 0 ? Math.min(PAGES, Math.floor(nx.x + EPS) + 1) : Math.max(1, Math.ceil(nx.x - EPS)); }
+function nextX(p, dir){ return dir > 0 ? p - 1 : p; }
+// First unknown page the next new hifz will land on, or null when the end has been reached.
+function nextStart(st, logs){
+  var r = advance(allKnown(st, logs), st.next.x, st.next.dir, 0.001);
+  if (!r.segs.length) return null;
+  var s = r.segs[0];
+  return st.next.dir > 0 ? Math.min(PAGES, Math.floor(s.a + EPS) + 1) : Math.max(1, Math.ceil(s.b - EPS));
+}
+// Remove / add new-hifz pages for one day, keeping the exact pages and the pointer in step.
+function changeNew(st, logs, l, v){
+  var cn = num(l.n), diff = v - cn;
+  if (!l.segs) l.segs = [];
+  if (diff > EPS){
+    var res = advance(allKnown(st, logs), st.next.x, st.next.dir, diff);
+    var r4 = function(x){ return Math.round(x * 1e4) / 1e4; };
+    res.segs.forEach(function(s){
+      s.a = r4(s.a); s.b = r4(s.b);
+      var last = l.segs[l.segs.length - 1];
+      // Join onto the last stretch when it carries straight on, so line-by-line adds stay one range.
+      if (last && last.d === s.d && (s.d > 0 ? Math.abs(last.b - s.a) < 1e-4 : Math.abs(last.a - s.b) < 1e-4)){ if (s.d > 0) last.b = s.b; else last.a = s.a; }
+      else l.segs.push(s);
+    });
+    st.next.x = r4(res.x);
+    l.n = Math.round((cn + res.got) * 1e4) / 1e4;
+  } else if (diff < -EPS){
+    var r = -diff;
+    while (r > EPS && l.segs.length){
+      var s = l.segs[l.segs.length - 1], L = s.b - s.a, cut = Math.min(L, r);
+      var edge = s.d > 0 ? s.b : s.a, ne = s.d > 0 ? s.b - cut : s.a + cut;
+      if (Math.abs(st.next.x - edge) < 1e-4 && st.next.dir === s.d) st.next.x = ne;
+      if (cut >= L - EPS) l.segs.pop(); else if (s.d > 0) s.b = ne; else s.a = ne;
+      r -= cut;
+    }
+    l.n = Math.max(0, Math.round(v * 1e4) / 1e4);
+  }
+}
+
+// How the pace is set: by a finish date, or by an amount each week (pages or lines).
+function weeklyPages(st){ var a = num(st.weeklyAmount); return st.weeklyUnit === 'lines' ? a / LINES : a; }
+function targetInfo(st, remaining, dateIso){
+  var kk = Math.max(1, activeCount(st.days));
+  if (st.targetMode === 'weekly'){
+    var w = weeklyPages(st), per = w / kk;
+    if (remaining <= 0 || per <= 0) return { req: 0, left: 0, finish: null, overdue: false, weekly: true };
+    return { req: Math.min(remaining, per), left: Math.ceil(remaining / per),
+             finish: iso(addDays(parse(dateIso), Math.ceil(remaining / w * 7))), overdue: false, weekly: true };
+  }
+  var left = countActive(st.days, dateIso, st.goalDate);
+  return { req: remaining > 0 && left > 0 ? remaining / left : 0, left: left, finish: st.goalDate, overdue: remaining > 0 && left <= 0, weekly: false };
+}
+// Per-study-day amounts as of a date, using only what was logged before that date.
+function perDay(st, logs, dateIso){
+  var kk = Math.max(1, activeCount(st.days));
+  var before = st.startPages + sumN(logs, function(k){ return k < dateIso; });
+  var rFrom = iso(addDays(parse(dateIso), -st.recentDays));
+  var recent = sumN(logs, function(k){ return k >= rFrom && k < dateIso; }), rToday = recent;
+  if (st.revMode !== 'window'){ var sr = srAt(st, logs, dateIso); recent = sr.poolSize; rToday = sr.total; }
+  var old = Math.max(0, before - recent);
+  var cyc = Math.max(1, st.cycleDays * kk / 7);
+  var remaining = Math.max(0, st.goalPages - before);
+  var info = targetInfo(st, remaining, dateIso), left = info.left;
+  var n = 0, state = 'ok';
+  if (remaining <= 0) state = 'done';
+  else if (info.overdue) state = 'overdue';
+  else n = info.req;
+  return { n: n, r: rToday, o: old / cyc, before: before, recent: recent, old: old, remaining: remaining, left: left, state: state, kk: kk, cyc: cyc };
+}
+function dayTargets(st, logs, dateIso){
+  var p = perDay(st, logs, dateIso);
+  var active = !!st.days[parse(dateIso).getDay()];
+  p.active = active;
+  p.tn = active ? p.n : 0; p.tr = active ? p.r : 0; p.to = active ? p.o : 0;
+  return p;
+}
+// Which pages go with each card on a given day.
+function slicesFor(st, logs, dateIso, todayStr, p, lg){
+  var out = { n: [], r: [], o: [] };
+  var day = (logs[dateIso] && logs[dateIso].segs) ? logs[dateIso].segs.map(function(s){ return [s.a, s.b]; }) : [];
+  var planned = [];
+  if (dateIso === todayStr && p.active && p.state === 'ok'){
+    var rem = Math.max(0, p.tn - num(lg.n));
+    if (rem > EPS) planned = advance(allKnown(st, logs), st.next.x, st.next.dir, rem).segs.map(function(s){ return [s.a, s.b]; });
+  }
+  out.n = pageRanges(day.concat(planned));
+  if (p.active && st.revMode === 'window') out.r = pageRanges(recentIv(st, logs, dateIso));
+  if (p.active && p.to > 0){
+    var pool = oldPool(st, logs, dateIso);
+    out.o = pageRanges(sliceIv(pool, oldOffset(logs, dateIso, pool), Math.max(p.to, 0.05)));
+  }
+  return out;
+}
+function weekDates(dateIso){
+  var d = parse(dateIso), dow = (d.getDay() + 6) % 7, mon = addDays(d, -dow), out = [];
+  for (var i = 0; i < 7; i++) out.push(iso(addDays(mon, i)));
+  return out;
+}
+function weekStats(st, logs, dateIso, todayIso, p){
+  var wd = weekDates(dateIso);
+  var act = wd.filter(function(x){ return st.days[parse(x).getDay()]; });
+  var done = { n: 0, r: 0, o: 0 };
+  wd.forEach(function(x){ var l = logs[x]; if (l){ done.n += num(l.n); done.r += num(l.r); done.o += num(l.o); } });
+  var activeLeft = act.filter(function(x){ return x >= todayIso; }).length;
+  return { wd: wd, nAct: act.length, done: done, activeLeft: activeLeft,
+           plan: { n: p.n * act.length, r: st.revMode === 'window' ? p.r * act.length : srWeekPlan(st, logs, wd), o: p.o * act.length } };
+}
+function pace(st, logs, todayIso){
+  var keys = Object.keys(logs).filter(function(k){ var l = logs[k]; return num(l.n) > 0 || num(l.r) > 0 || num(l.o) > 0; }).sort();
+  if (!keys.length) return null;
+  var floor = iso(addDays(parse(todayIso), -27));
+  var from = keys[0] > floor ? keys[0] : floor;
+  var act = Math.max(1, countActive(st.days, from, todayIso));
+  var cal = Math.max(1, diffDays(from, todayIso) + 1);
+  var n = 0, o = 0;
+  for (var k in logs){ if (k >= from && k <= todayIso){ n += num(logs[k].n); o += num(logs[k].o); } }
+  return { perActive: n / act, oldPerCal: o / cal, from: from, spanDays: cal };
+}
+function projectFinish(st, remaining, perActive, todayIso){
+  if (remaining <= 0) return { date: todayIso, days: 0 };
+  if (perActive <= 0) return null;
+  var cal = Math.ceil((remaining / perActive) * 7 / Math.max(1, activeCount(st.days)));
+  if (cal > 36500) return null;
+  return { date: iso(addDays(parse(todayIso), cal)), days: cal };
+}
+function milestones(st, mem, req, todayIso){
+  var rem = st.goalPages - mem;
+  if (rem <= 0 || !(req > 0)) return [];
+  var kk = Math.max(1, activeCount(st.days)), cyc = Math.max(1, st.cycleDays * kk / 7);
+  var step = Math.max(20, Math.ceil(rem / 5 / 20) * 20);
+  var marks = [];
+  for (var m = Math.ceil((mem + 1) / step) * step; m < st.goalPages - 10; m += step) marks.push(m);
+  marks.push(st.goalPages);
+  return marks.slice(0, 6).map(function(m){
+    var cal = Math.ceil(((m - mem) / req) * 7 / kk);
+    var ld = revLoad(st, req);
+    var oldPool = Math.max(0, m - ld.pool);
+    return { pages: m, date: iso(addDays(parse(todayIso), cal)), rev: ld.daily + oldPool / cyc, recentPlan: ld.daily };
+  });
+}
+function previewCalc(f, todayIso){
+  var kk = Math.max(1, activeCount(f.days));
+  var remaining = Math.max(0, f.goalPages - f.startPages);
+  var info = targetInfo(f, remaining, todayIso);
+  var n = info.req;
+  var cyc = Math.max(1, f.cycleDays * kk / 7);
+  var ld = revLoad(f, n);
+  return { n: n, weekly: n * kk, finish: info.finish, isWeekly: info.weekly, recentPlan: ld.daily, revNow: f.startPages / cyc,
+           revGoal: Math.max(0, f.goalPages - ld.pool) / cyc, remaining: remaining };
+}
+// </calc>
+
+var KEY = 'hifz-tracker-v1';
+var todayIso = function(){ return iso(new Date()); };
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function defaults(){
+  return { startPages: 60, base: [[0, 60]], next: { x: 60, dir: 1 }, goalPages: 604, goalDate: iso(addDays(new Date(), 730)),
+           targetMode: 'date', weeklyAmount: 7, weeklyUnit: 'pages',
+           cycleDays: 30, recentDays: 5, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', revMode: 'spaced', srSteps: SR_DEFAULT.slice(), srDaily: 21 };
+}
+var TINTS = ['Sage', 'Rose', 'Sky', 'Lavender', 'Peach', 'Aqua', 'Sunshine', 'Bubblegum', 'Ocean', 'Lime', 'Midnight', 'Plum'];
+function newPerson(name, tint){
+  var s = defaults(); s.startPages = 0; s.base = []; s.next = { x: 0, dir: 1 };
+  return { id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, tint: tint, settings: s, logs: {}, hard: [], reads: {} };
+}
+function nextTint(from, to){
+  for (var t = from; t < to; t++){ if (!S.people.some(function(p){ return p.tint === t; })) return t; }
+  return from + (S.people.length % (to - from));
+}
+function normPerson(p, i){
+  var src = (p && p.settings) || {};
+  var s = Object.assign(defaults(), src);
+  if (!Array.isArray(s.days) || s.days.length !== 7) s.days = defaults().days;
+  if (s.revMode !== 'window') s.revMode = 'spaced';
+  if (!(Number.isInteger(s.srDaily) && s.srDaily >= 0 && s.srDaily <= 90)) s.srDaily = 21;
+  if (srParse(Array.isArray(s.srSteps) ? s.srSteps.join(',') : '').err) s.srSteps = SR_DEFAULT.slice();
+  // One-time update: the old default 1, 3, 7, 14, 30 becomes 3, 7, 14, 30 (a 1-day gap repeats the every-day weeks).
+  if (!s.srV){ if (s.srSteps.join(',') === '1,3,7,14,30') s.srSteps = SR_DEFAULT.slice(); s.srV = 2; }
+  var logs = (p && p.logs && typeof p.logs === 'object') ? p.logs : {};
+  if (!Array.isArray(src.base)){
+    // Older data only had a page count. Assume it was learned from Al-Fatihah onward.
+    var sp = Math.max(0, Math.min(PAGES, num(s.startPages)));
+    s.base = sp > 0 ? [[0, sp]] : [];
+    var x = sp;
+    Object.keys(logs).sort().forEach(function(k){
+      var l = logs[k];
+      if (num(l.n) > 0 && !l.segs){ var b = Math.min(PAGES, x + num(l.n)); l.segs = [{ a: x, b: b, d: 1 }]; x = b; }
+    });
+    s.next = { x: x, dir: 1 };
+  }
+  s.base = normIv(s.base);
+  if (!s.next || !isFinite(s.next.x) || (s.next.dir !== 1 && s.next.dir !== -1)) s.next = { x: 0, dir: 1 };
+  s.startPages = Math.round(measure(s.base) * 100) / 100;
+  return { id: (p && p.id) || ('p' + i), name: (p && p.name) || 'Me', settings: s,
+           tint: (p && Number.isInteger(p.tint) && p.tint >= 0 && p.tint < TINTS.length) ? p.tint : (i % 6),
+           logs: logs, hard: normHard(p && p.hard), reads: normReads(p && p.reads) };
+}
+// Days ticked for reading pages not yet memorised: { 'YYYY-MM-DD': true }.
+function normReads(o){
+  var out = {};
+  if (o && typeof o === 'object') Object.keys(o).forEach(function(k){ if (o[k] === true && /^\d{4}-\d\d-\d\d$/.test(k)) out[k] = true; });
+  return out;
+}
+// Pages marked hard: { pg: page number, m: date marked, st: extra reviews done, last: date of last one }.
+function normHard(a){
+  if (!Array.isArray(a)) return [];
+  var seen = {};
+  return a.filter(function(h){
+    if (!h || !Number.isInteger(h.pg) || h.pg < 1 || h.pg > PAGES || seen[h.pg] || !/^\d{4}-\d\d-\d\d$/.test(h.m || '')) return false;
+    if (!(Number.isInteger(h.st) && h.st >= 0 && h.st < HARD_STEPS.length)) h.st = 0;
+    if (h.last && !/^\d{4}-\d\d-\d\d$/.test(h.last)) h.last = null;
+    return (seen[h.pg] = true);
+  });
+}
+function normalize(r){
+  var people;
+  if (r && Array.isArray(r.people) && r.people.length) people = r.people.map(normPerson);
+  else people = [normPerson({ id: 'me', name: 'Me', settings: r && r.settings, logs: r && r.logs }, 0)];
+  return { v: 2, updatedAt: num(r && r.updatedAt), people: people };
+}
+
+var S = normalize(null);
+try { var raw = localStorage.getItem(KEY); if (raw) S = normalize(JSON.parse(raw)); } catch (e) {}
+// Which person is on screen is remembered per device, not synced.
+var ACTIVE_KEY = 'hifz-tracker-active', activeId = null;
+try { activeId = localStorage.getItem(ACTIVE_KEY); } catch (e) {}
+function cur(){
+  for (var i = 0; i < S.people.length; i++) if (S.people[i].id === activeId) return S.people[i];
+  activeId = S.people[0].id; return S.people[0];
+}
+function saveActive(){ try { localStorage.setItem(ACTIVE_KEY, activeId); } catch (e) {} }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+var tab = cur().settings.setupDone ? 'today' : 'settings';
+var autoTab = !cur().settings.setupDone;
+var viewDate = todayIso();
+var draft = null;
+var resetArmed = false, removeArmed = false;
+var upDays = 14;
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && e.target && e.target.id === 'hardPg'){ e.preventDefault(); var b = document.querySelector('.hadd [data-a="hardadd"]'); if (b) b.click(); }
+});
+var rng = { fs: 0, fp: 1, ts: 0, tp: 1, msg: '' };
+
+var $ = function(s){ return document.querySelector(s); };
+function fmtDate(s, o){ return new Intl.DateTimeFormat('en-GB', o).format(parse(s)); }
+function val(x){ return Number.isFinite(x) ? x : ''; }
+
+// ---------- storage ----------
+var remote = null, saving = false, again = false, timer = null;
+function setSync(s){
+  var el = $('#sync'); if (!el) return;
+  el.textContent = s === 'synced' ? 'Saved to your Claude account, so it is here on your other devices too.'
+    : s === 'error' ? 'Could not reach your account just now. Saved on this device and retried on your next change.'
+    : s === 'local' ? 'Saved on this device only.' : '';
+}
+function persistLocal(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function touch(){ S.updatedAt = Date.now(); persistLocal(); if (remote){ clearTimeout(timer); timer = setTimeout(flush, 600); } }
+function flush(){
+  if (saving){ again = true; return; }
+  saving = true;
+  remote.set(clone(S)).then(function(){ setSync('synced'); }, function(){ setSync('error'); }).then(function(){
+    saving = false; if (again){ again = false; flush(); }
+  });
+}
+function adopt(r){
+  S = normalize(r); persistLocal();
+  if (autoTab && cur().settings.setupDone) tab = 'today';
+  var a = document.activeElement;
+  if (!(a && a.tagName === 'INPUT')) render();
+}
+function connect(){
+  if (!window.claude || !window.claude.use){ setSync('local'); return; }
+  Promise.all([window.claude.use('db'), window.claude.use('user')]).then(function(r){
+    var db = r[0], user = r[1];
+    if (!db || !user){ setSync('local'); return; }
+    return user.id().then(function(id){
+      if (!id){ setSync('local'); return; }
+      var ref = db.doc('data/users/' + id + '/state');
+      return ref.get().then(function(snap){
+        var pending = null;
+        if (snap.exists){
+          var rd = snap.data();
+          if (num(rd.updatedAt) >= S.updatedAt) adopt(rd);
+          else pending = ref.set(clone(S));
+        } else if (S.updatedAt){
+          pending = ref.set(clone(S));
+        }
+        return Promise.resolve(pending).then(function(){
+          remote = ref; setSync('synced');
+          ref.onSnapshot(function(s){
+            if (!s.exists || s.metadata.hasPendingWrites) return;
+            var d = s.data();
+            if (d && num(d.updatedAt) > S.updatedAt) adopt(d);
+          }, function(){});
+        });
+      });
+    });
+  }).catch(function(){ setSync('local'); });
+}
+
+// ---------- shared view helpers ----------
+function fmtR(r){ return r[0] === r[1] ? 'p.' + r[0] : 'p.' + r[0] + '–' + r[1]; }
+function juzText(ranges){
+  var lo = 99, hi = 0;
+  ranges.forEach(function(r){ lo = Math.min(lo, juzOf(r[0])); hi = Math.max(hi, juzOf(r[1])); });
+  return lo === hi ? 'Juz ' + lo : 'Juz ' + lo + '–' + hi;
+}
+function rangeLabel(p1, p2){
+  var s = surahsFor(p1, p2);
+  if (!s.length) return 'Page ' + p1;
+  var f = s[0].name, l = s[s.length - 1].name;
+  return f === l ? f : s.length === 2 ? f + ' and ' + l : f + ' to ' + l + ' (' + s.length + ' surahs)';
+}
+// A list of surahs and page numbers for a set of page ranges.
+function whereHtml(ranges, label){
+  if (!ranges.length) return '';
+  var items = [];
+  ranges.forEach(function(r){ surahsFor(r[0], r[1]).forEach(function(s){ items.push(s); }); });
+  var head = ranges.slice(0, 3).map(fmtR).join(', ') + (ranges.length > 3 ? ' +' + (ranges.length - 3) + ' more' : '') + ' · ' + juzText(ranges);
+  var li = function(s){ return '<li><span>' + esc(s.name) + '</span><b>' + fmtR([s.a, s.b]) + '</b></li>'; };
+  var h = '<div class="where"><div class="where-h"><span class="label">' + label + '</span><span>' + head + '</span></div><ul>' + items.slice(0, 4).map(li).join('') + '</ul>';
+  if (items.length > 4) h += '<details><summary>+' + (items.length - 4) + ' more</summary><ul>' + items.slice(4).map(li).join('') + '</ul></details>';
+  return h + '</div>';
+}
+// One line for the every-day block, then one per spaced review.
+function srItems(st, due, d){
+  var n = srSteps(st).length;
+  var dly = due.filter(function(it){ return it.daily; }), spc = due.filter(function(it){ return !it.daily; });
+  var items = [];
+  if (dly.length){
+    var drs = pageRanges(normIv([].concat.apply([], dly.map(function(it){ return it.b.iv; }))));
+    var dDone = dly.every(function(it){ return it.done; }), dPart = !dDone && dly.some(function(it){ return it.got > 0; });
+    var dNames = drs.map(function(r){ return rangeLabel(r[0], r[1]); }).join(', ');
+    items.push('<li class="sri' + (dDone ? ' ok' : '') + '"><span>' + esc(dNames) + '<small>Every day · new hifz from the last ' + srDaily(st) + ' days · ' + fmtQ(dly.reduce(function(t, it){ return t + it.b.size; }, 0)) + ' pages</small></span><b>' +
+      (dDone ? '✓ ' : '') + drs.map(fmtR).join(', ') + (dPart ? ' · part' : '') + '</b></li>');
+  }
+  items = items.concat(spc.map(function(it){
+    var rs = pageRanges(it.b.iv), names = rs.map(function(r){ return rangeLabel(r[0], r[1]); }).join(', ');
+    var tag = (it.done ? '✓ ' : '') + rs.map(fmtR).join(', ') + (!it.done && it.got > 0 ? ' · part' : '');
+    var late = it.due < d ? ' · was due ' + fmtDate(it.due, { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+    return '<li class="sri' + (it.done ? ' ok' : '') + '"><span>' + esc(names) + '<small>Learned ' + fmtDate(it.b.d, { weekday: 'short', day: 'numeric', month: 'short' }) +
+      ' · ' + ordinal(it.step + 1) + ' of ' + n + ' spaced reviews' + late + '</small></span><b>' + tag + '</b></li>';
+  }));
+  return items;
+}
+function srHtml(st, logs, sr, d, t, doneR){
+  var nx = srNext(st, logs, d), n = srSteps(st).length;
+  var more = ' <button class="linkb" data-a="tab" data-tab="plan" data-focus="upcoming">See the next ' + upDays + ' days</button>';
+  var nxt = '<p class="wnote">' + (nx ? 'Next due ' + (diffDays(d, nx.date) === 1 ? 'the day after' : fmtDate(nx.date, { weekday: 'short', day: 'numeric', month: 'short' })) + ': about ' + fmtQ(nx.total) + ' ' + (nx.total > 1 ? 'pages' : 'page') + '.' : 'Nothing else due soon.') + more + '</p>';
+  if (!sr.due.length) return nxt;
+  // A future day is a forecast: show what is due, but nothing as done yet.
+  if (d > t) sr = { total: sr.total, due: sr.due.map(function(it){ return Object.assign({}, it, { done: false, got: 0 }); }) };
+  var items = srItems(st, sr.due, d);
+  var left = sr.due.filter(function(it){ return !it.done; }).length;
+  var head = fmtQ(sr.total) + (sr.total > 1 ? ' pages' : ' page') + (left < sr.due.length ? (left ? ' · some done' : ' · all done') : '');
+  var h = '<div class="where"><div class="where-h"><span class="label">' + (d === t ? 'Due today' : 'Due') + '</span><span>' + head + '</span></div><ul>' + items.slice(0, 5).join('') + '</ul>';
+  if (items.length > 5) h += '<details><summary>+' + (items.length - 5) + ' more</summary><ul>' + items.slice(5).join('') + '</ul></details>';
+  var fc = d > t ? '<p class="wnote">Planned so far. New hifz you learn before then is added, and reviews not done by then move onto this day.</p>' : '';
+  return h + '</div>' + fc + (left ? '<p class="wnote">Revise them in this order. What you log is ticked off from the top.</p>' : '') + nxt;
+}
+function hardItem(h, st, extra){
+  return '<li><span>' + esc(rangeLabel(h.pg, h.pg)) + '<small>Hard page · extra review ' + (st + 1) + ' of ' + HARD_STEPS.length + (extra || '') + '</small></span><b>p.' + h.pg + '</b></li>';
+}
+function readsOf(P){ return P.reads && typeof P.reads === 'object' ? P.reads : (P.reads = {}); }
+function readStreak(R, t){
+  // Days in a row up to today, or up to yesterday if today isn't ticked yet.
+  var x = R[t] ? t : iso(addDays(parse(t), -1)), n = 0;
+  while (R[x]){ n++; x = iso(addDays(parse(x), -1)); }
+  return n;
+}
+function readCard(P, d, t){
+  var R = readsOf(P), on = !!R[d], future = d > t, wd = weekDates(d), streak = readStreak(R, t);
+  var short = { weekday: 'short', day: 'numeric', month: 'short' };
+  var label = on ? (d === t ? '✓ Read today' : '✓ Read on ' + fmtDate(d, short)) : future ? 'Not yet' : (d === t ? 'Tick for today' : 'Tick for ' + fmtDate(d, short));
+  var dots = wd.map(function(x){
+    var cls = R[x] ? 'on' : x > t ? 'fut' : '';
+    return '<span class="rd ' + cls + (x === d ? ' cur' : '') + '" title="' + fmtDate(x, short) + (R[x] ? ', read' : '') + '"><i>' + (R[x] ? '✓' : '') + '</i><small>' + fmtDate(x, { weekday: 'narrow' }) + '</small></span>';
+  }).join('');
+  var weekN = wd.filter(function(x){ return R[x]; }).length;
+  var note = streak > 1 ? streak + ' days in a row' + (R[t] ? '' : '. Read today to keep it going') + '.'
+    : weekN ? weekN + (weekN === 1 ? ' day' : ' days') + ' this week.'
+    : 'A little each day adds up.';
+  return '<section class="card s-read" aria-labelledby="h-read"><div class="card-h"><div class="ttl"><h2 id="h-read">Daily reading</h2></div></div>' +
+    '<p class="why">Read from pages you haven’t memorised yet. No pages to count, just a tick.</p>' +
+    '<button class="btn wide read' + (on ? ' solid' : '') + '" data-a="readtick" aria-pressed="' + on + '"' + (future ? ' disabled' : '') + '>' + label + '</button>' +
+    '<div class="rdots" role="img" aria-label="Reading this week: ' + weekN + ' of 7 days">' + dots + '</div>' +
+    '<p class="wnote">' + note + '</p></section>';
+}
+function hardCard(P, d, t, groups){
+  var H = hardOf(P), short = { weekday: 'short', day: 'numeric', month: 'short' };
+  var due = d === t ? H.filter(function(h){ return hardDue(h) <= t; }).sort(function(a, b){ return a.pg - b.pg; }) : [];
+  var rest = H.filter(function(h){ return due.indexOf(h) < 0; }).sort(function(a, b){ return hardDue(a) < hardDue(b) ? -1 : hardDue(a) > hardDue(b) ? 1 : a.pg - b.pg; });
+  var h = '<section class="card s-hard" aria-labelledby="h-hard"><div class="card-h"><div class="ttl"><h2 id="h-hard">Hard pages</h2></div>' +
+    '<span class="label">' + (H.length ? H.length + (H.length === 1 ? ' page' : ' pages') : '') + '</span></div>';
+  h += '<p class="why">' + (H.length ? 'Each hard page comes back ' + listAnd(HARD_STEPS.map(function(n, i){ return i ? n + ' days later' : 'the next day'; })) + ', on top of your normal revision. Tap Still hard to start it again.'
+    : 'Found a page hard? Mark it and it comes back the next day, 3 days later and 7 days later, on top of your normal revision.') + '</p>';
+  if (due.length){
+    h += '<div class="where"><div class="where-h"><span class="label">Due today</span><span>' + due.length + (due.length === 1 ? ' page' : ' pages') + '</span></div><ul class="hlist">' +
+      due.map(function(x){
+        var dd = hardDue(x), late = dd < t ? ' · was due ' + fmtDate(dd, short) : '';
+        return '<li><div class="hl"><span>' + esc(rangeLabel(x.pg, x.pg)) + '<small>Extra review ' + (x.st + 1) + ' of ' + HARD_STEPS.length + late + '</small></span><b>p.' + x.pg + '</b></div>' +
+          '<div class="hb"><button class="btn sm solid" data-a="hardok" data-pg="' + x.pg + '">Revised</button><button class="btn sm" data-a="hardagain" data-pg="' + x.pg + '">Still hard</button></div></li>';
+      }).join('') + '</ul></div>';
+  } else if (H.length && d === t){
+    h += '<p class="wnote">No hard pages due today.</p>';
+  }
+  if (rest.length){
+    h += '<details class="hall"' + (d !== t ? ' open' : '') + '><summary>' + (due.length ? 'Other hard pages' : 'All hard pages') + ' (' + rest.length + ')</summary><ul class="hlist">' +
+      rest.map(function(x){
+        return '<li><div class="hl"><span>' + esc(rangeLabel(x.pg, x.pg)) + '<small>Next extra review ' + fmtDate(hardDue(x), short) + ' · ' + (x.st + 1) + ' of ' + HARD_STEPS.length + '</small></span><b>p.' + x.pg + '</b>' +
+          '<button class="xbtn" data-a="hardrm" data-pg="' + x.pg + '" aria-label="Take page ' + x.pg + ' off the hard list">×</button></div></li>';
+      }).join('') + '</ul></details>';
+  }
+  if (d === t){
+    var isHard = {}; H.forEach(function(x){ isHard[x.pg] = true; });
+    var pick = groups.filter(function(g){ return g.pages.length; }).map(function(g){
+      return '<div class="pgrp"><span class="label">' + g.name + '</span><div class="pchips">' + g.pages.slice(0, 40).map(function(n){
+        return '<button type="button" class="chip xs" data-a="hardadd" data-pg="' + n + '" aria-pressed="' + !!isHard[n] + '">' + n + '</button>';
+      }).join('') + (g.pages.length > 40 ? '<span class="wnote">+' + (g.pages.length - 40) + ' more</span>' : '') + '</div></div>';
+    }).join('');
+    h += '<div class="hadd"><label for="hardPg">Mark a page as hard</label><div class="hrow"><input class="inp" id="hardPg" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="Page number">' +
+      '<button class="btn sm solid" data-a="hardadd">Mark as hard</button></div>' + (pick ? '<details class="hall"><summary>Or pick from today’s pages</summary>' + pick + '</details>' : '') + '</div>';
+  }
+  return h + '</section>';
+}
+function upcomingCard(st, logs, t){
+  var P = cur(), srOn = st.revMode !== 'window';
+  var end = iso(addDays(parse(t), upDays - 1)), hf = hardForecast(P, t, end);
+  if (!srOn && !Object.keys(hf).length) return '';
+  var r = srOn ? srRun(st, logs, srUntil(end), t) : { days: {} }, rows = [], x = t, i = 0;
+  while (x <= end){
+    var rec = r.days[x] || { due: [], total: 0 }, act = !!st.days[parse(x).getDay()];
+    var due = x > t ? rec.due.map(function(it){ return Object.assign({}, it, { done: false, got: 0 }); }) : rec.due;
+    var left = due.filter(function(it){ return !it.done; }).length;
+    var when = x === t ? 'Today' : i === 1 ? 'Tomorrow' : fmtDate(x, { weekday: 'short', day: 'numeric', month: 'short' });
+    var hd = hf[x] || [], hs = hd.length ? hd.length + ' hard' : '';
+    var sum = (act && due.length ? fmtQ(rec.total) + (rec.total > 1 ? ' pages' : ' page') + (x === t && !left ? ' · done' : '') : !act ? 'Rest day' : hd.length ? '' : 'Nothing due') + (hs ? (act && due.length || !act ? ' + ' : '') + hs : '');
+    if ((act && due.length) || hd.length){
+      var li = (act ? srItems(st, due, x) : []).concat(hd.map(function(e){ return hardItem(e.h, e.st); }));
+      rows.push('<details class="uday"' + (i < 2 ? ' open' : '') + '><summary><b>' + when + '</b><span>' + sum + '</span></summary><div class="where"><ul>' + li.join('') + '</ul></div></details>');
+    } else {
+      rows.push('<div class="uday none"><b>' + when + '</b><span>' + sum + '</span></div>');
+    }
+    x = iso(addDays(parse(x), 1)); i++;
+  }
+  return '<section class="card" id="upcoming" aria-label="Coming up"><div class="row-h"><h2 class="h">' + (srOn ? 'New revision, coming up' : 'Hard pages, coming up') + '</h2>' +
+    '<span class="uchips" role="group" aria-label="How many days"><button type="button" class="chip xs" data-a="updays" data-n="7" aria-pressed="' + (upDays === 7) + '">7 days</button>' +
+    '<button type="button" class="chip xs" data-a="updays" data-n="14" aria-pressed="' + (upDays === 14) + '">14 days</button></span></div>' +
+    '<div class="ulist">' + rows.join('') + '</div>' +
+    '<p class="wnote">' + (srOn ? '' : 'Hard pages only. ') + 'Only pages already learned are shown. New hifz you learn joins the every-day block the day after, and reviews you miss move to the next study day, so later days grow as you go.</p></section>';
+}
+function juzTiles(known, goal, interactive){
+  var h = '';
+  for (var i = 0; i < 30; i++){
+    var iv = juzIv(i), len = iv[1] - iv[0], fr = Math.max(0, Math.min(1, overlapIv(known, iv[0], iv[1]) / len));
+    var full = fr >= 0.999, cls = 'jz' + (full ? ' full' : '') + (!interactive && iv[0] >= goal ? ' beyond' : '');
+    if (interactive){
+      h += '<button type="button" class="' + cls + ' jzb" data-a="juzt" data-i="' + i + '" aria-pressed="' + full + '" aria-label="Juz ' + (i + 1) + ', ' + (full ? 'known' : fr > 0 ? 'partly known' : 'not known') + '"><span>' + (i + 1) + '</span><i style="width:' + (fr * 100) + '%"></i></button>';
+    } else {
+      h += '<div class="' + cls + '"><span>' + (i + 1) + '</span><i style="width:' + (fr * 100) + '%"></i></div>';
+    }
+  }
+  return h;
+}
+
+// ---------- views ----------
+var STREAMS = [
+  { key: 'n', cls: 'new', name: 'New hifz', t: 'tn' },
+  { key: 'r', cls: 'rec', name: 'New revision', t: 'tr' },
+  { key: 'o', cls: 'old', name: 'Revision', t: 'to' }
+];
+
+function card(sd, target, done, why, active, extra, noAdd, lines){
+  var fq = lines ? fmtL : fmtQ, uw = lines ? 'lines' : 'pages';
+  var pr = target > 0 ? Math.min(1, done / target) : (done > 0 ? 1 : 0);
+  var togo = target > 0 ? (done >= target - 0.001 ? 'Target met' : fq(target - done) + ' ' + uw + ' to go')
+    : (done > 0 ? 'Extra logged' : (active ? '' : 'Rest day'));
+  var k = sd.key;
+  return '<section class="card s-' + sd.cls + '" aria-labelledby="h-' + k + '">' +
+    '<div class="card-h"><div class="ttl"><h2 id="h-' + k + '">' + sd.name + '</h2></div>' +
+    '<div class="target"><b>' + (active ? fq(target) : '—') + '</b><span>' + uw + '</span></div></div>' +
+    '<p class="why">' + why + '</p>' + (extra || '') +
+    '<div class="bar" role="progressbar" aria-label="' + sd.name + ' today" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(pr * 100) + '"><i style="width:' + (pr * 100) + '%"></i></div>' +
+    '<div class="done"><label for="done-' + k + '">Done</label>' +
+    '<input class="num" id="done-' + k + '" type="number" inputmode="' + (lines ? 'numeric' : 'decimal') + '" min="0" step="' + (lines ? 1 : 0.25) + '" value="' + (lines ? Math.round((done || 0) * LINES) : Math.round((done || 0) * 100) / 100) + '" data-k="' + k + '"' + (lines ? ' data-u="lines"' : '') + ' aria-label="' + sd.name + ' done, in ' + uw + '">' +
+    (sd.key === 'n' ? '<span class="uchips" role="group" aria-label="Count new hifz in"><button type="button" class="chip xs" data-a="nunit" data-u="pages" aria-pressed="' + !lines + '">Pages</button><button type="button" class="chip xs" data-a="nunit" data-u="lines" aria-pressed="' + !!lines + '">Lines</button></span>' : '') +
+    '<span class="togo">' + togo + '</span></div>' +
+    '<div class="btns">' +
+    (lines
+      ? '<button class="btn" data-a="add" data-k="' + k + '" data-l="-1"' + (done <= 0 ? ' disabled' : '') + ' aria-label="Remove one line">−1 line</button>' +
+        '<button class="btn" data-a="add" data-k="' + k + '" data-l="1"' + (noAdd ? ' disabled' : '') + ' aria-label="Add one line">+1 line</button>' +
+        '<button class="btn" data-a="add" data-k="' + k + '" data-l="5"' + (noAdd ? ' disabled' : '') + ' aria-label="Add five lines">+5 lines</button>'
+      : '<button class="btn" data-a="add" data-k="' + k + '" data-v="-0.5"' + (done <= 0 ? ' disabled' : '') + ' aria-label="Remove half a page">−½</button>' +
+        '<button class="btn" data-a="add" data-k="' + k + '" data-v="0.5"' + (noAdd ? ' disabled' : '') + ' aria-label="Add half a page">+½</button>' +
+        '<button class="btn" data-a="add" data-k="' + k + '" data-v="1"' + (noAdd ? ' disabled' : '') + ' aria-label="Add one page">+1</button>') +
+    '<button class="btn solid" data-a="fill" data-k="' + k + '"' + (target > 0 && !noAdd ? '' : ' disabled') + '>Mark done</button>' +
+    '</div></section>';
+}
+
+function viewToday(){
+  var P = cur(), st = P.settings, d = viewDate, t = todayIso();
+  var p = dayTargets(st, P.logs, d);
+  var lg = P.logs[d] || { n: 0, r: 0, o: 0 };
+  var sl = slicesFor(st, P.logs, d, t, p, lg);
+  var wd = weekDates(d);
+  var strip = wd.map(function(x){
+    var l = P.logs[x], has = l && (l.n || l.r || l.o), act = st.days[parse(x).getDay()];
+    return '<button class="dbtn' + (has ? ' has' : '') + (act ? '' : ' rest') + (x === t ? ' today' : '') + '" data-a="day" data-date="' + x + '" aria-pressed="' + (x === d) + '" aria-label="' +
+      fmtDate(x, { weekday: 'long', day: 'numeric', month: 'long' }) + (x === t ? ', today' : '') + (act ? '' : ', rest day') + '">' +
+      '<span class="dow">' + fmtDate(x, { weekday: 'short' }).slice(0, 3) + '</span><span class="dn">' + parse(x).getDate() + '</span><span class="dot"></span></button>';
+  }).join('');
+
+  var head = '<div class="daybar"><div class="daylabel">' + fmtDate(d, { weekday: 'long', day: 'numeric', month: 'long' }) +
+    '<small>' + (d === t ? 'Today' : (d < t ? 'Earlier' : 'Coming up')) + ' · ' + (p.active ? 'Study day' : 'Rest day') + '</small></div>' +
+    '<div class="stepper"><button class="icon" data-a="wk" data-step="-7" aria-label="Previous week">‹</button>' +
+    (d !== t ? '<button class="icon txt" data-a="today">Today</button>' : '') +
+    '<button class="icon" data-a="wk" data-step="7" aria-label="Next week">›</button></div></div>';
+
+  var banner = st.setupDone ? '' : '<div class="note"><span>These are example numbers. Enter real ones to get a plan that fits.</span>' +
+    '<button class="btn solid sm" data-a="tab" data-tab="settings">Set my targets</button></div>';
+
+  var tt = p.tn + p.tr + p.to, td = lg.n + lg.r + lg.o;
+  var segs = STREAMS.map(function(sd, i){
+    var tg = p[sd.t], dn = lg[sd.key] || 0, pr = tg > 0 ? Math.min(1, dn / tg) : (dn > 0 ? 1 : 0);
+    var grow = tt > 0 ? Math.max(tg, tt * 0.04) : 1;
+    return '<div class="s' + (i + 1) + '" style="flex:' + grow + '"><i style="width:' + (pr * 100) + '%"></i></div>';
+  }).join('');
+  var hero = '<section class="card" aria-label="Today in total">' +
+    (p.active
+      ? '<div class="hero-n"><b>' + fmtQ(td) + '</b><span>of about ' + fmtQ(tt) + ' pages today</span></div>'
+      : '<div class="hero-n"><b>Rest day</b><span>Anything you log still counts.</span></div>') +
+    '<div class="seg" aria-hidden="true">' + segs + '</div>' +
+    '<div class="legend"><span><i class="sw new"></i>New hifz</span><span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span></div></section>';
+
+  var whyN = p.state === 'done' ? 'Goal reached, alhamdulillah. Keep revising.'
+    : p.state === 'overdue' ? 'The finish date has passed. Pick a new one in Settings.'
+    : st.targetMode === 'weekly'
+      ? fmtQ(p.remaining) + ' pages left. At ' + fmt1(st.weeklyAmount) + (st.weeklyUnit === 'lines' ? ' lines' : ' pages') + ' a week that is about ' + Math.max(1, Math.ceil(p.remaining / Math.max(weeklyPages(st), 0.01))) + ' more weeks, around ' + Math.max(1, Math.round(p.n * LINES)) + ' lines a study day.'
+      : fmtQ(p.remaining) + ' pages left to the goal over ' + p.left + ' study ' + (p.left === 1 ? 'day' : 'days') + ', about ' + Math.max(1, Math.round(p.n * LINES)) + ' lines a day.';
+  var spaced = st.revMode !== 'window', sr = spaced ? srAt(st, P.logs, d) : null, srS = srSteps(st);
+  var whyR = spaced
+    ? (sr.due.length
+        ? fmtQ(sr.total) + ' ' + (sr.total > 1 ? 'pages' : 'page') + ' due from recent new hifz. Each day of new hifz ' + srWords(st) + '.'
+        : sr.poolSize > EPS ? 'Nothing due ' + (d === t ? 'today' : 'on this day') + '. Each day of new hifz ' + srWords(st) + '.'
+        : 'Nothing due yet. Each day of new hifz ' + srWords(st) + '.')
+    : p.recent <= 0 ? 'Nothing from the last ' + st.recentDays + ' days yet. Log new hifz and it shows up here.'
+    : 'Everything from the last ' + st.recentDays + ' days of new hifz: ' + fmtQ(p.recent) + ' pages, once a day.';
+  var whyO = p.old <= 0 ? 'No older pages yet.'
+    : fmtQ(p.old) + ' older pages, one full pass every ' + st.cycleDays + ' days.';
+
+  var ns = nextStart(st, P.logs), nsName = ns ? surahsFor(ns, ns)[0].name : '';
+  var nextLine = '<p class="wnote">' + (ns
+    ? 'Learning on from <b>' + esc(nsName) + ' ' + fmtR([ns, ns]) + '</b>, going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + '. '
+    : '<b>No unlearned pages left going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + ' from here</b>, so new pages cannot be added. Change where you learn from to keep going. ') +
+    '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">Change</button></p>';
+  var exN = whereHtml(sl.n, d === t ? 'New pages today' : 'New pages') + nextLine;
+  var exR = spaced ? srHtml(st, P.logs, sr, d, t, lg.r || 0) : whereHtml(sl.r, 'Revise today');
+  var exO = whereHtml(sl.o, 'Revise today');
+
+  var nLines = st.newUnit === 'lines';
+  var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>Hud 11:88</figcaption></figure>';
+  var cards = ayah + card(STREAMS[0], p.tn, lg.n || 0, whyN, p.active, exN, !ns, nLines) +
+              card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active, exR) +
+              card(STREAMS[2], p.to, lg.o || 0, whyO, p.active, exO);
+  // Pages being worked on today, so a hard one can be marked with a tap.
+  var expand = function(rs){ var a = []; rs.forEach(function(r){ for (var n = r[0]; n <= r[1]; n++) a.push(n); }); return a; };
+  var revPages = spaced ? expand(pageRanges(normIv([].concat.apply([], sr.due.map(function(it){ return it.b.iv; }))))) : expand(sl.r);
+  cards += readCard(P, d, t);
+  cards += hardCard(P, d, t, [{ name: 'New hifz', pages: expand(sl.n) }, { name: 'New revision', pages: revPages }, { name: 'Revision', pages: expand(sl.o) }]);
+
+  var w = weekStats(st, P.logs, d, t, p), fmtQ0 = fmtQ;
+  var rows = STREAMS.map(function(sd){
+    var L = sd.key === 'n' && nLines, fmtQ = L ? function(v){ return fmtL(v) + ' lines'; } : fmtQ0;
+    var done = w.done[sd.key], plan = w.plan[sd.key], left = Math.max(0, plan - done);
+    var pr = plan > 0 ? Math.min(1, done / plan) : (done > 0 ? 1 : 0);
+    var note = plan <= 0 ? (done > 0 ? 'Logged ' + fmtQ(done) + ' this week.' : 'Nothing planned yet.')
+      : left < 0.125 ? 'On target for the week.'
+      : w.activeLeft > 0 ? fmtQ(left) + ' to go, about ' + fmtQ(left / w.activeLeft) + ' a day over ' + w.activeLeft + ' study ' + (w.activeLeft === 1 ? 'day' : 'days') + '.'
+      : fmtQ(left) + ' short of the plan.';
+    return '<div class="wrow s-' + sd.cls + '"><div class="wtop"><b><i class="sw ' + sd.cls + '"></i>' + sd.name + '</b><span>' + fmtQ(done) + (plan > 0 ? ' of ' + fmtQ(plan) : '') + '</span></div>' +
+      '<div class="bar" aria-hidden="true"><i style="width:' + (pr * 100) + '%"></i></div><p class="wnote">' + note + '</p></div>';
+  }).join('');
+  var weekCard = '<section class="card" aria-label="This week"><div class="row-h"><h2 class="h">This week</h2><span class="label">' +
+    fmtDate(wd[0], { day: 'numeric', month: 'short' }) + ' – ' + fmtDate(wd[6], { day: 'numeric', month: 'short' }) + '</span></div>' + rows + '</section>';
+
+  return banner + head + '<div class="wk">' + strip + '</div>' + hero + cards + weekCard;
+}
+
+function viewPlan(){
+  var P = cur(), st = P.settings, t = todayIso();
+  var mem = st.startPages + sumN(P.logs, function(){ return true; });
+  var rem = Math.max(0, st.goalPages - mem);
+  var info = targetInfo(st, rem, t), left = info.left, req = info.req;
+  var weeklyLabel = fmt1(st.weeklyAmount) + (st.weeklyUnit === 'lines' ? ' lines' : ' pages');
+  var pc = pace(st, P.logs, t);
+  var proj = pc ? projectFinish(st, rem, pc.perActive, t) : null;
+  var p = perDay(st, P.logs, t);
+  var dFmt = { day: 'numeric', month: 'short', year: 'numeric' };
+  var known = allKnown(st, P.logs);
+
+  var status;
+  if (rem <= 0) status = { c: 'good', t: 'Goal reached' };
+  else if (info.overdue) status = { c: 'bad', t: 'Past the finish date' };
+  else if (info.weekly) status = (pc && req > 0) ? (function(r){
+    return r >= 1.1 ? { c: 'good', t: 'Ahead of plan' } : r >= 0.9 ? { c: 'good', t: 'On track' } : r >= 0.7 ? { c: 'warn', t: 'Slightly behind' } : { c: 'bad', t: 'Behind plan' };
+  })(pc.perActive / req) : { c: '', t: 'Log some new hifz to see your pace' };
+  else if (proj){
+    var diff = diffDays(st.goalDate, proj.date);
+    status = diff <= -14 ? { c: 'good', t: 'Ahead of plan' } : diff <= 7 ? { c: 'good', t: 'On track' }
+      : diff <= 30 ? { c: 'warn', t: 'Slightly behind' } : { c: 'bad', t: 'Behind plan' };
+  } else status = { c: '', t: 'Log some new hifz to see your pace' };
+
+  var pct = Math.round(Math.min(1, mem / Math.max(1, st.goalPages)) * 100);
+  var memCard = '<section class="card" aria-label="Memorised so far"><span class="label">Memorised so far</span>' +
+    '<div class="big">' + fmt1(mem) + '<small>pages · ' + fmt1(mem / JUZ) + ' juz</small></div>' +
+    '<p class="muted">' + pct + '% of the ' + st.goalPages + '-page goal' + (rem > 0 ? ', ' + fmt1(rem) + ' pages to go.' : '.') + '</p>' +
+    '<div class="juz" role="img" aria-label="' + fmt1(mem / JUZ) + ' of 30 juz memorised">' + juzTiles(known, st.goalPages, false) + '</div>' +
+    '<p class="wnote">Each tile shows how much of that juz is known.</p></section>';
+
+  var kr = pageRanges(known);
+  var knownCard = '<section class="card" aria-label="What is known"><h2 class="h">What is known</h2>' +
+    (kr.length ? '<ul class="known">' + kr.map(function(r){
+      return '<li><div><b>' + esc(rangeLabel(r[0], r[1])) + '</b><small>' + fmtR(r) + ' · ' + juzText([r]) + '</small></div></li>';
+    }).join('') + '</ul>' : '<p class="muted">Nothing marked yet. Add what is known in Settings.</p>') + '</section>';
+
+  var paceNote = pc ? '<p class="wnote">Pace is measured over the last ' + pc.spanDays + (pc.spanDays === 1 ? ' day' : ' days') + (pc.spanDays < 7 ? ', so treat it as an early estimate.' : '.') + '</p>' : '';
+  var paceCard = '<section class="card" aria-label="New hifz pace"><div class="row-h"><h2 class="h">New hifz pace</h2><span class="pill ' + status.c + '">' + status.t + '</span></div>' +
+    '<dl class="kv">' +
+    '<dt>Pace</dt><dd>' + (pc ? fmt1(pc.perActive) + ' pages per study day' : '—') + '</dd>' +
+    (info.weekly ? '<dt>Weekly target</dt><dd>' + weeklyLabel + '</dd>' : '') +
+    '<dt>' + (info.weekly ? 'Planned per study day' : 'Needed to finish on time') + '</dt><dd>' + (req > 0 ? fmt1(req) + ' pages per study day' : '—') + '</dd>' +
+    '<dt>Finish at your pace</dt><dd>' + (rem <= 0 ? 'Done' : proj ? fmtDate(proj.date, dFmt) : '—') + '</dd>' +
+    '<dt>' + (info.weekly ? 'Planned finish' : 'Target date') + '</dt><dd>' + (info.finish ? fmtDate(info.finish, dFmt) : '—') + '</dd></dl>' + paceNote + '</section>';
+
+  var cycleNow = pc && pc.oldPerCal > 0 && p.old > 0 ? 'about ' + Math.max(1, Math.round(p.old / pc.oldPerCal)) + ' days' : '—';
+  var revCard = '<section class="card" aria-label="Revision load"><h2 class="h">Revision load</h2><dl class="kv">' +
+    (st.revMode === 'window' ? '<dt>New revision, per study day</dt><dd>' + fmt1(p.r) + ' pages</dd>' : '<dt>New revision due today</dt><dd>' + fmt1(p.r) + ' pages</dd><dt>Recent pages still in review</dt><dd>' + fmt1(p.recent) + ' pages</dd>') +
+    '<dt>Older pages in the cycle</dt><dd>' + fmt1(p.old) + ' pages</dd>' +
+    '<dt>Planned cycle</dt><dd>every ' + st.cycleDays + ' days</dd>' +
+    '<dt>Older revision, per study day</dt><dd>' + fmt1(p.o) + ' pages</dd>' +
+    '<dt>Cycle at the current rate</dt><dd>' + cycleNow + '</dd></dl></section>';
+
+  var ms = milestones(st, mem, req, t);
+  var msCard = '';
+  if (ms.length){
+    msCard = '<section class="card" aria-label="Looking ahead"><h2 class="h">If you stay on plan</h2>' +
+      '<div class="tblw"><table class="tbl"><thead><tr><th>Memorised</th><th>Around</th><th>Revision a day</th></tr></thead><tbody>' +
+      ms.map(function(m){
+        return '<tr><td><b>' + fmt1(m.pages / JUZ) + ' juz</b><small>' + m.pages + ' pages</small></td><td>' + fmtDate(m.date, { month: 'short', year: 'numeric' }) +
+          '</td><td><b>' + fmt1(m.rev) + ' pages</b></td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<p class="wnote">Daily revision is new revision plus older revision. It grows as you memorise more, so plan your time for the later rows, not just today.</p></section>';
+  }
+  return upcomingCard(st, P.logs, t) + memCard + knownCard + paceCard + revCard + msCard;
+}
+
+function srParse(txt){
+  var parts = String(txt || '').split(/[\s,]+/).filter(Boolean), a = parts.map(Number);
+  if (!a.length) return { err: 'Enter at least one review day, for example 3, 7, 14, 30.' };
+  if (a.length > 8) return { err: 'Use up to 8 review days.' };
+  for (var i = 0; i < a.length; i++){
+    if (!(Number.isInteger(a[i]) && a[i] >= 1 && a[i] <= 365)) return { err: 'Review days must be whole numbers from 1 to 365.' };
+    if (i && a[i] <= a[i - 1]) return { err: 'Review days must go up, for example 3, 7, 14, 30.' };
+  }
+  return { steps: a };
+}
+function ordinal(n){ return n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'); }
+function srWords(st, steps){
+  var D = srDaily(st), sp = listAnd(steps || srSteps(st));
+  return D ? 'is revised every study day for ' + (D % 7 === 0 ? (D / 7) + (D === 7 ? ' week' : ' weeks') : D + (D === 1 ? ' day' : ' days')) + ', then comes back ' + sp + ' days after that'
+           : 'comes back ' + sp + ' days after it is learned';
+}
+function listAnd(a){ return a.length < 2 ? String(a[0]) : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
+function validate(f){
+  var e = [], t = todayIso();
+  if (!f.name || !String(f.name).trim()) e.push('Enter a name.');
+  if (!(f.goalPages >= 1 && f.goalPages <= PAGES)) e.push('The goal must be between 1 and 604 pages.');
+  else if (f.startPages > f.goalPages + 0.001) e.push('More pages are marked as known than the goal. Raise the goal or remove a range.');
+  if (f.targetMode === 'weekly'){
+    var wpg = f.weeklyUnit === 'lines' ? f.weeklyAmount / LINES : f.weeklyAmount;
+    if (!(f.weeklyAmount > 0)) e.push('Enter how much to memorise each week.');
+    else if (wpg > PAGES) e.push('That is more than the whole Quran in a week. Lower the amount.');
+  } else if (!f.goalDate) e.push('Choose the date you want to finish by.');
+  else if (f.goalDate <= t && f.startPages < f.goalPages) e.push('Choose a finish date after today.');
+  if (!(f.cycleDays >= 1 && f.cycleDays <= 365)) e.push('Revision cycle must be between 1 and 365 days.');
+  if (f.revMode === 'window'){ if (!(f.recentDays >= 1 && f.recentDays <= 30)) e.push('New revision window must be between 1 and 30 days.'); }
+  else {
+    var sp = srParse(f.srText != null ? f.srText : (f.srSteps || []).join(',')); if (sp.err) e.push(sp.err);
+    if (!(Number.isInteger(f.srDaily) && f.srDaily >= 0 && f.srDaily <= 90)) e.push('Every-day revision must be a whole number of days from 0 to 90.');
+  }
+  if (activeCount(f.days) < 1) e.push('Choose at least one study day.');
+  return e;
+}
+
+function previewHtml(f){
+  var c = previewCalc(f, todayIso());
+  var nTxt = c.n > 0
+    ? '<b>New hifz</b> about ' + fmtQ(c.n) + ' pages per study day <small>(' + fmt1(c.weekly) + ' pages a week, around ' + Math.max(1, Math.round(c.n * LINES)) + ' lines a day' +
+      (c.isWeekly && c.finish ? ', finishing around ' + fmtDate(c.finish, { month: 'short', year: 'numeric' }) : '') + ')</small>'
+    : '<b>New hifz</b> none needed, the goal is already met';
+  return '<ul class="pv">' +
+    '<li><i class="sw new"></i><div>' + nTxt + '</div></li>' +
+    (f.revMode === 'window'
+      ? '<li><i class="sw rec"></i><div><b>New revision</b> about ' + fmt1(c.recentPlan) + ' pages a day, once you have ' + f.recentDays + ' days of new hifz behind you</div></li>'
+      : '<li><i class="sw rec"></i><div><b>New revision</b> about ' + fmt1(c.recentPlan) + ' pages per study day once it is running. Each day of new hifz ' + srWords(f, srParse(f.srText).steps || SR_DEFAULT) + '</div></li>') +
+    '<li><i class="sw old"></i><div><b>Revision</b> about ' + fmt1(c.revNow) + ' pages a day to start, rising to about ' + fmt1(c.revGoal) + ' by the finish date</div></li></ul>';
+}
+
+function surahOptions(sel){
+  return NAMES.map(function(n, i){ return '<option value="' + i + '"' + (i === sel ? ' selected' : '') + '>' + (i + 1) + '. ' + esc(n) + '</option>'; }).join('');
+}
+function surahIdxOfPage(p){ var s = surahsFor(p, p); return s.length ? s[0].i : 0; }
+function syncStart(){ draft.startPages = Math.round(measure(draft.base) * 100) / 100; }
+
+function viewSettings(){
+  if (!draft){ draft = clone(cur().settings); draft.name = cur().name; draft.srText = srSteps(draft).join(', '); }
+  var f = draft, first = !cur().settings.setupDone;
+  var order = [1, 2, 3, 4, 5, 6, 0], names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  var chips = order.map(function(di, i){
+    return '<button type="button" class="chip" data-a="toggleday" data-i="' + di + '" aria-pressed="' + !!f.days[di] + '">' + names[i] + '</button>';
+  }).join('');
+  var bl = normIv(f.base);
+  var knownList = bl.length ? '<ul class="known">' + bl.map(function(r, i){
+    var pr = pageRanges([r])[0];
+    return '<li><div><b>' + esc(rangeLabel(pr[0], pr[1])) + '</b><small>' + fmtR(pr) + ' · ' + fmt1(r[1] - r[0]) + ' pages</small></div>' +
+      '<button type="button" class="btn sm" data-a="rmrange" data-i="' + i + '" aria-label="Remove ' + esc(rangeLabel(pr[0], pr[1])) + '">Remove</button></li>';
+  }).join('') + '</ul>' : '<p class="muted">Nothing marked yet.</p>';
+  var np = nextPage(f.next), wk = f.targetMode === 'weekly';
+  return '<section class="card"><h2 class="h">' + (first ? 'Set up' : 'Person') + '</h2>' +
+    '<p class="muted">' + (first ? 'Enter where they are and where they want to be. The daily amounts and the pages to revise are worked out from that.' : 'Change anything and the plan updates straight away. Your logs are kept.') + '</p>' +
+    '<div class="field"><label for="f-name">Name</label><input class="inp" id="f-name" type="text" maxlength="24" autocomplete="off" value="' + esc(f.name || '') + '"></div>' +
+    '<div class="field"><span class="lab" id="lab-tint">Colour</span><div class="chips" role="group" aria-labelledby="lab-tint">' + TINTS.map(function(n, i){ return '<button type="button" class="swatch" style="background:var(--t-' + i + ')" data-a="tint" data-i="' + i + '" aria-label="' + n + '" aria-pressed="' + (cur().tint === i) + '"></button>'; }).join('') + '</div></div></section>' +
+
+    '<section class="card"><h2 class="h">What is already known</h2>' +
+    '<p class="muted">Tap a juz to mark it known or not. For part of a juz, or part of a surah, add an exact range below.</p>' +
+    '<div class="juz" role="group" aria-label="Juz known">' + juzTiles(normIv(f.base), PAGES, true) + '</div>' +
+    '<p class="wnote"><b>' + fmt1(f.startPages) + ' pages</b> known, about ' + fmt1(f.startPages / JUZ) + ' juz.</p>' + knownList +
+    '<div class="field"><span class="lab">Add a range</span><div class="rng">' +
+    '<span>From</span><select class="inp" id="r-fs" aria-label="From surah">' + surahOptions(rng.fs) + '</select><input class="inp" id="r-fp" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="From page" value="' + val(rng.fp) + '">' +
+    '<span>To</span><select class="inp" id="r-ts" aria-label="To surah">' + surahOptions(rng.ts) + '</select><input class="inp" id="r-tp" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="To page" value="' + val(rng.tp) + '"></div>' +
+    '<small class="hint">Choosing a surah fills in its first page for From and its last page for To. Change the page numbers for part of a surah. Page 1 to 604 is the whole Quran.</small>' +
+    (rng.msg ? '<small class="hint err">' + esc(rng.msg) + '</small>' : '') +
+    '<button type="button" class="btn" data-a="addrange">Add this range</button></div></section>' +
+
+    '<section class="card" id="nextCard"><h2 class="h">Where new hifz continues from</h2>' +
+    '<p class="muted">New pages are learned from here, and skip anything already known. Move it whenever you switch to a different part of the Quran.</p>' +
+    '<div class="field"><span class="lab" id="lab-dir">Direction</span><div class="chips" role="group" aria-labelledby="lab-dir">' +
+    '<button type="button" class="chip" data-a="dir" data-d="1" aria-pressed="' + (f.next.dir > 0) + '">Forward</button>' +
+    '<button type="button" class="chip" data-a="dir" data-d="-1" aria-pressed="' + (f.next.dir < 0) + '">Backwards</button></div>' +
+    '<small class="hint">Forward moves towards An-Nas. Backwards moves towards Al-Fatihah.</small></div>' +
+    '<div class="field"><span class="lab">Start at</span><div class="rng2"><select class="inp" id="n-s" aria-label="Surah to continue from">' + surahOptions(surahIdxOfPage(np)) + '</select>' +
+    '<input class="inp" id="n-p" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="Page to continue from" value="' + np + '"></div>' +
+    '<small class="hint" id="nextHint"></small></div></section>' +
+
+    '<section class="card"><h2 class="h">' + (first ? 'Set targets' : 'Targets') + '</h2>' +
+    '<div class="field"><label for="f-goal">Goal, in pages</label><input class="inp" id="f-goal" type="number" inputmode="decimal" min="1" max="604" step="1" value="' + val(f.goalPages) + '"><small class="hint">604 pages is the whole Quran in the Madinah mushaf, 15 lines to a page.</small></div>' +
+    '<div class="field"><span class="lab" id="lab-mode">Set the pace by</span><div class="chips" role="group" aria-labelledby="lab-mode">' +
+    '<button type="button" class="chip" data-a="mode" data-m="date" aria-pressed="' + !wk + '">Finish date</button>' +
+    '<button type="button" class="chip" data-a="mode" data-m="weekly" aria-pressed="' + wk + '">Amount a week</button></div></div>' +
+    (wk
+      ? '<div class="field"><label for="f-weekly">Memorise each week</label><input class="inp" id="f-weekly" type="number" inputmode="decimal" min="0" step="0.5" value="' + val(f.weeklyAmount) + '">' +
+        '<div class="chips" role="group" aria-label="Unit">' +
+        '<button type="button" class="chip" data-a="unit" data-u="pages" aria-pressed="' + (f.weeklyUnit !== 'lines') + '">Pages</button>' +
+        '<button type="button" class="chip" data-a="unit" data-u="lines" aria-pressed="' + (f.weeklyUnit === 'lines') + '">Lines</button></div>' +
+        '<small class="hint" id="wkHint"></small><small class="hint">15 lines make one page. The amount is spread over your study days, and the finish date follows from it.</small></div>'
+      : '<div class="field"><label for="f-date">Finish by</label><input class="inp" id="f-date" type="date" value="' + (f.goalDate || '') + '"></div>') +
+    '<div class="field"><label for="f-cycle">Revise everything older every (days)</label><input class="inp" id="f-cycle" type="number" inputmode="numeric" min="1" max="365" step="1" value="' + val(f.cycleDays) + '"><small class="hint">A shorter cycle means more revision each day. Many students aim for 7 to 30 days.</small></div>' +
+    '<div class="field"><span class="lab" id="lab-rev">New revision</span><div class="chips" role="group" aria-labelledby="lab-rev">' +
+    '<button type="button" class="chip" data-a="revmode" data-m="spaced" aria-pressed="' + (f.revMode !== 'window') + '">Spaced repetition</button>' +
+    '<button type="button" class="chip" data-a="revmode" data-m="window" aria-pressed="' + (f.revMode === 'window') + '">Every day for a few days</button></div>' +
+    (f.revMode === 'window'
+      ? '<small class="hint">Pages learned in the window below are revised every day.</small></div>' +
+        '<div class="field"><label for="f-recent">New revision covers the last (days)</label><input class="inp" id="f-recent" type="number" inputmode="numeric" min="1" max="30" step="1" value="' + val(f.recentDays) + '"><small class="hint">Often 3 to 7 days.</small></div>'
+      : '<small class="hint">Each day of new hifz comes back on a schedule, with longer gaps each time, then joins the older revision cycle. Missed reviews carry over.</small></div>' +
+        '<div class="field"><label for="f-daily">Every day for the first (days)</label><input class="inp" id="f-daily" type="number" inputmode="numeric" min="0" max="90" step="1" value="' + val(f.srDaily) + '"><small class="hint">New hifz is revised every study day for this long before spaced reviews start. 21 days is 3 weeks. Use 0 to go straight to spaced reviews.</small></div>' +
+        '<div class="field"><label for="f-steps">Then review after (days)</label><input class="inp" id="f-steps" type="text" inputmode="numeric" autocomplete="off" value="' + esc(f.srText) + '"><small class="hint">Counted from the end of the every-day period, separated by commas. For example 7, 14, 30.</small></div>') +
+    '<div class="field"><span class="lab" id="lab-days">Days you study</span><div class="chips" role="group" aria-labelledby="lab-days">' + chips + '</div><small class="hint">Daily amounts are spread over these days only.</small></div></section>' +
+    '<section class="card"><h2 class="h">What this means</h2><div id="preview"></div></section>' +
+    '<ul class="errs" id="formErr" role="alert"></ul>' +
+    '<button class="btn solid wide" id="saveBtn" data-a="save">' + (first ? 'Save and start' : 'Save changes') + '</button>' +
+    '<section class="card"><h2 class="h">Logs</h2><p class="muted">Clearing removes every day logged for ' + esc(cur().name) + ', including the pages those days added. What is already known and where new hifz continues from stay as set.</p>' +
+    '<button class="btn wide" data-a="reset">' + (resetArmed ? 'Tap again to erase all logs' : 'Clear all logs') + '</button></section>' +
+    '<section class="card"><h2 class="h">Remove person</h2><p class="muted">' + (S.people.length < 2 ? 'Keep at least one person. Add someone else first if you want to remove this one.' : 'Deletes ' + esc(cur().name) + ' and all of their logs. This cannot be undone.') + '</p>' +
+    '<button class="btn wide" data-a="remove"' + (S.people.length < 2 ? ' disabled' : '') + '>' + (removeArmed ? 'Tap again to remove ' : 'Remove ') + esc(cur().name) + '</button></section>';
+}
+
+function updatePreview(){
+  if (tab !== 'settings' || !draft) return;
+  var errs = validate(draft);
+  $('#formErr').innerHTML = errs.map(function(m){ return '<li>' + m + '</li>'; }).join('');
+  $('#saveBtn').disabled = errs.length > 0;
+  $('#preview').innerHTML = errs.length ? '<p class="muted">Fix the values above to see the plan.</p>' : previewHtml(draft);
+  var hint = $('#nextHint');
+  if (hint){
+    var st = { base: draft.base, next: draft.next };
+    var ns = nextStart(st, cur().logs);
+    hint.textContent = ns ? 'Next new pages start at ' + surahsFor(ns, ns)[0].name + ' ' + fmtR([ns, ns]) + ', going ' + (draft.next.dir > 0 ? 'forward' : 'backwards') + '.'
+      : 'Nothing left to learn in this direction from here.';
+  }
+  var wh = $('#wkHint');
+  if (wh){
+    var per = weeklyPages(draft) / Math.max(1, activeCount(draft.days));
+    wh.textContent = per > 0 ? 'About ' + fmtQ(per) + ' pages (' + Math.max(1, Math.round(per * LINES)) + ' lines) on each study day.' : '';
+  }
+}
+
+function renderPeople(){
+  var id = cur().id;
+  $('#people').innerHTML = S.people.map(function(p){
+    return '<button class="pchip" data-a="person" data-id="' + esc(p.id) + '" aria-pressed="' + (p.id === id) + '"><span class="pdot" style="background:var(--t-' + p.tint + ')"></span>' + esc(p.name) + '</button>';
+  }).join('') + '<button class="pchip add" data-a="addperson">+ Add person</button>';
+}
+
+// One dua asking for Jannah each day, in turn.
+var DUAS = [
+  { ar: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ، وَأَعُوذُ بِكَ مِنَ النَّارِ',
+    tr: 'Allāhumma innī as’aluka al-jannah, wa a‘ūdhu bika min an-nār',
+    en: 'O Allah, I ask You for Paradise and seek refuge in You from the Fire.',
+    src: 'Abu Dawud 792, Ibn Majah 910' },
+  { ar: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ أَوْ عَمَلٍ، وَأَعُوذُ بِكَ مِنَ النَّارِ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ أَوْ عَمَلٍ',
+    tr: 'Allāhumma innī as’aluka al-jannata wa mā qarraba ilayhā min qawlin aw ‘amal, wa a‘ūdhu bika min an-nāri wa mā qarraba ilayhā min qawlin aw ‘amal',
+    en: 'O Allah, I ask You for Paradise and whatever words or deeds bring me closer to it, and I seek refuge in You from the Fire and whatever words or deeds bring me closer to it.',
+    src: 'Ibn Majah 3846' },
+  { ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+    tr: 'Rabbanā ātinā fid-dunyā ḥasanatan wa fil-ākhirati ḥasanatan wa qinā ‘adhāban-nār',
+    en: 'Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.',
+    src: 'Al-Baqarah 2:201 · the Prophet’s most frequent dua, Bukhari 6389, Muslim 2690' },
+  { ar: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْفِرْدَوْسَ الْأَعْلَى',
+    tr: 'Allāhumma innī as’aluka al-firdaws al-a‘lā',
+    en: 'O Allah, I ask You for the highest Firdaws.',
+    src: '“When you ask Allah, ask Him for al-Firdaws”, Bukhari 2790' }
+];
+function renderDua(){
+  var el = $('#dua'); if (!el) return;
+  var t = todayIso(), n = Math.round(parse(t).getTime() / 864e5), i = ((n % DUAS.length) + DUAS.length) % DUAS.length;
+  if (el.dataset.day === t) return;
+  var d = DUAS[i];
+  el.dataset.day = t;
+  el.innerHTML = '<p class="ar" lang="ar" dir="rtl">' + d.ar + '</p><p class="tr">' + d.tr + '</p><p class="en">“' + d.en + '”</p><figcaption>' + d.src + '</figcaption>';
+}
+function render(){
+  renderDua();
+  renderPeople();
+  document.body.setAttribute('data-tint', String(cur().tint));
+  var app = $('#app');
+  app.innerHTML = tab === 'today' ? viewToday() : tab === 'plan' ? viewPlan() : viewSettings();
+  ['today', 'plan', 'settings'].forEach(function(k){ $('#tab-' + k).setAttribute('aria-selected', String(k === tab)); });
+  if (tab === 'settings') updatePreview();
+}
+
+// ---------- actions ----------
+function setLog(k, v, noRender){
+  var P = cur(), l = P.logs[viewDate] || (P.logs[viewDate] = { n: 0, r: 0, o: 0 });
+  v = Math.max(0, Math.round(num(v) * 1e4) / 1e4);
+  if (k === 'n') changeNew(P.settings, P.logs, l, v); else l[k] = v;
+  if (!l.n && !l.r && !l.o) delete P.logs[viewDate];
+  touch();
+  if (noRender) pendingRender = true; else { pendingRender = false; render(); }
+}
+// While a finger or mouse is down, re-rendering would swap the button out from under it
+// and the tap would be lost. So a Done box committed by that tap saves now and redraws after.
+var pressing = false, pendingRender = false, pressTimer = null;
+document.addEventListener('pointerdown', function(){ pressing = true; clearTimeout(pressTimer); }, true);
+function endPress(){
+  clearTimeout(pressTimer);
+  pressTimer = setTimeout(function(){ pressing = false; if (pendingRender){ pendingRender = false; render(); } }, 350);
+}
+document.addEventListener('pointerup', endPress, true);
+document.addEventListener('pointercancel', endPress, true);
+// If the page is left open overnight, move from yesterday to today when it comes back.
+var shownToday = todayIso();
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState !== 'visible') return;
+  var t = todayIso();
+  if (t !== shownToday){ if (viewDate === shownToday) viewDate = t; shownToday = t; render(); }
+});
+function goTab(k){
+  tab = k; autoTab = false; resetArmed = false; removeArmed = false;
+  if (k !== 'settings') draft = null;
+  render();
+  try { window.scrollTo(0, 0); } catch (e) {}
+}
+
+document.addEventListener('click', function(e){
+  var t = e.target.closest('[data-a]');
+  if (!t || t.disabled) return;
+  var a = t.dataset.a;
+  if (a === 'tab'){
+    goTab(t.dataset.tab);
+    if (t.dataset.focus){ var fe = $('#' + t.dataset.focus); if (fe){ try { fe.scrollIntoView(); } catch (x) {} } }
+  }
+  else if (a === 'day'){ viewDate = t.dataset.date; render(); }
+  else if (a === 'wk'){ viewDate = iso(addDays(parse(viewDate), Number(t.dataset.step))); render(); }
+  else if (a === 'today'){ viewDate = todayIso(); render(); }
+  else if (a === 'add'){
+    var prev = (cur().logs[viewDate] && cur().logs[viewDate][t.dataset.k]) || 0;
+    if (t.dataset.l) setLog(t.dataset.k, Math.max(0, Math.round(prev * LINES) + Number(t.dataset.l)) / LINES);
+    else setLog(t.dataset.k, prev + Number(t.dataset.v));
+  }
+  else if (a === 'nunit'){ cur().settings.newUnit = t.dataset.u === 'lines' ? 'lines' : 'pages'; touch(); render(); }
+  else if (a === 'fill'){
+    var p = dayTargets(cur().settings, cur().logs, viewDate), sd = STREAMS.filter(function(s){ return s.key === t.dataset.k; })[0];
+    var q = Math.round(p[sd.t] * 4) / 4; if (p[sd.t] > 0 && q === 0) q = 0.25;
+    if (sd.key === 'r' && cur().settings.revMode !== 'window' && p[sd.t] > 0) q = Math.ceil(p[sd.t] * 1e4) / 1e4;
+    if (sd.key === 'n' && cur().settings.newUnit === 'lines'){ q = Math.max(1, Math.round(p[sd.t] * LINES)) / LINES; }
+    setLog(t.dataset.k, q);
+  }
+  else if (a === 'toggleday'){
+    var i = Number(t.dataset.i); draft.days[i] = !draft.days[i];
+    t.setAttribute('aria-pressed', String(draft.days[i])); updatePreview();
+  }
+  else if (a === 'juzt'){
+    var iv = juzIv(Number(t.dataset.i)), full = overlapIv(draft.base, iv[0], iv[1]) >= (iv[1] - iv[0]) - EPS;
+    draft.base = full ? subtractIv(draft.base, [iv]) : unionIv(draft.base, [iv]);
+    syncStart(); render();
+  }
+  else if (a === 'addrange'){
+    var fp = Math.round(num(rng.fp)), tp = Math.round(num(rng.tp));
+    if (fp < 1 || tp > PAGES || fp > tp){ rng.msg = 'Choose a start page that is not after the end page, between 1 and 604.'; render(); return; }
+    rng.msg = ''; draft.base = unionIv(draft.base, [[fp - 1, tp]]); syncStart(); render();
+  }
+  else if (a === 'rmrange'){
+    var list = normIv(draft.base); list.splice(Number(t.dataset.i), 1); draft.base = list; syncStart(); render();
+  }
+  else if (a === 'dir'){
+    var pg = nextPage(draft.next); draft.next.dir = Number(t.dataset.d); draft.next.x = nextX(pg, draft.next.dir); render();
+  }
+  else if (a === 'mode'){
+    draft.targetMode = t.dataset.m;
+    if (draft.targetMode === 'weekly' && !draft._wTouched){
+      var rem0 = Math.max(0, draft.goalPages - draft.startPages);
+      var inf = targetInfo(Object.assign({}, draft, { targetMode: 'date' }), rem0, todayIso());
+      var wp = inf.req * Math.max(1, activeCount(draft.days));
+      var amt = draft.weeklyUnit === 'lines' ? Math.round(wp * LINES) : Math.round(wp * 2) / 2;
+      if (amt > 0) draft.weeklyAmount = amt;
+    }
+    render();
+  }
+  else if (a === 'readtick'){
+    if (viewDate > todayIso()) return;
+    var R = readsOf(cur()); if (R[viewDate]) delete R[viewDate]; else R[viewDate] = true;
+    touch(); render();
+  }
+  else if (a === 'hardadd'){
+    var inp = $('#hardPg'), pg = t.dataset.pg ? Number(t.dataset.pg) : Math.round(parseFloat(inp && inp.value));
+    if (!(pg >= 1 && pg <= PAGES)){ if (inp){ inp.focus(); inp.setAttribute('aria-invalid', 'true'); } return; }
+    var H = hardOf(cur()), ex = H.filter(function(x){ return x.pg === pg; })[0];
+    if (ex && t.dataset.pg){ H.splice(H.indexOf(ex), 1); }            // tapping a marked page chip again unmarks it
+    else if (ex){ ex.st = 0; ex.m = todayIso(); ex.last = null; }     // marking again starts its extra reviews over
+    else H.push({ pg: pg, m: todayIso(), st: 0, last: null });
+    touch(); render();
+  }
+  else if (a === 'hardok' || a === 'hardagain' || a === 'hardrm'){
+    var H2 = hardOf(cur()), pg2 = Number(t.dataset.pg), hx = H2.filter(function(x){ return x.pg === pg2; })[0];
+    if (!hx) return;
+    if (a === 'hardrm') H2.splice(H2.indexOf(hx), 1);
+    else if (a === 'hardagain'){ hx.st = 0; hx.m = todayIso(); hx.last = null; }
+    else { hx.st++; hx.last = todayIso(); if (hx.st >= HARD_STEPS.length) H2.splice(H2.indexOf(hx), 1); }
+    touch(); render();
+  }
+  else if (a === 'updays'){ upDays = t.dataset.n === '7' ? 7 : 14; render(); }
+  else if (a === 'revmode'){ draft.revMode = t.dataset.m === 'window' ? 'window' : 'spaced'; render(); }
+  else if (a === 'unit'){
+    var u = t.dataset.u;
+    if (u !== draft.weeklyUnit){
+      var am = num(draft.weeklyAmount);
+      draft.weeklyAmount = u === 'lines' ? Math.round(am * LINES * 100) / 100 : Math.round(am / LINES * 100) / 100;
+      draft.weeklyUnit = u; draft._wTouched = true;
+    }
+    render();
+  }
+  else if (a === 'save'){
+    if (validate(draft).length) return;
+    var f = clone(draft); var nm = String(f.name || '').trim().slice(0, 24); delete f.name; delete f._wTouched;
+    var spp = srParse(f.srText); if (spp.steps) f.srSteps = spp.steps; delete f.srText;
+    f.base = normIv(f.base); f.startPages = Math.round(measure(f.base) * 100) / 100; f.goalPages = Math.round(f.goalPages);
+    f.cycleDays = Math.round(f.cycleDays); f.recentDays = Math.round(f.recentDays); f.setupDone = true;
+    cur().settings = f; cur().name = nm; draft = null; touch(); goTab('today');
+  }
+  else if (a === 'tint'){ cur().tint = Number(t.dataset.i); touch(); render(); }
+  else if (a === 'person'){ activeId = t.dataset.id; saveActive(); draft = null; resetArmed = false; removeArmed = false; render(); }
+  else if (a === 'addperson'){
+    var np = newPerson('Person ' + (S.people.length + 1), nextTint(0, TINTS.length)); S.people.push(np);
+    activeId = np.id; saveActive(); draft = null; viewDate = todayIso(); touch(); goTab('settings');
+    var nf = $('#f-name'); if (nf){ try { nf.focus(); nf.select(); } catch (x) {} }
+  }
+  else if (a === 'remove'){
+    if (S.people.length < 2) return;
+    if (!removeArmed){ removeArmed = true; render(); }
+    else {
+      var rid = cur().id; S.people = S.people.filter(function(p){ return p.id !== rid; });
+      activeId = S.people[0].id; saveActive(); removeArmed = false; draft = null; touch(); goTab('today');
+    }
+  }
+  else if (a === 'reset'){
+    if (!resetArmed){ resetArmed = true; render(); }
+    else { cur().logs = {}; cur().hard = []; cur().reads = {}; resetArmed = false; touch(); render(); }
+  }
+});
+
+var FIELDS = {
+  'f-name': ['name', function(v){ return v; }], 'f-goal': ['goalPages', parseFloat], 'f-date': ['goalDate', function(v){ return v; }],
+  'f-weekly': ['weeklyAmount', parseFloat], 'f-cycle': ['cycleDays', parseFloat], 'f-recent': ['recentDays', parseFloat], 'f-steps': ['srText', function(v){ return v; }], 'f-daily': ['srDaily', parseFloat]
+};
+document.addEventListener('input', function(e){
+  var id = e.target.id, m = FIELDS[id];
+  if (m && draft){ draft[m[0]] = m[1](e.target.value); if (id === 'f-weekly') draft._wTouched = true; updatePreview(); return; }
+  if (id === 'r-fp'){ rng.fp = parseInt(e.target.value, 10); if (rng.fp >= 1 && rng.fp <= PAGES){ rng.fs = surahIdxOfPage(rng.fp); $('#r-fs').value = String(rng.fs); } }
+  else if (id === 'r-tp'){ rng.tp = parseInt(e.target.value, 10); if (rng.tp >= 1 && rng.tp <= PAGES){ rng.ts = surahIdxOfPage(rng.tp); $('#r-ts').value = String(rng.ts); } }
+  else if (id === 'n-p' && draft){
+    var pg = parseInt(e.target.value, 10);
+    if (pg >= 1 && pg <= PAGES){ draft.next.x = nextX(pg, draft.next.dir); $('#n-s').value = String(surahIdxOfPage(pg)); updatePreview(); }
+  }
+});
+document.addEventListener('change', function(e){
+  var id = e.target.id;
+  if (e.target.classList && e.target.classList.contains('num')){ var ev = parseFloat(e.target.value) || 0; if (e.target.dataset.u === 'lines') ev = Math.round(ev) / LINES; setLog(e.target.dataset.k, ev, pressing); return; }
+  if (id === 'r-fs'){ rng.fs = Number(e.target.value); rng.fp = STARTS[rng.fs]; $('#r-fp').value = rng.fp; }
+  else if (id === 'r-ts'){ rng.ts = Number(e.target.value); rng.tp = ENDS[rng.ts]; $('#r-tp').value = rng.tp; }
+  else if (id === 'n-s' && draft){
+    var i = Number(e.target.value), pg = draft.next.dir > 0 ? STARTS[i] : ENDS[i];
+    draft.next.x = nextX(pg, draft.next.dir); $('#n-p').value = pg; updatePreview();
+  }
+});
+document.addEventListener('focusin', function(e){
+  if (e.target.classList && e.target.classList.contains('num')){ try { e.target.select(); } catch (x) {} }
+});
+
+setSync('');
+render();
+connect();
+})();
+</script>
+</body>
+</html>
