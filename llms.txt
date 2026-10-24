@@ -7,6 +7,7 @@
 - New hifz: spreads the remaining pages over the chosen study days, to reach either a finish date or a set amount each week, counted in pages or lines (15 lines to a page).
 - New revision: spaced repetition. By default each day of new hifz is revised every study day for 21 days, then comes back 3, 7, 14 and 30 days after that, before joining the older cycle. Missed reviews carry over. Alternatively, revise the last few days of new hifz every day.
 - Revision: everything older is revised in a full cycle, every 30 days by default.
+- Revised different pages from the ones planned: mark those pages as revised and they count towards the day's revision, while the planned pages that were skipped come up first next time.
 - Hard pages: a page marked hard comes back the next day, 3 days later and 7 days later, on top of normal revision.
 - Daily reading tick with a streak, for reading pages not yet memorised.
 - Plan view: juz-by-juz progress, current pace, projected finish date, and how daily revision grows as more is memorised.

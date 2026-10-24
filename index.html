@@ -471,6 +471,7 @@ h1,h2,p,ul,dl{margin:0}
       <li>Hard pages come back the next day, 3 days later and 7 days later, on top of normal revision.</li>
       <li>A daily reading tick with a streak, for reading pages not yet memorised.</li>
       <li>Juz-by-juz progress, your current pace and a projected finish date.</li>
+      <li>Revised different pages from the ones planned? Mark them as revised and they count towards the day.</li>
       <li>Several people on one device, for a family or a class.</li>
     </ul>
   </section>
@@ -739,6 +740,9 @@ function revLoad(st, n){
   var sp = srSteps(st), D = srDaily(st);
   return { daily: n * sp.length + n * D * kk / 7, pool: n * (D + sp[sp.length - 1]) * kk / 7 };
 }
+// Pages revised that were not on the day's revision list: [[from, to], ...] on the same x scale as everything else.
+// They count towards the day's revision but do not move the cycle on, so planned pages that were skipped come up next.
+function oxOf(l){ return l && Array.isArray(l.ox) ? measure(normIv(l.ox)) : 0; }
 function oldOffset(logs, dateIso, pool){
   var t = measure(pool); if (t < EPS) return 0;
   var done = 0; Object.keys(logs).forEach(function(k){ if (k < dateIso) done += num(logs[k].o); });
@@ -849,9 +853,11 @@ function slicesFor(st, logs, dateIso, todayStr, p, lg){
   }
   out.n = pageRanges(day.concat(planned));
   if (p.active && st.revMode === 'window') out.r = pageRanges(recentIv(st, logs, dateIso));
-  if (p.active && p.to > 0){
+  // Other pages revised today count towards the amount, so fewer of the planned pages are left to show.
+  var needO = p.to - oxOf(logs[dateIso]);
+  if (p.active && needO > EPS){
     var pool = oldPool(st, logs, dateIso);
-    out.o = pageRanges(sliceIv(pool, oldOffset(logs, dateIso, pool), Math.max(p.to, 0.05)));
+    out.o = pageRanges(sliceIv(pool, oldOffset(logs, dateIso, pool), Math.max(needO, 0.05)));
   }
   return out;
 }
@@ -865,20 +871,20 @@ function weekStats(st, logs, dateIso, todayIso, p){
   var wd = weekDates(dateIso, st.weekStart);
   var act = wd.filter(function(x){ return st.days[parse(x).getDay()]; });
   var done = { n: 0, r: 0, o: 0 };
-  wd.forEach(function(x){ var l = logs[x]; if (l){ done.n += num(l.n); done.r += num(l.r); done.o += num(l.o); } });
+  wd.forEach(function(x){ var l = logs[x]; if (l){ done.n += num(l.n); done.r += num(l.r); done.o += num(l.o) + oxOf(l); } });
   var activeLeft = act.filter(function(x){ return x >= todayIso; }).length;
   return { wd: wd, nAct: act.length, done: done, activeLeft: activeLeft,
            plan: { n: p.wk ? p.wk.plan : p.n * act.length, r: st.revMode === 'window' ? p.r * act.length : srWeekPlan(st, logs, wd), o: p.o * act.length } };
 }
 function pace(st, logs, todayIso){
-  var keys = Object.keys(logs).filter(function(k){ var l = logs[k]; return num(l.n) > 0 || num(l.r) > 0 || num(l.o) > 0; }).sort();
+  var keys = Object.keys(logs).filter(function(k){ var l = logs[k]; return num(l.n) > 0 || num(l.r) > 0 || num(l.o) > 0 || oxOf(l) > 0; }).sort();
   if (!keys.length) return null;
   var floor = iso(addDays(parse(todayIso), -27));
   var from = keys[0] > floor ? keys[0] : floor;
   var act = Math.max(1, countActive(st.days, from, todayIso));
   var cal = Math.max(1, diffDays(from, todayIso) + 1);
   var n = 0, o = 0;
-  for (var k in logs){ if (k >= from && k <= todayIso){ n += num(logs[k].n); o += num(logs[k].o); } }
+  for (var k in logs){ if (k >= from && k <= todayIso){ n += num(logs[k].n); o += num(logs[k].o) + oxOf(logs[k]); } }
   return { perActive: n / act, oldPerCal: o / cal, from: from, spanDays: cal };
 }
 function projectFinish(st, remaining, perActive, todayIso){
@@ -1005,8 +1011,12 @@ var resetArmed = false, removeArmed = false;
 var upDays = 14;
 document.addEventListener('keydown', function(e){
   if (e.key === 'Enter' && e.target && e.target.id === 'hardPg'){ e.preventDefault(); var b = document.querySelector('.hadd [data-a="hardadd"]'); if (b) b.click(); }
+  if (e.key === 'Enter' && e.target && (e.target.id === 'ox-f' || e.target.id === 'ox-t')){ e.preventDefault(); var ob = document.querySelector('[data-a="oxadd"]'); if (ob) ob.click(); }
 });
 var rng = { fs: 0, fp: 1, ts: 0, tp: 1, msg: '' };
+var oxr = { s: 0, f: '', t: '', open: false, msg: '' };
+// Keep the "Revised other pages?" form open across redraws once it has been opened.
+document.addEventListener('toggle', function(e){ if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-ox')) oxr.open = e.target.open; }, true);
 
 var $ = function(s){ return document.querySelector(s); };
 function fmtDate(s, o){ return new Intl.DateTimeFormat('en-GB', o).format(parse(s)); }
@@ -1237,11 +1247,33 @@ var STREAMS = [
   { key: 'o', cls: 'old', name: 'Revision', t: 'to' }
 ];
 
-function card(sd, target, done, why, active, extra, noAdd, lines){
-  var fq = lines ? fmtL : fmtQ, uw = lines ? 'lines' : 'pages';
-  var pr = target > 0 ? Math.min(1, done / target) : (done > 0 ? 1 : 0);
-  var togo = target > 0 ? (done >= target - 0.001 ? 'Target met' : fq(target - done) + ' ' + uw + ' to go')
-    : (done > 0 ? 'Extra logged' : (active ? '' : 'Rest day'));
+// The Revision card's list of other pages revised that day, and the form to add more.
+function otherRevHtml(lg, d, t){
+  var list = lg && Array.isArray(lg.ox) ? pageRanges(normIv(lg.ox)) : [], h = '';
+  if (list.length){
+    h += '<div class="where"><div class="where-h"><span class="label">Also revised</span><span>' + fmtQ(oxOf(lg)) + (oxOf(lg) > 1 ? ' pages' : ' page') + '</span></div><ul class="hlist">' +
+      list.map(function(r, i){
+        return '<li><div class="hl"><span>' + esc(rangeLabel(r[0], r[1])) + '</span><b>' + fmtR(r) + '</b>' +
+          '<button class="xbtn" data-a="oxrm" data-i="' + i + '" aria-label="Remove ' + fmtR(r) + '">×</button></div></li>';
+      }).join('') + '</ul></div>';
+  }
+  if (d > t) return h;
+  return h + '<details class="hall"' + (oxr.open ? ' open' : '') + ' data-ox><summary>Revised other pages?</summary><div class="hadd">' +
+    '<p class="wnote">Mark pages you revised that were not on the list. They count towards ' + (d === t ? 'today’s' : 'this day’s') + ' revision. Planned pages you didn’t get to come up first next time.</p>' +
+    '<select class="inp" id="ox-s" aria-label="Surah revised">' + surahOptions(oxr.s) + '</select>' +
+    '<div class="hrow"><input class="inp" id="ox-f" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="From" aria-label="From page" value="' + esc(oxr.f) + '">' +
+    '<input class="inp" id="ox-t" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="To" aria-label="To page" value="' + esc(oxr.t) + '">' +
+    '<button class="btn sm solid" data-a="oxadd">Mark revised</button></div>' +
+    '<small class="hint">Choosing a surah fills in all of its pages. Change the page numbers for part of it.</small>' +
+    (oxr.msg ? '<small class="hint err">' + esc(oxr.msg) + '</small>' : '') + '</div></details>';
+}
+// `also` is extra progress logged elsewhere on the card (other pages revised); it counts for progress, not the Done box.
+function card(sd, target, done, why, active, extra, noAdd, lines, also){
+  var fq = lines ? fmtL : fmtQ, uw = lines ? 'lines' : 'pages', tot = done + (also || 0);
+  var pr = target > 0 ? Math.min(1, tot / target) : (tot > 0 ? 1 : 0);
+  var rem = fq(target - tot), one = target - tot <= 1 + 1 / 30;
+  var togo = target > 0 ? (tot >= target - 0.001 ? 'Target met' : rem + ' ' + (one ? uw.slice(0, -1) : uw) + ' to go')
+    : (tot > 0 ? 'Extra logged' : (active ? '' : 'Rest day'));
   var k = sd.key;
   return '<section class="card s-' + sd.cls + '" aria-labelledby="h-' + k + '">' +
     '<div class="card-h"><div class="ttl"><h2 id="h-' + k + '">' + sd.name + '</h2></div>' +
@@ -1271,7 +1303,7 @@ function viewToday(){
   var sl = slicesFor(st, P.logs, d, t, p, lg);
   var wd = weekDates(d, st.weekStart);
   var strip = wd.map(function(x){
-    var l = P.logs[x], has = l && (l.n || l.r || l.o), act = st.days[parse(x).getDay()];
+    var l = P.logs[x], has = l && (l.n || l.r || l.o || oxOf(l)), act = st.days[parse(x).getDay()];
     return '<button class="dbtn' + (has ? ' has' : '') + (act ? '' : ' rest') + (x === t ? ' today' : '') + '" data-a="day" data-date="' + x + '" aria-pressed="' + (x === d) + '" aria-label="' +
       fmtDate(x, { weekday: 'long', day: 'numeric', month: 'long' }) + (x === t ? ', today' : '') + (act ? '' : ', rest day') + '">' +
       '<span class="dow">' + fmtDate(x, { weekday: 'short' }).slice(0, 3) + '</span><span class="dn">' + parse(x).getDate() + '</span><span class="dot"></span></button>';
@@ -1286,9 +1318,9 @@ function viewToday(){
   var banner = st.setupDone ? '' : '<div class="note"><span>These are example numbers. Enter real ones to get a plan that fits.</span>' +
     '<button class="btn solid sm" data-a="tab" data-tab="settings">Set my targets</button></div>';
 
-  var tt = p.tn + p.tr + p.to, td = lg.n + lg.r + lg.o;
+  var oxD = oxOf(lg), tt = p.tn + p.tr + p.to, td = lg.n + lg.r + lg.o + oxD;
   var segs = STREAMS.map(function(sd, i){
-    var tg = p[sd.t], dn = lg[sd.key] || 0, pr = tg > 0 ? Math.min(1, dn / tg) : (dn > 0 ? 1 : 0);
+    var tg = p[sd.t], dn = (lg[sd.key] || 0) + (sd.key === 'o' ? oxD : 0), pr = tg > 0 ? Math.min(1, dn / tg) : (dn > 0 ? 1 : 0);
     var grow = tt > 0 ? Math.max(tg, tt * 0.04) : 1;
     return '<div class="s' + (i + 1) + '" style="flex:' + grow + '"><i style="width:' + (pr * 100) + '%"></i></div>';
   }).join('');
@@ -1327,13 +1359,13 @@ function viewToday(){
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">Change</button></p>';
   var exN = whereHtml(sl.n, d === t ? 'New pages today' : 'New pages') + nextLine;
   var exR = spaced ? srHtml(st, P.logs, sr, d, t, lg.r || 0) : whereHtml(sl.r, 'Revise today');
-  var exO = whereHtml(sl.o, 'Revise today');
+  var exO = whereHtml(sl.o, oxD > 0 ? 'Still to revise' : 'Revise today') + otherRevHtml(lg, d, t);
 
   var nLines = st.newUnit === 'lines';
   var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>Hud 11:88</figcaption></figure>';
   var cards = ayah + card(STREAMS[0], p.tn, lg.n || 0, whyN, p.active, exN, !ns, nLines) +
               card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active, exR) +
-              card(STREAMS[2], p.to, lg.o || 0, whyO, p.active, exO);
+              card(STREAMS[2], p.to, lg.o || 0, whyO, p.active, exO, false, false, oxD);
   // Pages being worked on today, so a hard one can be marked with a tap.
   var expand = function(rs){ var a = []; rs.forEach(function(r){ for (var n = r[0]; n <= r[1]; n++) a.push(n); }); return a; };
   var revPages = spaced ? expand(pageRanges(normIv([].concat.apply([], sr.due.map(function(it){ return it.b.iv; }))))) : expand(sl.r);
@@ -1633,7 +1665,7 @@ function setLog(k, v, noRender){
   var P = cur(), l = P.logs[viewDate] || (P.logs[viewDate] = { n: 0, r: 0, o: 0 });
   v = Math.max(0, Math.round(num(v) * 1e4) / 1e4);
   if (k === 'n') changeNew(P.settings, P.logs, l, v); else l[k] = v;
-  if (!l.n && !l.r && !l.o) delete P.logs[viewDate];
+  if (!l.n && !l.r && !l.o && !oxOf(l)) delete P.logs[viewDate];
   touch();
   if (noRender) pendingRender = true; else { pendingRender = false; render(); }
 }
@@ -1681,6 +1713,7 @@ document.addEventListener('click', function(e){
   else if (a === 'fill'){
     var p = dayTargets(cur().settings, cur().logs, viewDate), sd = STREAMS.filter(function(s){ return s.key === t.dataset.k; })[0];
     var q = Math.round(p[sd.t] * 4) / 4; if (p[sd.t] > 0 && q === 0) q = 0.25;
+    if (sd.key === 'o'){ var ox0 = oxOf(cur().logs[viewDate]); if (ox0 > 0) q = Math.max(0, Math.round((p[sd.t] - ox0) * 4) / 4); }
     if (sd.key === 'r' && cur().settings.revMode !== 'window' && p[sd.t] > 0) q = Math.ceil(p[sd.t] * 1e4) / 1e4;
     if (sd.key === 'n' && cur().settings.newUnit === 'lines'){ q = Math.max(1, Math.round(p[sd.t] * LINES)) / LINES; }
     setLog(t.dataset.k, q);
@@ -1688,6 +1721,24 @@ document.addEventListener('click', function(e){
   else if (a === 'toggleday'){
     var i = Number(t.dataset.i); draft.days[i] = !draft.days[i];
     t.setAttribute('aria-pressed', String(draft.days[i])); updatePreview();
+  }
+  else if (a === 'oxadd'){
+    if (viewDate > todayIso()) return;
+    var of = Math.round(num(oxr.f)), ot = Math.round(num(oxr.t));
+    if (oxr.f !== '' && oxr.t === '') ot = of;
+    oxr.open = true;
+    if (!(of >= 1 && ot <= PAGES && of <= ot)){ oxr.msg = 'Enter the pages you revised, from 1 to 604, with the first page not after the last.'; render(); return; }
+    var Lx = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
+    Lx.ox = unionIv(Lx.ox || [], [[of - 1, ot]]);
+    oxr.msg = ''; oxr.f = ''; oxr.t = ''; touch(); render();
+  }
+  else if (a === 'oxrm'){
+    var Lr = cur().logs[viewDate]; if (!Lr || !Array.isArray(Lr.ox)) return;
+    var rr = pageRanges(normIv(Lr.ox))[Number(t.dataset.i)]; if (!rr) return;
+    Lr.ox = subtractIv(Lr.ox, [[rr[0] - 1, rr[1]]]);
+    if (!Lr.ox.length) delete Lr.ox;
+    if (!Lr.n && !Lr.r && !Lr.o && !Lr.ox) delete cur().logs[viewDate];
+    touch(); render();
   }
   else if (a === 'weekstart'){ draft.weekStart = Number(t.dataset.i); render(); }
   else if (a === 'juzt'){
@@ -1786,7 +1837,9 @@ var FIELDS = {
 document.addEventListener('input', function(e){
   var id = e.target.id, m = FIELDS[id];
   if (m && draft){ draft[m[0]] = m[1](e.target.value); if (id === 'f-weekly') draft._wTouched = true; updatePreview(); return; }
-  if (id === 'r-fp'){ rng.fp = parseInt(e.target.value, 10); if (rng.fp >= 1 && rng.fp <= PAGES){ rng.fs = surahIdxOfPage(rng.fp); $('#r-fs').value = String(rng.fs); } }
+  if (id === 'ox-f'){ oxr.f = e.target.value; var pf = parseInt(oxr.f, 10); if (pf >= 1 && pf <= PAGES){ oxr.s = surahIdxOfPage(pf); $('#ox-s').value = String(oxr.s); } }
+  else if (id === 'ox-t'){ oxr.t = e.target.value; }
+  else if (id === 'r-fp'){ rng.fp = parseInt(e.target.value, 10); if (rng.fp >= 1 && rng.fp <= PAGES){ rng.fs = surahIdxOfPage(rng.fp); $('#r-fs').value = String(rng.fs); } }
   else if (id === 'r-tp'){ rng.tp = parseInt(e.target.value, 10); if (rng.tp >= 1 && rng.tp <= PAGES){ rng.ts = surahIdxOfPage(rng.tp); $('#r-ts').value = String(rng.ts); } }
   else if (id === 'n-p' && draft){
     var pg = parseInt(e.target.value, 10);
@@ -1796,7 +1849,8 @@ document.addEventListener('input', function(e){
 document.addEventListener('change', function(e){
   var id = e.target.id;
   if (e.target.classList && e.target.classList.contains('num')){ var ev = parseFloat(e.target.value) || 0; if (e.target.dataset.u === 'lines') ev = Math.round(ev) / LINES; setLog(e.target.dataset.k, ev, pressing); return; }
-  if (id === 'r-fs'){ rng.fs = Number(e.target.value); rng.fp = STARTS[rng.fs]; $('#r-fp').value = rng.fp; }
+  if (id === 'ox-s'){ oxr.s = Number(e.target.value); oxr.f = String(STARTS[oxr.s]); oxr.t = String(ENDS[oxr.s]); $('#ox-f').value = oxr.f; $('#ox-t').value = oxr.t; }
+  else if (id === 'r-fs'){ rng.fs = Number(e.target.value); rng.fp = STARTS[rng.fs]; $('#r-fp').value = rng.fp; }
   else if (id === 'r-ts'){ rng.ts = Number(e.target.value); rng.tp = ENDS[rng.ts]; $('#r-tp').value = rng.tp; }
   else if (id === 'n-s' && draft){
     var i = Number(e.target.value), pg = draft.next.dir > 0 ? STARTS[i] : ENDS[i];
