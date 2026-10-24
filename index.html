@@ -1028,9 +1028,11 @@ function setSync(s){
   var el = $('#sync'); if (!el) return;
   el.textContent = s === 'synced' ? 'Saved to your Claude account, so it is here on your other devices too.'
     : s === 'error' ? 'Could not reach your account just now. Saved on this device and retried on your next change.'
-    : s === 'local' ? 'Saved on this device only.' : '';
+    : s === 'local' ? (canStore ? 'Saved on this device only.' : 'Not saved: this browser is blocking the app from saving.') : '';
 }
-function persistLocal(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+// Private browsing and blocked site data stop the browser from keeping anything, so say so instead of failing quietly.
+var canStore = (function(){ try { localStorage.setItem(KEY + '-test', '1'); localStorage.removeItem(KEY + '-test'); return true; } catch (e) { return false; } })();
+function persistLocal(){ try { localStorage.setItem(KEY, JSON.stringify(S)); canStore = true; } catch (e) { canStore = false; } }
 function touch(){ S.updatedAt = Date.now(); persistLocal(); if (remote){ clearTimeout(timer); timer = setTimeout(flush, 600); } }
 function flush(){
   if (saving){ again = true; return; }
@@ -1315,8 +1317,9 @@ function viewToday(){
     (d !== t ? '<button class="icon txt" data-a="today">Today</button>' : '') +
     '<button class="icon" data-a="wk" data-step="7" aria-label="Next week">›</button></div></div>';
 
-  var banner = st.setupDone ? '' : '<div class="note"><span>These are example numbers. Enter real ones to get a plan that fits.</span>' +
-    '<button class="btn solid sm" data-a="tab" data-tab="settings">Set my targets</button></div>';
+  var banner = (canStore ? '' : '<div class="note"><span>This browser is not letting Hifdh Helper save, so progress is lost when the page is reloaded or closed. This usually happens in private browsing, or when site data is blocked in the browser’s settings.</span></div>') +
+    (st.setupDone ? '' : '<div class="note"><span>These are example numbers. Enter real ones to get a plan that fits.</span>' +
+    '<button class="btn solid sm" data-a="tab" data-tab="settings">Set my targets</button></div>');
 
   var oxD = oxOf(lg), tt = p.tn + p.tr + p.to, td = lg.n + lg.r + lg.o + oxD;
   var segs = STREAMS.map(function(sd, i){
@@ -1667,8 +1670,39 @@ function setLog(k, v, noRender){
   if (k === 'n') changeNew(P.settings, P.logs, l, v); else l[k] = v;
   if (!l.n && !l.r && !l.o && !oxOf(l)) delete P.logs[viewDate];
   touch();
+  if (noRender === 'quiet') return;
   if (noRender) pendingRender = true; else { pendingRender = false; render(); }
 }
+// A Done box is saved while it is typed in, so reloading or closing straight after typing keeps the number.
+// The redraw still waits for the box to be left (its change event), so typing is not interrupted.
+var typing = null;
+function commitTyping(){
+  if (!typing) return;
+  clearTimeout(typing.timer);
+  var el = typing.el, k = typing.k, at = typing.date; typing = null;
+  if (el.value === '' || at !== viewDate) return;
+  var v = parseFloat(el.value); if (!(v >= 0)) return;
+  if (el.dataset.u === 'lines') v = Math.round(v) / LINES;
+  setLog(k, v, 'quiet');
+}
+// Settings are kept as a draft until Save. These say whether the draft differs from what is saved.
+function draftDirty(){
+  if (!draft) return false;
+  var P = cur(), f = clone(draft);
+  if (String(f.name || '').trim() !== P.name) return true;
+  if (String(f.srText || '').replace(/\s+/g, '') !== srSteps(P.settings).join(',')) return true;
+  delete f.name; delete f.srText; delete f._wTouched;
+  return JSON.stringify(f) !== JSON.stringify(P.settings);
+}
+function leaveSettingsOk(){
+  return !(tab === 'settings' && draftDirty()) || window.confirm('Your changes in Settings are not saved yet. Leave without saving them?');
+}
+window.addEventListener('beforeunload', function(e){
+  commitTyping();
+  if (tab === 'settings' && draftDirty()){ e.preventDefault(); e.returnValue = ''; }
+});
+window.addEventListener('pagehide', commitTyping);
+document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') commitTyping(); });
 // While a finger or mouse is down, re-rendering would swap the button out from under it
 // and the tap would be lost. So a Done box committed by that tap saves now and redraws after.
 var pressing = false, pendingRender = false, pressTimer = null;
@@ -1687,6 +1721,7 @@ document.addEventListener('visibilitychange', function(){
   if (t !== shownToday){ if (viewDate === shownToday) viewDate = t; shownToday = t; render(); }
 });
 function goTab(k){
+  if (k !== 'settings' && !leaveSettingsOk()) return;
   tab = k; autoTab = false; resetArmed = false; removeArmed = false;
   if (k !== 'settings') draft = null;
   render();
@@ -1810,8 +1845,9 @@ document.addEventListener('click', function(e){
     cur().settings = f; cur().name = nm; draft = null; touch(); goTab('today');
   }
   else if (a === 'tint'){ cur().tint = Number(t.dataset.i); touch(); render(); }
-  else if (a === 'person'){ activeId = t.dataset.id; saveActive(); draft = null; resetArmed = false; removeArmed = false; render(); }
+  else if (a === 'person'){ if (t.dataset.id !== activeId && !leaveSettingsOk()) return; activeId = t.dataset.id; saveActive(); draft = null; resetArmed = false; removeArmed = false; render(); }
   else if (a === 'addperson'){
+    if (!leaveSettingsOk()) return;
     var np = newPerson('Person ' + (S.people.length + 1), nextTint(0, TINTS.length)); S.people.push(np);
     activeId = np.id; saveActive(); draft = null; viewDate = todayIso(); touch(); goTab('settings');
     var nf = $('#f-name'); if (nf){ try { nf.focus(); nf.select(); } catch (x) {} }
@@ -1836,6 +1872,11 @@ var FIELDS = {
 };
 document.addEventListener('input', function(e){
   var id = e.target.id, m = FIELDS[id];
+  if (e.target.classList && e.target.classList.contains('num')){
+    if (typing) clearTimeout(typing.timer);
+    typing = { el: e.target, k: e.target.dataset.k, date: viewDate, timer: setTimeout(commitTyping, 300) };
+    return;
+  }
   if (m && draft){ draft[m[0]] = m[1](e.target.value); if (id === 'f-weekly') draft._wTouched = true; updatePreview(); return; }
   if (id === 'ox-f'){ oxr.f = e.target.value; var pf = parseInt(oxr.f, 10); if (pf >= 1 && pf <= PAGES){ oxr.s = surahIdxOfPage(pf); $('#ox-s').value = String(oxr.s); } }
   else if (id === 'ox-t'){ oxr.t = e.target.value; }
@@ -1848,7 +1889,7 @@ document.addEventListener('input', function(e){
 });
 document.addEventListener('change', function(e){
   var id = e.target.id;
-  if (e.target.classList && e.target.classList.contains('num')){ var ev = parseFloat(e.target.value) || 0; if (e.target.dataset.u === 'lines') ev = Math.round(ev) / LINES; setLog(e.target.dataset.k, ev, pressing); return; }
+  if (e.target.classList && e.target.classList.contains('num')){ if (typing && typing.el === e.target){ clearTimeout(typing.timer); typing = null; } var ev = parseFloat(e.target.value) || 0; if (e.target.dataset.u === 'lines') ev = Math.round(ev) / LINES; setLog(e.target.dataset.k, ev, pressing); return; }
   if (id === 'ox-s'){ oxr.s = Number(e.target.value); oxr.f = String(STARTS[oxr.s]); oxr.t = String(ENDS[oxr.s]); $('#ox-f').value = oxr.f; $('#ox-t').value = oxr.t; }
   else if (id === 'r-fs'){ rng.fs = Number(e.target.value); rng.fp = STARTS[rng.fs]; $('#r-fp').value = rng.fp; }
   else if (id === 'r-ts'){ rng.ts = Number(e.target.value); rng.tp = ENDS[rng.ts]; $('#r-tp').value = rng.tp; }
