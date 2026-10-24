@@ -812,9 +812,28 @@ function perDay(st, logs, dateIso){
   else n = info.req;
   return { n: n, r: rToday, o: old / cyc, before: before, recent: recent, old: old, remaining: remaining, left: left, state: state, kk: kk, cyc: cyc };
 }
+// New hifz for the week is fixed at the start of the week (Monday). Each study day gets what is left of it,
+// shared over the study days left, so doing extra one day means less on the days after, not a new weekly target.
+function weekNew(st, logs, dateIso){
+  var wd = weekDates(dateIso), p0 = perDay(st, logs, wd[0]);
+  if (p0.state !== 'ok') return null;
+  var act = wd.filter(function(x){ return st.days[parse(x).getDay()] && (st.targetMode === 'weekly' || x <= st.goalDate); });
+  var plan = Math.min(p0.remaining, p0.n * act.length), before = 0, t = todayIso();
+  var daysFrom = function(x){ return act.filter(function(y){ return y >= x; }).length; };
+  wd.forEach(function(x){
+    if (x >= dateIso) return;
+    var got = logs[x] ? num(logs[x].n) : 0;
+    // Looking ahead, study days from today on are assumed to reach their target.
+    if (x >= t && act.indexOf(x) >= 0) got = Math.max(got, Math.max(0, plan - before) / daysFrom(x));
+    before += got;
+  });
+  var left = daysFrom(dateIso);
+  return { plan: plan, before: before, left: left, base: p0.n, n: left ? Math.max(0, plan - before) / left : 0 };
+}
 function dayTargets(st, logs, dateIso){
   var p = perDay(st, logs, dateIso);
   var active = !!st.days[parse(dateIso).getDay()];
+  if (p.state === 'ok'){ p.wk = weekNew(st, logs, dateIso); if (p.wk) p.n = Math.min(p.remaining, p.wk.n); }
   p.active = active;
   p.tn = active ? p.n : 0; p.tr = active ? p.r : 0; p.to = active ? p.o : 0;
   return p;
@@ -848,7 +867,7 @@ function weekStats(st, logs, dateIso, todayIso, p){
   wd.forEach(function(x){ var l = logs[x]; if (l){ done.n += num(l.n); done.r += num(l.r); done.o += num(l.o); } });
   var activeLeft = act.filter(function(x){ return x >= todayIso; }).length;
   return { wd: wd, nAct: act.length, done: done, activeLeft: activeLeft,
-           plan: { n: p.n * act.length, r: st.revMode === 'window' ? p.r * act.length : srWeekPlan(st, logs, wd), o: p.o * act.length } };
+           plan: { n: p.wk ? p.wk.plan : p.n * act.length, r: st.revMode === 'window' ? p.r * act.length : srWeekPlan(st, logs, wd), o: p.o * act.length } };
 }
 function pace(st, logs, todayIso){
   var keys = Object.keys(logs).filter(function(k){ var l = logs[k]; return num(l.n) > 0 || num(l.r) > 0 || num(l.o) > 0; }).sort();
@@ -1278,11 +1297,16 @@ function viewToday(){
     '<div class="seg" aria-hidden="true">' + segs + '</div>' +
     '<div class="legend"><span><i class="sw new"></i>New hifz</span><span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span></div></section>';
 
+  var baseN = p.wk ? p.wk.base : p.n, half = 0.5 / LINES;
+  var adjN = !p.wk || !p.active ? ''
+    : p.wk.n <= EPS ? ' This week’s new hifz is already done, alhamdulillah. Nothing more is needed until next week.'
+    : p.wk.n < baseN - half ? ' You did extra earlier this week, so today is lighter.'
+    : p.wk.n > baseN + half ? ' A little more today to keep up with this week.' : '';
   var whyN = p.state === 'done' ? 'Goal reached, alhamdulillah. Keep revising.'
     : p.state === 'overdue' ? 'The finish date has passed. Pick a new one in Settings.'
-    : st.targetMode === 'weekly'
-      ? fmtQ(p.remaining) + ' pages left. At ' + fmt1(st.weeklyAmount) + (st.weeklyUnit === 'lines' ? ' lines' : ' pages') + ' a week that is about ' + Math.max(1, Math.ceil(p.remaining / Math.max(weeklyPages(st), 0.01))) + ' more weeks, around ' + Math.max(1, Math.round(p.n * LINES)) + ' lines a study day.'
-      : fmtQ(p.remaining) + ' pages left to the goal over ' + p.left + ' study ' + (p.left === 1 ? 'day' : 'days') + ', about ' + Math.max(1, Math.round(p.n * LINES)) + ' lines a day.';
+    : (st.targetMode === 'weekly'
+      ? fmtQ(p.remaining) + ' pages left. At ' + fmt1(st.weeklyAmount) + (st.weeklyUnit === 'lines' ? ' lines' : ' pages') + ' a week that is about ' + Math.max(1, Math.ceil(p.remaining / Math.max(weeklyPages(st), 0.01))) + ' more weeks, around ' + Math.max(1, Math.round(baseN * LINES)) + ' lines a study day.'
+      : fmtQ(p.remaining) + ' pages left to the goal over ' + p.left + ' study ' + (p.left === 1 ? 'day' : 'days') + ', about ' + Math.max(1, Math.round(baseN * LINES)) + ' lines a day.') + adjN;
   var spaced = st.revMode !== 'window', sr = spaced ? srAt(st, P.logs, d) : null, srS = srSteps(st);
   var whyR = spaced
     ? (sr.due.length
@@ -1315,13 +1339,16 @@ function viewToday(){
   cards += hardCard(P, d, t, [{ name: 'New hifz', pages: expand(sl.n) }, { name: 'New revision', pages: revPages }, { name: 'Revision', pages: expand(sl.o) }]);
 
   var w = weekStats(st, P.logs, d, t, p), fmtQ0 = fmtQ;
+  var pT = d === t ? p : w.wd.indexOf(t) >= 0 ? dayTargets(st, P.logs, t) : null, lgT = P.logs[t] || {};
   var rows = STREAMS.map(function(sd){
     var L = sd.key === 'n' && nLines, fmtQ = L ? function(v){ return fmtL(v) + ' lines'; } : fmtQ0;
     var done = w.done[sd.key], plan = w.plan[sd.key], left = Math.max(0, plan - done);
     var pr = plan > 0 ? Math.min(1, done / plan) : (done > 0 ? 1 : 0);
+    // Once today's target for this stream is met, what is left falls on the study days after today.
+    var dl = w.activeLeft - (pT && pT.active && pT[sd.t] > 0 && num(lgT[sd.key]) >= pT[sd.t] - 0.001 ? 1 : 0);
     var note = plan <= 0 ? (done > 0 ? 'Logged ' + fmtQ(done) + ' this week.' : 'Nothing planned yet.')
       : left < 0.125 ? 'On target for the week.'
-      : w.activeLeft > 0 ? fmtQ(left) + ' to go, about ' + fmtQ(left / w.activeLeft) + ' a day over ' + w.activeLeft + ' study ' + (w.activeLeft === 1 ? 'day' : 'days') + '.'
+      : dl > 0 ? fmtQ(left) + ' to go, about ' + fmtQ(left / dl) + ' a day over ' + dl + ' study ' + (dl === 1 ? 'day' : 'days') + '.'
       : fmtQ(left) + ' short of the plan.';
     return '<div class="wrow s-' + sd.cls + '"><div class="wtop"><b><i class="sw ' + sd.cls + '"></i>' + sd.name + '</b><span>' + fmtQ(done) + (plan > 0 ? ' of ' + fmtQ(plan) : '') + '</span></div>' +
       '<div class="bar" aria-hidden="true"><i style="width:' + (pr * 100) + '%"></i></div><p class="wnote">' + note + '</p></div>';
