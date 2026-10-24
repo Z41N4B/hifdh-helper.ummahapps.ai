@@ -812,10 +812,10 @@ function perDay(st, logs, dateIso){
   else n = info.req;
   return { n: n, r: rToday, o: old / cyc, before: before, recent: recent, old: old, remaining: remaining, left: left, state: state, kk: kk, cyc: cyc };
 }
-// New hifz for the week is fixed at the start of the week (Monday). Each study day gets what is left of it,
+// New hifz for the week is fixed on the first day of the week (Monday unless changed in Settings). Each study day gets what is left of it,
 // shared over the study days left, so doing extra one day means less on the days after, not a new weekly target.
 function weekNew(st, logs, dateIso){
-  var wd = weekDates(dateIso), p0 = perDay(st, logs, wd[0]);
+  var wd = weekDates(dateIso, st.weekStart), p0 = perDay(st, logs, wd[0]);
   if (p0.state !== 'ok') return null;
   var act = wd.filter(function(x){ return st.days[parse(x).getDay()] && (st.targetMode === 'weekly' || x <= st.goalDate); });
   var plan = Math.min(p0.remaining, p0.n * act.length), before = 0, t = todayIso();
@@ -855,13 +855,14 @@ function slicesFor(st, logs, dateIso, todayStr, p, lg){
   }
   return out;
 }
-function weekDates(dateIso){
-  var d = parse(dateIso), dow = (d.getDay() + 6) % 7, mon = addDays(d, -dow), out = [];
+function weekDates(dateIso, ws){
+  ws = Number.isInteger(ws) ? ws : 1;
+  var d = parse(dateIso), dow = (d.getDay() - ws + 7) % 7, mon = addDays(d, -dow), out = [];
   for (var i = 0; i < 7; i++) out.push(iso(addDays(mon, i)));
   return out;
 }
 function weekStats(st, logs, dateIso, todayIso, p){
-  var wd = weekDates(dateIso);
+  var wd = weekDates(dateIso, st.weekStart);
   var act = wd.filter(function(x){ return st.days[parse(x).getDay()]; });
   var done = { n: 0, r: 0, o: 0 };
   wd.forEach(function(x){ var l = logs[x]; if (l){ done.n += num(l.n); done.r += num(l.r); done.o += num(l.o); } });
@@ -920,7 +921,7 @@ function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function defaults(){
   return { startPages: 60, base: [[0, 60]], next: { x: 60, dir: 1 }, goalPages: 604, goalDate: iso(addDays(new Date(), 730)),
            targetMode: 'date', weeklyAmount: 7, weeklyUnit: 'pages',
-           cycleDays: 30, recentDays: 5, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', revMode: 'spaced', srSteps: SR_DEFAULT.slice(), srDaily: 21 };
+           cycleDays: 30, recentDays: 5, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', revMode: 'spaced', srSteps: SR_DEFAULT.slice(), srDaily: 21, weekStart: 1 };
 }
 var TINTS = ['Sage', 'Rose', 'Sky', 'Lavender', 'Peach', 'Aqua', 'Sunshine', 'Bubblegum', 'Ocean', 'Lime', 'Midnight', 'Plum'];
 function newPerson(name, tint){
@@ -937,6 +938,7 @@ function normPerson(p, i){
   if (!Array.isArray(s.days) || s.days.length !== 7) s.days = defaults().days;
   if (s.revMode !== 'window') s.revMode = 'spaced';
   if (!(Number.isInteger(s.srDaily) && s.srDaily >= 0 && s.srDaily <= 90)) s.srDaily = 21;
+  if (!(Number.isInteger(s.weekStart) && s.weekStart >= 0 && s.weekStart <= 6)) s.weekStart = 1;
   if (srParse(Array.isArray(s.srSteps) ? s.srSteps.join(',') : '').err) s.srSteps = SR_DEFAULT.slice();
   // One-time update: the old default 1, 3, 7, 14, 30 becomes 3, 7, 14, 30 (a 1-day gap repeats the every-day weeks).
   if (!s.srV){ if (s.srSteps.join(',') === '1,3,7,14,30') s.srSteps = SR_DEFAULT.slice(); s.srV = 2; }
@@ -1134,7 +1136,7 @@ function readStreak(R, t){
   return n;
 }
 function readCard(P, d, t){
-  var R = readsOf(P), on = !!R[d], future = d > t, wd = weekDates(d), streak = readStreak(R, t);
+  var R = readsOf(P), on = !!R[d], future = d > t, wd = weekDates(d, P.settings.weekStart), streak = readStreak(R, t);
   var short = { weekday: 'short', day: 'numeric', month: 'short' };
   var label = on ? (d === t ? '✓ Read today' : '✓ Read on ' + fmtDate(d, short)) : future ? 'Not yet' : (d === t ? 'Tick for today' : 'Tick for ' + fmtDate(d, short));
   var dots = wd.map(function(x){
@@ -1267,7 +1269,7 @@ function viewToday(){
   var p = dayTargets(st, P.logs, d);
   var lg = P.logs[d] || { n: 0, r: 0, o: 0 };
   var sl = slicesFor(st, P.logs, d, t, p, lg);
-  var wd = weekDates(d);
+  var wd = weekDates(d, st.weekStart);
   var strip = wd.map(function(x){
     var l = P.logs[x], has = l && (l.n || l.r || l.o), act = st.days[parse(x).getDay()];
     return '<button class="dbtn' + (has ? ' has' : '') + (act ? '' : ' rest') + (x === t ? ' today' : '') + '" data-a="day" data-date="' + x + '" aria-pressed="' + (x === d) + '" aria-label="' +
@@ -1488,9 +1490,13 @@ function syncStart(){ draft.startPages = Math.round(measure(draft.base) * 100) /
 function viewSettings(){
   if (!draft){ draft = clone(cur().settings); draft.name = cur().name; draft.srText = srSteps(draft).join(', '); }
   var f = draft, first = !cur().settings.setupDone;
-  var order = [1, 2, 3, 4, 5, 6, 0], names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  var chips = order.map(function(di, i){
-    return '<button type="button" class="chip" data-a="toggleday" data-i="' + di + '" aria-pressed="' + !!f.days[di] + '">' + names[i] + '</button>';
+  var ws = Number.isInteger(f.weekStart) ? f.weekStart : 1, dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var order = [0, 1, 2, 3, 4, 5, 6].map(function(i){ return (ws + i) % 7; });
+  var chips = order.map(function(di){
+    return '<button type="button" class="chip" data-a="toggleday" data-i="' + di + '" aria-pressed="' + !!f.days[di] + '">' + dayNames[di] + '</button>';
+  }).join('');
+  var wsChips = [1, 2, 3, 4, 5, 6, 0].map(function(di){
+    return '<button type="button" class="chip" data-a="weekstart" data-i="' + di + '" aria-pressed="' + (ws === di) + '">' + dayNames[di] + '</button>';
   }).join('');
   var bl = normIv(f.base);
   var knownList = bl.length ? '<ul class="known">' + bl.map(function(r, i){
@@ -1547,7 +1553,8 @@ function viewSettings(){
       : '<small class="hint">Each day of new hifz comes back on a schedule, with longer gaps each time, then joins the older revision cycle. Missed reviews carry over.</small></div>' +
         '<div class="field"><label for="f-daily">Every day for the first (days)</label><input class="inp" id="f-daily" type="number" inputmode="numeric" min="0" max="90" step="1" value="' + val(f.srDaily) + '"><small class="hint">New hifz is revised every study day for this long before spaced reviews start. 21 days is 3 weeks. Use 0 to go straight to spaced reviews.</small></div>' +
         '<div class="field"><label for="f-steps">Then review after (days)</label><input class="inp" id="f-steps" type="text" inputmode="numeric" autocomplete="off" value="' + esc(f.srText) + '"><small class="hint">Counted from the end of the every-day period, separated by commas. For example 7, 14, 30.</small></div>') +
-    '<div class="field"><span class="lab" id="lab-days">Days you study</span><div class="chips" role="group" aria-labelledby="lab-days">' + chips + '</div><small class="hint">Daily amounts are spread over these days only.</small></div></section>' +
+    '<div class="field"><span class="lab" id="lab-days">Days you study</span><div class="chips" role="group" aria-labelledby="lab-days">' + chips + '</div><small class="hint">Daily amounts are spread over these days only.</small></div>' +
+    '<div class="field"><span class="lab" id="lab-ws">Week starts on</span><div class="chips" role="group" aria-labelledby="lab-ws">' + wsChips + '</div><small class="hint">Each week’s new hifz is set on this day. Doing extra one day means less on the days after, until the next week starts.</small></div></section>' +
     '<section class="card"><h2 class="h">What this means</h2><div id="preview"></div></section>' +
     '<ul class="errs" id="formErr" role="alert"></ul>' +
     '<button class="btn solid wide" id="saveBtn" data-a="save">' + (first ? 'Save and start' : 'Save changes') + '</button>' +
@@ -1682,6 +1689,7 @@ document.addEventListener('click', function(e){
     var i = Number(t.dataset.i); draft.days[i] = !draft.days[i];
     t.setAttribute('aria-pressed', String(draft.days[i])); updatePreview();
   }
+  else if (a === 'weekstart'){ draft.weekStart = Number(t.dataset.i); render(); }
   else if (a === 'juzt'){
     var iv = juzIv(Number(t.dataset.i)), full = overlapIv(draft.base, iv[0], iv[1]) >= (iv[1] - iv[0]) - EPS;
     draft.base = full ? subtractIv(draft.base, [iv]) : unionIv(draft.base, [iv]);
