@@ -276,6 +276,10 @@ h1,h2,p,ul,dl{margin:0}
 .rng{display:grid; grid-template-columns:auto minmax(0,1fr) 92px; gap:8px; align-items:center}
 .rng2{display:grid; grid-template-columns:minmax(0,1fr) 92px; gap:8px}
 .jzb{appearance:none; padding:0; cursor:pointer; font-family:inherit}
+.jrow{display:flex; gap:6px; overflow-x:auto; padding:2px 2px 6px; scrollbar-width:thin}
+.jrow .chip{flex:none; min-width:40px; justify-content:center}
+.schips{max-height:8.6em; overflow-y:auto; padding:2px; align-content:flex-start}
+.chip small{font-weight:500; opacity:.75; margin-left:5px}
 .hint.err{color:var(--bad-ink); font-weight:600}
 .pchip.add{border-style:dashed; color:var(--muted)}
 .tabs{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; background:var(--track); padding:4px; border-radius:12px}
@@ -874,10 +878,13 @@ function slicesFor(st, logs, dateIso, todayStr, p, lg){
   out.n = pageRanges(day.concat(planned));
   if (p.active && st.revMode === 'window') out.r = pageRanges(recentIv(st, logs, dateIso));
   // Other pages revised today count towards the amount, so fewer of the planned pages are left to show.
+  // Pages already marked as revised are left off the list too.
   var needO = p.to - oxOf(logs[dateIso]);
   if (p.active && needO > EPS){
-    var pool = oldPool(st, logs, dateIso);
-    out.o = pageRanges(sliceIv(pool, oldOffset(logs, dateIso, pool), Math.max(needO, 0.05)));
+    var pool = oldPool(st, logs, dateIso), oxd = (logs[dateIso] && logs[dateIso].ox) || [];
+    var plan = sliceIv(pool, oldOffset(logs, dateIso, pool), Math.max(p.to, 0.05)), left = [];
+    plan.forEach(function(r){ left = left.concat(subtractIv([r], oxd)); });
+    out.o = pageRanges(takeIv(left, 0, needO));
   }
   return out;
 }
@@ -1035,9 +1042,9 @@ document.addEventListener('keydown', function(e){
   if (e.key === 'Enter' && e.target && (e.target.id === 'ox-f' || e.target.id === 'ox-t')){ e.preventDefault(); var ob = document.querySelector('[data-a="oxadd"]'); if (ob) ob.click(); }
 });
 var rng = { fs: 0, fp: 1, ts: 0, tp: 1, msg: '' };
-var oxr = { s: 0, f: '', t: '', open: false, msg: '' };
+var oxr = { s: 0, f: '', t: '', open: false, pages: false, j: null, msg: '' };
 // Keep the "Revised other pages?" form open across redraws once it has been opened.
-document.addEventListener('toggle', function(e){ if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-ox')) oxr.open = e.target.open; }, true);
+document.addEventListener('toggle', function(e){ if (!e.target || !e.target.hasAttribute) return; if (e.target.hasAttribute('data-ox')) oxr.open = e.target.open; if (e.target.hasAttribute('data-oxpages')) oxr.pages = e.target.open; }, true);
 
 var $ = function(s){ return document.querySelector(s); };
 function fmtDate(s, o){ return new Intl.DateTimeFormat('en-GB', o).format(parse(s)); }
@@ -1281,14 +1288,41 @@ function otherRevHtml(lg, d, t){
       }).join('') + '</ul></div>';
   }
   if (d > t) return h;
+  // Pick a juz, then tap the surahs revised in it. Only juz and surahs that are known are offered.
+  var known = allKnown(cur().settings, cur().logs), ox = lg && Array.isArray(lg.ox) ? lg.ox : [];
+  var juzList = []; for (var j = 0; j < 30; j++){ var jv = juzIv(j); if (overlapIv(known, jv[0], jv[1]) > EPS) juzList.push(j); }
+  if (!juzList.length) for (var j2 = 0; j2 < 30; j2++) juzList.push(j2);
+  if (juzList.indexOf(oxr.j) < 0) oxr.j = juzList[0];
+  var parts = juzSurahParts(oxr.j, known);
+  var jChips = juzList.map(function(j){
+    return '<button type="button" class="chip xs" data-a="oxjuz" data-j="' + j + '" aria-pressed="' + (j === oxr.j) + '" aria-label="Juz ' + (j + 1) + '">' + (j + 1) + '</button>';
+  }).join('');
+  var sChips = parts.map(function(s){
+    var on = overlapIv(ox, 0, PAGES) > EPS && measure(subtractIv(s.iv, ox)) < EPS;
+    var pr = pageRanges(s.iv), whole = pr.length === 1 && pr[0][0] === STARTS[s.i] && pr[0][1] === ENDS[s.i];
+    return '<button type="button" class="chip xs" data-a="oxsurah" data-j="' + oxr.j + '" data-s="' + s.i + '" aria-pressed="' + on + '">' + (on ? '✓ ' : '') + esc(s.name) +
+      (whole ? '' : '<small>' + pr.map(fmtR).join(', ') + '</small>') + '</button>';
+  }).join('');
   return h + '<details class="hall"' + (oxr.open ? ' open' : '') + ' data-ox><summary>Revised other pages?</summary><div class="hadd">' +
-    '<p class="wnote">Mark pages you revised that were not on the list. They count towards ' + (d === t ? 'today’s' : 'this day’s') + ' revision. Planned pages you didn’t get to come up first next time.</p>' +
+    '<p class="wnote">Pick a juz, then tap the surahs you revised. Planned pages you skip come up first next time.</p>' +
+    '<div class="jrow" role="group" aria-label="Juz">' + jChips + '</div>' +
+    '<div class="pchips schips" role="group" aria-label="Surahs in Juz ' + (oxr.j + 1) + '">' + (sChips || '<span class="wnote">Nothing known in this juz yet.</span>') + '</div>' +
+    '<details class="hall"' + (oxr.pages ? ' open' : '') + ' data-oxpages><summary>Or enter page numbers</summary><div class="hadd">' +
     '<select class="inp" id="ox-s" aria-label="Surah revised">' + surahOptions(oxr.s) + '</select>' +
     '<div class="hrow"><input class="inp" id="ox-f" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="From" aria-label="From page" value="' + esc(oxr.f) + '">' +
     '<input class="inp" id="ox-t" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="To" aria-label="To page" value="' + esc(oxr.t) + '">' +
     '<button class="btn sm solid" data-a="oxadd">Mark revised</button></div>' +
     '<small class="hint">Choosing a surah fills in all of its pages. Change the page numbers for part of it.</small>' +
-    (oxr.msg ? '<small class="hint err">' + esc(oxr.msg) + '</small>' : '') + '</div></details>';
+    (oxr.msg ? '<small class="hint err">' + esc(oxr.msg) + '</small>' : '') + '</div></details></div></details>';
+}
+// The known part of each surah inside one juz, as page intervals.
+function juzSurahParts(j, known){
+  var jv = juzIv(j), out = [];
+  surahsFor(jv[0] + 1, jv[1]).forEach(function(s){
+    var iv = normIv((known || []).map(function(r){ return [Math.max(r[0], s.a - 1, jv[0]), Math.min(r[1], s.b, jv[1])]; }));
+    if (measure(iv) > EPS) out.push({ i: s.i, name: s.name, iv: iv });
+  });
+  return out;
 }
 // `also` is extra progress logged elsewhere on the card (other pages revised); it counts for progress, not the Done box.
 function card(sd, target, done, why, active, extra, noAdd, lines, also){
@@ -1793,6 +1827,19 @@ document.addEventListener('click', function(e){
     var Lx = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
     Lx.ox = unionIv(Lx.ox || [], [[of - 1, ot]]);
     oxr.msg = ''; oxr.f = ''; oxr.t = ''; touch(); render();
+  }
+  else if (a === 'oxjuz'){ oxr.j = Number(t.dataset.j); oxr.open = true; render(); }
+  else if (a === 'oxsurah'){
+    if (viewDate > todayIso()) return;
+    var sp = juzSurahParts(Number(t.dataset.j), allKnown(cur().settings, cur().logs)).filter(function(s){ return s.i === Number(t.dataset.s); })[0];
+    if (!sp) return;
+    var Ls = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
+    var have = Array.isArray(Ls.ox) ? Ls.ox : [];
+    // Tapping a surah that is already marked takes it off again.
+    Ls.ox = have.length && measure(subtractIv(sp.iv, have)) < EPS ? subtractIv(have, sp.iv) : unionIv(have, sp.iv);
+    if (!Ls.ox.length) delete Ls.ox;
+    if (!Ls.n && !Ls.r && !Ls.o && !Ls.ox) delete cur().logs[viewDate];
+    oxr.open = true; touch(); render();
   }
   else if (a === 'oxrm'){
     var Lr = cur().logs[viewDate]; if (!Lr || !Array.isArray(Lr.ox)) return;
