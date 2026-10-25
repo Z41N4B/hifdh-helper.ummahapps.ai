@@ -763,9 +763,28 @@ function revLoad(st, n){
 // Pages revised that were not on the day's revision list: [[from, to], ...] on the same x scale as everything else.
 // They count towards the day's revision but do not move the cycle on, so planned pages that were skipped come up next.
 function oxOf(l){ return l && Array.isArray(l.ox) ? measure(normIv(l.ox)) : 0; }
-function oldOffset(logs, dateIso, pool){
+// Planned older pages minus any marked as revised, in cycle order: what the Done box counts through.
+function planLeft(plan, ox){ var left = []; plan.forEach(function(r){ left = left.concat(subtractIv([r], ox || [])); }); return left; }
+// How far a day moves the revision cycle on. The Done amount covers the planned pages in order; planned pages
+// marked as revised also count, as long as everything before them in the plan was done too. A skipped planned
+// page stops the cycle there, so it comes up first next time.
+function cycleCredit(st, logs, k, before){
+  var l = logs[k], o = num(l.o);
+  if (!oxOf(l)) return o;
+  var pool = oldPool(st, logs, k), t = measure(pool), to = dayTargets(st, logs, k).to;
+  if (t < EPS || !(to > 0)) return o;
+  var plan = sliceIv(pool, before % t, to), cov = unionIv(l.ox, takeIv(planLeft(plan, l.ox), 0, o)), pre = 0;
+  for (var i = 0; i < plan.length; i++){
+    var r = plan[i], c = cov.filter(function(x){ return x[0] <= r[0] + EPS && x[1] > r[0] + EPS; })[0];
+    if (!c) break;
+    var part = Math.min(c[1], r[1]) - r[0]; pre += part;
+    if (part < r[1] - r[0] - EPS) break;
+  }
+  return Math.max(o, pre);
+}
+function oldOffset(st, logs, dateIso, pool){
   var t = measure(pool); if (t < EPS) return 0;
-  var done = 0; Object.keys(logs).forEach(function(k){ if (k < dateIso) done += num(logs[k].o); });
+  var done = 0; Object.keys(logs).sort().forEach(function(k){ if (k < dateIso) done += cycleCredit(st, logs, k, done); });
   return done % t;
 }
 function nextPage(nx){ return nx.dir > 0 ? Math.min(PAGES, Math.floor(nx.x + EPS) + 1) : Math.max(1, Math.ceil(nx.x - EPS)); }
@@ -882,9 +901,8 @@ function slicesFor(st, logs, dateIso, todayStr, p, lg){
   var needO = p.to - oxOf(logs[dateIso]);
   if (p.active && needO > EPS){
     var pool = oldPool(st, logs, dateIso), oxd = (logs[dateIso] && logs[dateIso].ox) || [];
-    var plan = sliceIv(pool, oldOffset(logs, dateIso, pool), Math.max(p.to, 0.05)), left = [];
-    plan.forEach(function(r){ left = left.concat(subtractIv([r], oxd)); });
-    out.o = pageRanges(takeIv(left, 0, needO));
+    var plan = sliceIv(pool, oldOffset(st, logs, dateIso, pool), Math.max(p.to, 0.05));
+    out.o = pageRanges(takeIv(planLeft(plan, oxd), 0, needO));
   }
   return out;
 }
