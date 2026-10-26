@@ -281,6 +281,8 @@ h1,h2,p,ul,dl{margin:0}
 .schips{max-height:8.6em; overflow-y:auto; padding:2px; align-content:flex-start}
 .rvs{display:flex; flex-wrap:wrap; gap:5px; padding:4px 0 10px}
 .rv{display:inline-flex; align-items:baseline; gap:3px; padding:4px 9px; border-radius:999px; font:600 12.5px var(--f-body); border:1px solid var(--line); background:var(--surface); color:var(--muted)}
+button.rv{appearance:none; cursor:pointer; min-height:32px}
+button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .rv small{font-weight:500; opacity:.8; margin-left:3px}
 .rv.ok{background:var(--good-bg); color:var(--good-ink); border-color:transparent}
 .rv.part{background:var(--warn-bg); color:var(--warn-ink); border-color:transparent}
@@ -1398,7 +1400,8 @@ function cycleState(st, logs, d){
 }
 function cycleHtml(st, logs, d){
   var c = cycleState(st, logs, d); if (!c) return '';
-  var pct = Math.round(c.doneIn / c.total * 100), rows = [];
+  var pct = Math.round(c.doneIn / c.total * 100), rows = [], canTap = d <= todayIso();
+  var oxD = (logs[d] && Array.isArray(logs[d].ox)) ? logs[d].ox : [], doneOther = subtractIv(c.done, oxD);
   for (var j = 0; j < 30; j++){
     var parts = juzSurahParts(j, c.pool); if (!parts.length) continue;
     var stat = parts.map(function(s){
@@ -1408,7 +1411,11 @@ function cycleHtml(st, logs, d){
     var nOk = stat.filter(function(x){ return x.k === 'ok'; }).length;
     var pills = stat.map(function(x){
       var pr = pageRanges(x.s.iv), whole = pr.length === 1 && pr[0][0] === STARTS[x.s.i] && pr[0][1] === ENDS[x.s.i];
-      return '<span class="rv ' + x.k + '">' + (x.k === 'ok' ? '✓ ' : x.k === 'part' ? '◐ ' : '') + esc(x.s.name) + (whole ? '' : '<small>' + pr.map(fmtR).join(', ') + '</small>') + '</span>';
+      var inner = (x.k === 'ok' ? '✓ ' : x.k === 'part' ? '◐ ' : '') + esc(x.s.name) + (whole ? '' : '<small>' + pr.map(fmtR).join(', ') + '</small>');
+      // Not done, part done, or marked on this day: tap to mark or unmark. Done on an earlier day: shown only.
+      var rest = subtractIv(x.s.iv, doneOther), mine = oxD.length && measure(rest) > EPS && measure(subtractIv(rest, oxD)) < EPS;
+      if (!canTap || (x.k === 'ok' && !mine)) return '<span class="rv ' + x.k + '">' + inner + '</span>';
+      return '<button type="button" class="rv ' + x.k + '" data-a="cycsurah" data-j="' + j + '" data-s="' + x.s.i + '" aria-pressed="' + !!mine + '">' + inner + '</button>';
     }).join('');
     var openJ = cyc.j === j || (cyc.j == null && nOk < stat.length && !rows.some(function(r){ return r.open; }));
     rows.push({ open: openJ, h: '<details class="cj"' + (openJ ? ' open' : '') + ' data-cj="' + j + '"><summary><b>Juz ' + (j + 1) + '</b><span>' + (nOk === stat.length ? 'All done' : nOk + ' of ' + stat.length + ' done') + '</span></summary><div class="rvs">' + pills + '</div></details>' });
@@ -1417,6 +1424,7 @@ function cycleHtml(st, logs, d){
     '<div class="wtop"><b>' + (c.full ? 'Pass ' + c.pass + ' complete, alhamdulillah' : 'Pass ' + c.pass) + '</b><span>' + fmt1(c.doneIn) + ' of ' + fmt1(c.total) + ' pages · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
     '<p class="wnote"><span class="rv ok">✓ done</span> <span class="rv part">◐ part done</span> <span class="rv">not yet</span></p>' +
+    (canTap ? '<p class="wnote">Tap a surah to mark it as revised ' + (d === todayIso() ? 'today' : 'on this day') + '. Tap it again to undo.</p>' : '') +
     '<div class="ulist">' + rows.map(function(r){ return r.h; }).join('') + '</div></div></details>';
 }
 // The known part of each surah inside one juz, as page intervals.
@@ -1932,6 +1940,21 @@ document.addEventListener('click', function(e){
     var Lx = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
     Lx.ox = unionIv(Lx.ox || [], [[of - 1, ot]]);
     oxr.msg = ''; oxr.f = ''; oxr.t = ''; touch(); render();
+  }
+  else if (a === 'cycsurah'){
+    if (viewDate > todayIso()) return;
+    var cs0 = cycleState(cur().settings, cur().logs, viewDate); if (!cs0) return;
+    var cp = juzSurahParts(Number(t.dataset.j), cs0.pool).filter(function(s){ return s.i === Number(t.dataset.s); })[0];
+    if (!cp) return;
+    var Lc = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
+    var haveC = Array.isArray(Lc.ox) ? Lc.ox : [];
+    // Only the part not already done this cycle counts as revised now, so a part-done surah adds just what was left.
+    var restC = subtractIv(cp.iv, subtractIv(cs0.done, haveC));
+    if (measure(restC) < EPS) return;
+    Lc.ox = haveC.length && measure(subtractIv(restC, haveC)) < EPS ? subtractIv(haveC, restC) : unionIv(haveC, restC);
+    if (!Lc.ox.length) delete Lc.ox;
+    if (!Lc.n && !Lc.r && !Lc.o && !Lc.ox) delete cur().logs[viewDate];
+    cyc.open = true; cyc.j = Number(t.dataset.j); touch(); render();
   }
   else if (a === 'oxjuz'){ oxr.j = Number(t.dataset.j); oxr.open = true; render(); }
   else if (a === 'oxsurah'){
