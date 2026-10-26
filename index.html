@@ -866,6 +866,10 @@ function changeNew(st, logs, l, v){
 
 // How the pace is set: by a finish date, or by an amount each week (pages or lines).
 function weeklyPages(st){ var a = num(st.weeklyAmount); return st.weeklyUnit === 'lines' ? a / LINES : a; }
+// New hifz can be paused. Each pause is { from, to } with to = null while it is still on; revision carries on.
+function pausesOf(st){ return Array.isArray(st.pauses) ? st.pauses : []; }
+function pausedOn(st, x){ return pausesOf(st).some(function(p){ return x >= p.from && (!p.to || x < p.to); }); }
+function isPaused(st){ var ps = pausesOf(st); return !!(ps.length && !ps[ps.length - 1].to); }
 // A study day is one of the chosen days of the week, on or after the start date if one is set.
 function studyOn(st, x){ return !!st.days[parse(x).getDay()] && !(st.startDate && x < st.startDate); }
 function targetInfo(st, remaining, dateIso){
@@ -902,7 +906,7 @@ function perDay(st, logs, dateIso){
 function weekNew(st, logs, dateIso){
   var wd = weekDates(dateIso, st.weekStart), p0 = perDay(st, logs, st.startDate && st.startDate > wd[0] ? st.startDate : wd[0]);
   if (p0.state !== 'ok') return null;
-  var act = wd.filter(function(x){ return studyOn(st, x) && (st.targetMode === 'weekly' || x <= st.goalDate); });
+  var act = wd.filter(function(x){ return studyOn(st, x) && !pausedOn(st, x) && (st.targetMode === 'weekly' || x <= st.goalDate); });
   var plan = Math.min(p0.remaining, p0.n * act.length), before = 0, t = todayIso();
   var daysFrom = function(x){ return act.filter(function(y){ return y >= x; }).length; };
   wd.forEach(function(x){
@@ -921,7 +925,8 @@ function dayTargets(st, logs, dateIso){
   p.notStarted = !!(st.startDate && dateIso < st.startDate);
   if (p.state === 'ok'){ p.wk = weekNew(st, logs, dateIso); if (p.wk) p.n = Math.min(p.remaining, p.wk.n); }
   p.active = active;
-  p.tn = active ? p.n : 0; p.tr = active ? p.r : 0; p.to = active ? p.o : 0;
+  p.newPaused = pausedOn(st, dateIso);
+  p.tn = active && !p.newPaused ? p.n : 0; p.tr = active ? p.r : 0; p.to = active ? p.o : 0;
   return p;
 }
 // Which pages go with each card on a given day.
@@ -1029,6 +1034,8 @@ function normPerson(p, i){
   if (s.revMode !== 'window') s.revMode = 'spaced';
   if (!(Number.isInteger(s.srDaily) && s.srDaily >= 0 && s.srDaily <= 90)) s.srDaily = 21;
   if (!(Number.isInteger(s.weekStart) && s.weekStart >= 0 && s.weekStart <= 6)) s.weekStart = 1;
+  s.pauses = pausesOf(s).filter(function(p){ return p && /^\d{4}-\d\d-\d\d$/.test(p.from) && (p.to == null || (/^\d{4}-\d\d-\d\d$/.test(p.to) && p.to > p.from)); })
+    .map(function(p){ return { from: p.from, to: p.to || null }; });
   if (!(typeof s.startDate === 'string' && /^\d{4}-\d\d-\d\d$/.test(s.startDate))) s.startDate = null;
   if (srParse(Array.isArray(s.srSteps) ? s.srSteps.join(',') : '').err) s.srSteps = SR_DEFAULT.slice();
   // One-time update: the old default 1, 3, 7, 14, 30 becomes 3, 7, 14, 30 (a 1-day gap repeats the every-day weeks).
@@ -1107,6 +1114,7 @@ document.addEventListener('keydown', function(e){
 });
 var rng = { fs: 0, fp: 1, ts: 0, tp: 1, msg: '' };
 var cyc = { open: false, j: null };
+var pauseAsk = false;
 var oxr = { s: 0, f: '', t: '', open: false, pages: false, j: null, msg: '' };
 // Keep the "Revised other pages?" form open across redraws once it has been opened.
 document.addEventListener('toggle', function(e){ if (!e.target || !e.target.hasAttribute) return; if (e.target.hasAttribute('data-ox')) oxr.open = e.target.open; if (e.target.hasAttribute('data-oxpages')) oxr.pages = e.target.open;
@@ -1513,7 +1521,8 @@ function viewToday(){
     : p.wk.n <= EPS ? ' This week’s new hifz is already done, alhamdulillah. Nothing more is needed until next week.'
     : p.wk.n < baseN - half ? ' You did extra earlier this week, so today is lighter.'
     : p.wk.n > baseN + half ? ' A little more today to keep up with this week.' : '';
-  var whyN = p.state === 'done' ? 'Goal reached, alhamdulillah. Keep revising.'
+  var whyN = p.newPaused ? 'New hifz is paused, so there is no target. Revision carries on as normal, and anything you do learn still counts.'
+    : p.state === 'done' ? 'Goal reached, alhamdulillah. Keep revising.'
     : p.state === 'overdue' ? 'The finish date has passed. Pick a new one in Settings.'
     : (st.targetMode === 'weekly'
       ? fmtQ(p.remaining) + ' pages left. At ' + fmt1(st.weeklyAmount) + (st.weeklyUnit === 'lines' ? ' lines' : ' pages') + ' a week that is about ' + Math.max(1, Math.ceil(p.remaining / Math.max(weeklyPages(st), 0.01))) + ' more weeks, around ' + Math.max(1, Math.round(baseN * LINES)) + ' lines a study day.'
@@ -1534,13 +1543,22 @@ function viewToday(){
     ? 'Learning on from <b>' + esc(nsName) + ' ' + fmtR([ns, ns]) + '</b>, going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + '. '
     : '<b>No unlearned pages left going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + ' from here</b>, so new pages cannot be added. Change where you learn from to keep going. ') +
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">Change</button></p>';
-  var exN = whereHtml(sl.n, d === t ? 'New pages today' : 'New pages') + nextLine;
+  var pauseCtl = isPaused(st)
+    ? '<div class="hb"><button class="btn sm solid" data-a="resumenew">Resume new hifz</button></div>'
+    : pauseAsk
+      ? '<div class="note" role="alertdialog" aria-label="Pause new hifz?"><span><b>Are you sure?</b> Don’t lose your momentum. You can keep going even if it’s a little.</span>' +
+        '<div class="hb"><button class="btn sm solid" data-a="pausekeep">Keep going</button><button class="btn sm" data-a="pauseyes">Yes, pause</button></div></div>'
+      : '<p class="wnote"><button class="linkb" data-a="pausenew">Pause new hifz</button></p>';
+  var exN = whereHtml(sl.n, d === t ? 'New pages today' : 'New pages') + nextLine + (d === t ? pauseCtl : '');
   var exR = spaced ? srHtml(st, P.logs, sr, d, t, lg.r || 0) : whereHtml(sl.r, 'Revise today');
   var exO = whereHtml(sl.o, oxD > 0 ? 'Still to revise' : 'Revise today') + otherRevHtml(lg, d, t) + cycleHtml(st, P.logs, d);
 
   var nLines = st.newUnit === 'lines';
   var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>Hud 11:88</figcaption></figure>';
-  var cards = ayah + card(STREAMS[0], p.tn, lg.n || 0, whyN, p.active, exN, !ns, nLines) +
+  restWord = p.newPaused ? 'Paused' : p.notStarted ? 'Not started' : 'Rest day';
+  var cardN = card(STREAMS[0], p.tn, lg.n || 0, whyN, p.active && !p.newPaused, exN, !ns, nLines);
+  restWord = p.notStarted ? 'Not started' : 'Rest day';
+  var cards = ayah + cardN +
               card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active, exR) +
               card(STREAMS[2], p.to, lg.o || 0, whyO, p.active, exO, false, false, oxD);
   // Pages being worked on today, so a hard one can be marked with a tap.
@@ -1557,7 +1575,7 @@ function viewToday(){
     var pr = plan > 0 ? Math.min(1, done / plan) : (done > 0 ? 1 : 0);
     // Once today's target for this stream is met, what is left falls on the study days after today.
     var dl = w.activeLeft - (pT && pT.active && pT[sd.t] > 0 && num(lgT[sd.key]) >= pT[sd.t] - 0.001 ? 1 : 0);
-    var note = plan <= 0 ? (done > 0 ? 'Logged ' + fmtQ(done) + ' this week.' : 'Nothing planned yet.')
+    var note = sd.key === 'n' && isPaused(st) && plan <= 0 ? 'New hifz is paused.' : plan <= 0 ? (done > 0 ? 'Logged ' + fmtQ(done) + ' this week.' : 'Nothing planned yet.')
       : left < 0.125 ? 'On target for the week.'
       : dl > 0 ? fmtQ(left) + ' to go, about ' + fmtQ(left / dl) + ' a day over ' + dl + ' study ' + (dl === 1 ? 'day' : 'days') + '.'
       : fmtQ(left) + ' short of the plan.';
@@ -1584,6 +1602,7 @@ function viewPlan(){
 
   var status;
   if (rem <= 0) status = { c: 'good', t: 'Goal reached' };
+  else if (isPaused(st)) status = { c: 'warn', t: 'New hifz paused' };
   else if (info.overdue) status = { c: 'bad', t: 'Past the finish date' };
   else if (info.weekly) status = (pc && req > 0) ? (function(r){
     return r >= 1.1 ? { c: 'good', t: 'Ahead of plan' } : r >= 0.9 ? { c: 'good', t: 'On track' } : r >= 0.7 ? { c: 'warn', t: 'Slightly behind' } : { c: 'bad', t: 'Behind plan' };
@@ -1942,6 +1961,17 @@ document.addEventListener('click', function(e){
     var Lx = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
     Lx.ox = unionIv(Lx.ox || [], [[of - 1, ot]]);
     oxr.msg = ''; oxr.f = ''; oxr.t = ''; touch(); render();
+  }
+  else if (a === 'pausenew'){ pauseAsk = true; render(); }
+  else if (a === 'pausekeep'){ pauseAsk = false; render(); }
+  else if (a === 'pauseyes'){
+    var stP = cur().settings; stP.pauses = pausesOf(stP).concat([{ from: todayIso(), to: null }]);
+    pauseAsk = false; touch(); render();
+  }
+  else if (a === 'resumenew'){
+    var stR = cur().settings, ps = pausesOf(stR), lp = ps[ps.length - 1];
+    if (lp && !lp.to){ if (lp.from >= todayIso()) ps.pop(); else lp.to = todayIso(); }
+    touch(); render();
   }
   else if (a === 'cycsurah'){
     if (viewDate > todayIso()) return;
