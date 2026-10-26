@@ -480,7 +480,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
   <header class="top">
     <h1 class="brand"><img src="/favicon.svg" alt="" width="32" height="32">Hifdh Helper</h1>
   </header>
-  <p class="tagline">A hifz tracker that plans your Quran memorisation and revision, day by day.</p>
+  <p class="tagline">A hifz tracker that helps you plan your Quran memorisation and revision, day by day.</p>
   <noscript><p class="noscript">Hifdh Helper needs JavaScript to build your plan. Please turn it on, or read how it works below.</p></noscript>
   <div class="people" id="people" role="group" aria-label="People"></div>
   <nav class="tabs" role="tablist" aria-label="Sections">
@@ -1618,7 +1618,7 @@ function viewPlan(){
     '<dt>' + (info.weekly ? 'Planned finish' : 'Target date') + '</dt><dd>' + (info.finish ? fmtDate(info.finish, dFmt) : '—') + '</dd></dl>' + paceNote + '</section>';
 
   var cycleNow = pc && pc.oldPerCal > 0 && p.old > 0 ? 'about ' + Math.max(1, Math.round(p.old / pc.oldPerCal)) + ' days' : '—';
-  var revCard = '<section class="card" aria-label="Revision load"><h2 class="h">Revision load</h2><dl class="kv">' +
+  var revCard = '<section class="card" aria-label="Revision"><h2 class="h">Revision</h2><dl class="kv">' +
     (st.revMode === 'window' ? '<dt>New revision, per study day</dt><dd>' + fmt1(p.r) + ' pages</dd>' : '<dt>New revision due today</dt><dd>' + fmt1(p.r) + ' pages</dd><dt>Recent pages still in review</dt><dd>' + fmt1(p.recent) + ' pages</dd>') +
     '<dt>Older pages in the cycle</dt><dd>' + fmt1(p.old) + ' pages</dd>' +
     '<dt>Planned cycle</dt><dd>every ' + st.cycleDays + ' days</dd>' +
@@ -1634,7 +1634,7 @@ function viewPlan(){
         return '<tr><td><b>' + fmt1(m.pages / JUZ) + ' juz</b><small>' + m.pages + ' pages</small></td><td>' + fmtDate(m.date, { month: 'short', year: 'numeric' }) +
           '</td><td><b>' + fmt1(m.rev) + ' pages</b></td></tr>';
       }).join('') + '</tbody></table></div>' +
-      '<p class="wnote">Daily revision is new revision plus older revision. It grows as you memorise more, so plan your time for the later rows, not just today.</p></section>';
+      '<p class="wnote">Daily revision is new revision plus older revision.</p></section>';
   }
   return upcomingCard(st, P.logs, t) + memCard + knownCard + paceCard + revCard + msCard;
 }
