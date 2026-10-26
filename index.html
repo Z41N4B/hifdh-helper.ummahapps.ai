@@ -454,6 +454,10 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .pv small{color:var(--muted)}
 .errs{list-style:none; padding:0; display:flex; flex-direction:column; gap:4px; color:var(--bad-ink); font-weight:500}
 .errs:empty{display:none}
+.quiet{margin-top:6px; font-size:13px; color:var(--muted)}
+.quiet summary{cursor:pointer; text-align:center; opacity:.7; padding:8px 0; list-style:none}
+.quiet summary::-webkit-details-marker{display:none}
+.quiet .hadd{padding:6px 2px 0}
 .foot{font-size:13px; color:var(--muted); text-align:center; min-height:1.4em}
 
 /* about + FAQ: plain HTML so search engines and AI assistants can read it without running the app */
@@ -1500,8 +1504,11 @@ function viewToday(){
     (st.setupDone ? '' : '<div class="note"><span>These are example numbers. Enter real ones to get a plan that fits.</span>' +
     '<button class="btn solid sm" data-a="tab" data-tab="settings">Set my targets</button></div>');
 
+  // While new hifz is paused it is left off the front page, unless something was learned that day anyway.
+  var hideN = p.newPaused && !(num(lg.n) > 0);
   var oxD = oxOf(lg), tt = p.tn + p.tr + p.to, td = lg.n + lg.r + lg.o + oxD;
   var segs = STREAMS.map(function(sd, i){
+    if (hideN && sd.key === 'n') return '';
     var tg = p[sd.t], dn = (lg[sd.key] || 0) + (sd.key === 'o' ? oxD : 0), pr = tg > 0 ? Math.min(1, dn / tg) : (dn > 0 ? 1 : 0);
     var grow = tt > 0 ? Math.max(tg, tt * 0.04) : 1;
     return '<div class="s' + (i + 1) + '" style="flex:' + grow + '"><i style="width:' + (pr * 100) + '%"></i></div>';
@@ -1514,7 +1521,7 @@ function viewToday(){
       : p.notStarted ? '<div class="hero-n"><b>Not started</b><span>Your plan starts on ' + fmtDate(st.startDate, { weekday: 'long', day: 'numeric', month: 'long' }) + '. Anything you log still counts.</span></div>'
       : '<div class="hero-n"><b>Rest day</b><span>Anything you log still counts.</span></div>') +
     '<div class="seg" aria-hidden="true">' + segs + '</div>' +
-    '<div class="legend"><span><i class="sw new"></i>New hifz</span><span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span><span><i class="sw read"></i>Reading</span></div></section>';
+    '<div class="legend">' + (hideN ? '' : '<span><i class="sw new"></i>New hifz</span>') + '<span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span><span><i class="sw read"></i>Reading</span></div></section>';
 
   var baseN = p.wk ? p.wk.base : p.n, half = 0.5 / LINES;
   var adjN = !p.wk || !p.active ? ''
@@ -1543,13 +1550,7 @@ function viewToday(){
     ? 'Learning on from <b>' + esc(nsName) + ' ' + fmtR([ns, ns]) + '</b>, going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + '. '
     : '<b>No unlearned pages left going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + ' from here</b>, so new pages cannot be added. Change where you learn from to keep going. ') +
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">Change</button></p>';
-  var pauseCtl = isPaused(st)
-    ? '<div class="hb"><button class="btn sm solid" data-a="resumenew">Resume new hifz</button></div>'
-    : pauseAsk
-      ? '<div class="note" role="alertdialog" aria-label="Pause new hifz?"><span><b>Are you sure?</b> Don’t lose your momentum. You can keep going even if it’s a little.</span>' +
-        '<div class="hb"><button class="btn sm solid" data-a="pausekeep">Keep going</button><button class="btn sm" data-a="pauseyes">Yes, pause</button></div></div>'
-      : '<p class="wnote"><button class="linkb" data-a="pausenew">Pause new hifz</button></p>';
-  var exN = whereHtml(sl.n, d === t ? 'New pages today' : 'New pages') + nextLine + (d === t ? pauseCtl : '');
+  var exN = whereHtml(sl.n, d === t ? 'New pages today' : 'New pages') + nextLine;
   var exR = spaced ? srHtml(st, P.logs, sr, d, t, lg.r || 0) : whereHtml(sl.r, 'Revise today');
   var exO = whereHtml(sl.o, oxD > 0 ? 'Still to revise' : 'Revise today') + otherRevHtml(lg, d, t) + cycleHtml(st, P.logs, d);
 
@@ -1558,7 +1559,7 @@ function viewToday(){
   restWord = p.newPaused ? 'Paused' : p.notStarted ? 'Not started' : 'Rest day';
   var cardN = card(STREAMS[0], p.tn, lg.n || 0, whyN, p.active && !p.newPaused, exN, !ns, nLines);
   restWord = p.notStarted ? 'Not started' : 'Rest day';
-  var cards = ayah + cardN +
+  var cards = ayah + (hideN ? '' : cardN) +
               card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active, exR) +
               card(STREAMS[2], p.to, lg.o || 0, whyO, p.active, exO, false, false, oxD);
   // Pages being worked on today, so a hard one can be marked with a tap.
@@ -1570,6 +1571,7 @@ function viewToday(){
   var w = weekStats(st, P.logs, d, t, p), fmtQ0 = fmtQ;
   var pT = d === t ? p : w.wd.indexOf(t) >= 0 ? dayTargets(st, P.logs, t) : null, lgT = P.logs[t] || {};
   var rows = STREAMS.map(function(sd){
+    if (sd.key === 'n' && hideN && !(w.done.n > 0)) return '';
     var L = sd.key === 'n' && nLines, fmtQ = L ? function(v){ return fmtL(v) + ' lines'; } : fmtQ0;
     var done = w.done[sd.key], plan = w.plan[sd.key], left = Math.max(0, plan - done);
     var pr = plan > 0 ? Math.min(1, done / plan) : (done > 0 ? 1 : 0);
@@ -1791,7 +1793,22 @@ function viewSettings(){
     '<section class="card"><h2 class="h">Logs</h2><p class="muted">Clearing removes every day logged for ' + esc(cur().name) + ', including the pages those days added. What is already known and where new hifz continues from stay as set.</p>' +
     '<button class="btn wide" data-a="reset">' + (resetArmed ? 'Tap again to erase all logs' : 'Clear all logs') + '</button></section>' +
     '<section class="card"><h2 class="h">Remove person</h2><p class="muted">' + (S.people.length < 2 ? 'Keep at least one person. Add someone else first if you want to remove this one.' : 'Deletes ' + esc(cur().name) + ' and all of their logs. This cannot be undone.') + '</p>' +
-    '<button class="btn wide" data-a="remove"' + (S.people.length < 2 ? ' disabled' : '') + '>' + (removeArmed ? 'Tap again to remove ' : 'Remove ') + esc(cur().name) + '</button></section>';
+    '<button class="btn wide" data-a="remove"' + (S.people.length < 2 ? ' disabled' : '') + '>' + (removeArmed ? 'Tap again to remove ' : 'Remove ') + esc(cur().name) + '</button></section>' + pauseCard(cur().settings);
+}
+// Pausing new hifz takes effect straight away, without Save, like clearing logs.
+function pauseCard(st){
+  var paused = isPaused(st), ps = pausesOf(st), since = paused ? ps[ps.length - 1].from : null;
+  var body = paused
+    ? '<p class="muted">New hifz has been paused since ' + fmtDate(since, { weekday: 'long', day: 'numeric', month: 'long' }) + '. Revision carries on as normal.</p>' +
+      '<button class="btn solid wide" data-a="resumenew">Resume new hifz</button>'
+    : pauseAsk
+      ? '<div class="note" role="alertdialog" aria-label="Pause new hifz?"><span><b>Are you sure?</b> Don’t lose your momentum. You can keep going even if it’s a little.</span>' +
+        '<div class="hb"><button class="btn sm solid" data-a="pausekeep">Keep going</button><button class="btn sm" data-a="pauseyes">Yes, pause</button></div></div>'
+      : '<p class="muted">Stops new hifz targets for a while. Revision, hard pages and daily reading carry on.</p>' +
+        '<button class="btn wide" data-a="pausenew">Pause new hifz</button>';
+  // Not paused: kept small and out of the way, a faint line to open. Paused: shown in full so it is easy to resume.
+  if (!paused) return '<details class="quiet" id="pauseCard"' + (pauseAsk ? ' open' : '') + '><summary>Pause new hifz</summary><div class="hadd">' + body + '</div></details>';
+  return '<section class="card" id="pauseCard"><h2 class="h">New hifz is paused</h2>' + body + '</section>';
 }
 
 function updatePreview(){
@@ -1917,7 +1934,7 @@ document.addEventListener('visibilitychange', function(){
 });
 function goTab(k){
   if (k !== 'settings' && !leaveSettingsOk()) return;
-  tab = k; autoTab = false; resetArmed = false; removeArmed = false;
+  tab = k; autoTab = false; resetArmed = false; removeArmed = false; pauseAsk = false;
   if (k !== 'settings') draft = null;
   render();
   try { window.scrollTo(0, 0); } catch (e) {}
@@ -1966,11 +1983,13 @@ document.addEventListener('click', function(e){
   else if (a === 'pausekeep'){ pauseAsk = false; render(); }
   else if (a === 'pauseyes'){
     var stP = cur().settings; stP.pauses = pausesOf(stP).concat([{ from: todayIso(), to: null }]);
+    if (draft) draft.pauses = clone(stP.pauses);
     pauseAsk = false; touch(); render();
   }
   else if (a === 'resumenew'){
     var stR = cur().settings, ps = pausesOf(stR), lp = ps[ps.length - 1];
     if (lp && !lp.to){ if (lp.from >= todayIso()) ps.pop(); else lp.to = todayIso(); }
+    stR.pauses = ps; if (draft) draft.pauses = clone(ps);
     touch(); render();
   }
   else if (a === 'cycsurah'){
@@ -2075,6 +2094,7 @@ document.addEventListener('click', function(e){
   else if (a === 'save'){
     if (validate(draft).length) return;
     var f = clone(draft); var nm = String(f.name || '').trim().slice(0, 24); delete f.name; delete f._wTouched;
+    f.pauses = clone(pausesOf(cur().settings));
     var spp = srParse(f.srText); if (spp.steps) f.srSteps = spp.steps; delete f.srText;
     f.base = normIv(f.base); f.startPages = Math.round(measure(f.base) * 100) / 100; f.goalPages = Math.round(f.goalPages);
     f.cycleDays = Math.round(f.cycleDays); f.recentDays = Math.round(f.recentDays); f.setupDone = true;
