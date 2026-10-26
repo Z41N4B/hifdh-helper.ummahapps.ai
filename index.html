@@ -328,11 +328,11 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .seg{display:flex; gap:4px}
 .seg>div{height:10px; background:var(--track); border-radius:999px; overflow:hidden; min-width:6px}
 .seg i{display:block; height:100%}
-.seg .s1 i{background:var(--new)} .seg .s2 i{background:var(--rec)} .seg .s3 i{background:var(--old)}
+.seg .s1 i{background:var(--new)} .seg .s2 i{background:var(--rec)} .seg .s3 i{background:var(--old)} .seg .s4 i{background:var(--accent)}
 .legend{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:13px; color:var(--muted)}
 .legend span{display:inline-flex; align-items:center; gap:6px}
 .sw{display:inline-block; width:9px; height:9px; border-radius:50%; flex:none}
-.sw.new{background:var(--new)} .sw.rec{background:var(--rec)} .sw.old{background:var(--old)}
+.sw.new{background:var(--new)} .sw.rec{background:var(--rec)} .sw.old{background:var(--old)} .sw.read{background:var(--accent)}
 
 .note{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:var(--warn-bg); color:var(--warn-ink); border-radius:12px; padding:12px 14px; font-weight:500}
 
@@ -1497,14 +1497,16 @@ function viewToday(){
     var tg = p[sd.t], dn = (lg[sd.key] || 0) + (sd.key === 'o' ? oxD : 0), pr = tg > 0 ? Math.min(1, dn / tg) : (dn > 0 ? 1 : 0);
     var grow = tt > 0 ? Math.max(tg, tt * 0.04) : 1;
     return '<div class="s' + (i + 1) + '" style="flex:' + grow + '"><i style="width:' + (pr * 100) + '%"></i></div>';
-  }).join('');
+  }).join('') +
+    // A small piece for daily reading: no pages to count, so it fills when the day is ticked.
+    '<div class="s4" style="flex:' + (tt > 0 ? tt * 0.07 : 0.25) + '"><i style="width:' + (readsOf(P)[d] ? 100 : 0) + '%"></i></div>';
   var hero = '<section class="card" aria-label="Today in total">' +
     (p.active
       ? '<div class="hero-n"><b>' + fmtQ(td) + '</b><span>of about ' + fmtQ(tt) + ' pages today</span></div>'
       : p.notStarted ? '<div class="hero-n"><b>Not started</b><span>Your plan starts on ' + fmtDate(st.startDate, { weekday: 'long', day: 'numeric', month: 'long' }) + '. Anything you log still counts.</span></div>'
       : '<div class="hero-n"><b>Rest day</b><span>Anything you log still counts.</span></div>') +
     '<div class="seg" aria-hidden="true">' + segs + '</div>' +
-    '<div class="legend"><span><i class="sw new"></i>New hifz</span><span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span></div></section>';
+    '<div class="legend"><span><i class="sw new"></i>New hifz</span><span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span><span><i class="sw read"></i>Reading</span></div></section>';
 
   var baseN = p.wk ? p.wk.base : p.n, half = 0.5 / LINES;
   var adjN = !p.wk || !p.active ? ''
