@@ -279,6 +279,17 @@ h1,h2,p,ul,dl{margin:0}
 .jrow{display:flex; gap:6px; overflow-x:auto; padding:2px 2px 6px; scrollbar-width:thin}
 .jrow .chip{flex:none; min-width:40px; justify-content:center}
 .schips{max-height:8.6em; overflow-y:auto; padding:2px; align-content:flex-start}
+.rvs{display:flex; flex-wrap:wrap; gap:5px; padding:4px 0 10px}
+.rv{display:inline-flex; align-items:baseline; gap:3px; padding:4px 9px; border-radius:999px; font:600 12.5px var(--f-body); border:1px solid var(--line); background:var(--surface); color:var(--muted)}
+.rv small{font-weight:500; opacity:.8; margin-left:3px}
+.rv.ok{background:var(--good-bg); color:var(--good-ink); border-color:transparent}
+.rv.part{background:var(--warn-bg); color:var(--warn-ink); border-color:transparent}
+.cj{border:1px solid var(--line); border-radius:10px; padding:0 12px}
+.cj summary{display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:10px 0; cursor:pointer; list-style:none}
+.cj summary::-webkit-details-marker{display:none}
+.cj summary b::before{content:'▸ '; color:var(--muted)}
+.cj[open] summary b::before{content:'▾ '}
+.cj summary span{color:var(--muted); font-size:13px}
 .chip small{font-weight:500; opacity:.75; margin-left:5px}
 .hint.err{color:var(--bad-ink); font-weight:600}
 .pchip.add{border-style:dashed; color:var(--muted)}
@@ -362,7 +373,9 @@ h1,h2,p,ul,dl{margin:0}
 .ttl{display:flex; flex-direction:column; align-items:flex-start; gap:6px; min-width:0}
 .ttl h2{font:700 19px/1.1 var(--f-display); letter-spacing:-.01em}
 .term{font:600 11px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--ci); background:var(--cs); padding:3px 9px; border-radius:999px}
-.target{display:flex; align-items:baseline; gap:5px; flex:none}
+.target{display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex:none}
+.target .tv{display:flex; align-items:baseline; gap:5px}
+.target .tl{font:600 11px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
 .target b{font:700 40px/1 var(--f-display); letter-spacing:-.02em; color:var(--ci); font-variant-numeric:tabular-nums}
 .target span{color:var(--muted); font-size:13px}
 .why{color:var(--muted); font-size:14px}
@@ -614,7 +627,27 @@ function pageRanges(ivs){
   return out;
 }
 // Learn the next n unknown pages from x in a direction, skipping what is already known.
-function advance(known, x, dir, n){
+// The surah to start from on a page when going backwards: the last one that begins there or carries over it.
+function lastSurahOn(p){ var on = surahsFor(p, p); return on.length ? on[on.length - 1].i : 0; }
+// Going backwards means surah by surah towards Al-Fatihah, but each surah is still learned from its first page.
+// s is the surah being learned; -1 once Al-Fatihah is done.
+function advanceBack(known, x, s, n){
+  var k = normIv(known || []), segs = [], got = 0, guard = 0;
+  if (!Number.isInteger(s)) s = lastSurahOn(Math.max(1, Math.ceil(x - EPS)));
+  while (n > EPS && s >= 0 && guard++ < 3000){
+    var lo = STARTS[s] - 1, hi = ENDS[s];
+    if (x < lo - EPS || x > hi + EPS) x = lo;
+    if (x >= hi - EPS){ s--; if (s >= 0) x = STARTS[s] - 1; continue; }
+    var iv = k.filter(function(r){ return r[0] <= x + EPS && r[1] > x + EPS; })[0];
+    if (iv){ x = Math.min(iv[1], hi); continue; }
+    var nx = k.filter(function(r){ return r[0] > x + EPS; })[0];
+    var t = Math.min(n, Math.min(nx ? nx[0] : PAGES, hi) - x);
+    segs.push({ a: x, b: x + t, d: -1, s: s }); k = unionIv(k, [[x, x + t]]); x += t; n -= t; got += t;
+  }
+  return { segs: segs, x: x, s: s, got: got };
+}
+function advance(known, x, dir, n, s){
+  if (dir < 0) return advanceBack(known, x, s, n);
   var k = normIv(known || []), segs = [], got = 0, guard = 0;
   while (n > EPS && guard++ < 1000){
     var iv, lim;
@@ -787,38 +820,42 @@ function oldOffset(st, logs, dateIso, pool){
   var done = 0; Object.keys(logs).sort().forEach(function(k){ if (k < dateIso) done += cycleCredit(st, logs, k, done); });
   return done % t;
 }
-function nextPage(nx){ return nx.dir > 0 ? Math.min(PAGES, Math.floor(nx.x + EPS) + 1) : Math.max(1, Math.ceil(nx.x - EPS)); }
-function nextX(p, dir){ return dir > 0 ? p - 1 : p; }
+function nextPage(nx){ return Math.max(1, Math.min(PAGES, Math.floor(nx.x + EPS) + 1)); }
+function nextX(p){ return p - 1; }
 // First unknown page the next new hifz will land on, or null when the end has been reached.
-function nextStart(st, logs){
-  var r = advance(allKnown(st, logs), st.next.x, st.next.dir, 0.001);
+function nextStartAt(st, logs){
+  var r = advance(allKnown(st, logs), st.next.x, st.next.dir, 0.001, st.next.s);
   if (!r.segs.length) return null;
-  var s = r.segs[0];
-  return st.next.dir > 0 ? Math.min(PAGES, Math.floor(s.a + EPS) + 1) : Math.max(1, Math.ceil(s.b - EPS));
+  var p = Math.min(PAGES, Math.floor(r.segs[0].a + EPS) + 1), si = r.segs[0].s;
+  return { p: p, i: Number.isInteger(si) ? si : surahsFor(p, p)[0].i };
 }
+function nextStart(st, logs){ var r = nextStartAt(st, logs); return r ? r.p : null; }
 // Remove / add new-hifz pages for one day, keeping the exact pages and the pointer in step.
 function changeNew(st, logs, l, v){
   var cn = num(l.n), diff = v - cn;
   if (!l.segs) l.segs = [];
   if (diff > EPS){
-    var res = advance(allKnown(st, logs), st.next.x, st.next.dir, diff);
+    var res = advance(allKnown(st, logs), st.next.x, st.next.dir, diff, st.next.s);
     var r4 = function(x){ return Math.round(x * 1e4) / 1e4; };
     res.segs.forEach(function(s){
       s.a = r4(s.a); s.b = r4(s.b);
       var last = l.segs[l.segs.length - 1];
       // Join onto the last stretch when it carries straight on, so line-by-line adds stay one range.
-      if (last && last.d === s.d && (s.d > 0 ? Math.abs(last.b - s.a) < 1e-4 : Math.abs(last.a - s.b) < 1e-4)){ if (s.d > 0) last.b = s.b; else last.a = s.a; }
+      // Forward pages, and backwards pages inside a surah, run upwards; older backwards logs ran downwards.
+      var up = s.d > 0 || s.s != null;
+      if (last && last.d === s.d && last.s === s.s && (up ? Math.abs(last.b - s.a) < 1e-4 : Math.abs(last.a - s.b) < 1e-4)){ if (up) last.b = s.b; else last.a = s.a; }
       else l.segs.push(s);
     });
     st.next.x = r4(res.x);
+    if (st.next.dir < 0) st.next.s = res.s;
     l.n = Math.round((cn + res.got) * 1e4) / 1e4;
   } else if (diff < -EPS){
     var r = -diff;
     while (r > EPS && l.segs.length){
       var s = l.segs[l.segs.length - 1], L = s.b - s.a, cut = Math.min(L, r);
-      var edge = s.d > 0 ? s.b : s.a, ne = s.d > 0 ? s.b - cut : s.a + cut;
-      if (Math.abs(st.next.x - edge) < 1e-4 && st.next.dir === s.d) st.next.x = ne;
-      if (cut >= L - EPS) l.segs.pop(); else if (s.d > 0) s.b = ne; else s.a = ne;
+      var up2 = s.d > 0 || s.s != null, edge = up2 ? s.b : s.a, ne = up2 ? s.b - cut : s.a + cut;
+      if (Math.abs(st.next.x - edge) < 1e-4 && st.next.dir === s.d && (s.s == null || st.next.s === s.s)) st.next.x = ne;
+      if (cut >= L - EPS) l.segs.pop(); else if (up2) s.b = ne; else s.a = ne;
       r -= cut;
     }
     l.n = Math.max(0, Math.round(v * 1e4) / 1e4);
@@ -892,7 +929,7 @@ function slicesFor(st, logs, dateIso, todayStr, p, lg){
   var planned = [];
   if (dateIso === todayStr && p.active && p.state === 'ok'){
     var rem = Math.max(0, p.tn - num(lg.n));
-    if (rem > EPS) planned = advance(allKnown(st, logs), st.next.x, st.next.dir, rem).segs.map(function(s){ return [s.a, s.b]; });
+    if (rem > EPS) planned = advance(allKnown(st, logs), st.next.x, st.next.dir, rem, st.next.s).segs.map(function(s){ return [s.a, s.b]; });
   }
   out.n = pageRanges(day.concat(planned));
   if (p.active && st.revMode === 'window') out.r = pageRanges(recentIv(st, logs, dateIso));
@@ -1008,6 +1045,13 @@ function normPerson(p, i){
   }
   s.base = normIv(s.base);
   if (!s.next || !isFinite(s.next.x) || (s.next.dir !== 1 && s.next.dir !== -1)) s.next = { x: 0, dir: 1 };
+  // Backwards used to learn pages downwards, so a surah was started from its last page. Now it goes surah by
+  // surah, each from its first page: carry on from the start of the surah that was being learned, skipping what is known.
+  if (s.next.dir === -1 && !Number.isInteger(s.next.s)){
+    if (s.next.x <= EPS) s.next = { x: 0, dir: -1, s: -1 };
+    else { var bs = lastSurahOn(Math.max(1, Math.ceil(s.next.x - EPS))); s.next = { x: STARTS[bs] - 1, dir: -1, s: bs }; }
+  }
+  if (s.next.dir === 1) delete s.next.s;
   s.startPages = Math.round(measure(s.base) * 100) / 100;
   return { id: (p && p.id) || ('p' + i), name: (p && p.name) || 'Me', settings: s,
            tint: (p && Number.isInteger(p.tint) && p.tint >= 0 && p.tint < TINTS.length) ? p.tint : (i % 6),
@@ -1060,9 +1104,12 @@ document.addEventListener('keydown', function(e){
   if (e.key === 'Enter' && e.target && (e.target.id === 'ox-f' || e.target.id === 'ox-t')){ e.preventDefault(); var ob = document.querySelector('[data-a="oxadd"]'); if (ob) ob.click(); }
 });
 var rng = { fs: 0, fp: 1, ts: 0, tp: 1, msg: '' };
+var cyc = { open: false, j: null };
 var oxr = { s: 0, f: '', t: '', open: false, pages: false, j: null, msg: '' };
 // Keep the "Revised other pages?" form open across redraws once it has been opened.
-document.addEventListener('toggle', function(e){ if (!e.target || !e.target.hasAttribute) return; if (e.target.hasAttribute('data-ox')) oxr.open = e.target.open; if (e.target.hasAttribute('data-oxpages')) oxr.pages = e.target.open; }, true);
+document.addEventListener('toggle', function(e){ if (!e.target || !e.target.hasAttribute) return; if (e.target.hasAttribute('data-ox')) oxr.open = e.target.open; if (e.target.hasAttribute('data-oxpages')) oxr.pages = e.target.open;
+  if (e.target.hasAttribute('data-cyc')) cyc.open = e.target.open;
+  if (e.target.hasAttribute('data-cj')){ var cj = Number(e.target.getAttribute('data-cj')); if (e.target.open) cyc.j = cj; else if (cyc.j === cj || cyc.j == null) cyc.j = -1; } }, true);
 
 var $ = function(s){ return document.querySelector(s); };
 function fmtDate(s, o){ return new Intl.DateTimeFormat('en-GB', o).format(parse(s)); }
@@ -1333,6 +1380,45 @@ function otherRevHtml(lg, d, t){
     '<small class="hint">Choosing a surah fills in all of its pages. Change the page numbers for part of it.</small>' +
     (oxr.msg ? '<small class="hint err">' + esc(oxr.msg) + '</small>' : '') + '</div></details></div></details>';
 }
+// Where the revision cycle stands at the end of a day: which older pages are done in the current pass.
+function cycleState(st, logs, d){
+  var pool = oldPool(st, logs, d), total = measure(pool);
+  if (total < EPS) return null;
+  var raw = 0;
+  Object.keys(logs).sort().forEach(function(k){ if (k <= d) raw += cycleCredit(st, logs, k, raw); });
+  var pass = Math.floor(raw / total + EPS), at = raw - pass * total;
+  // Finishing a pass exactly shows it as complete rather than as a new, empty one.
+  var full = at < EPS && raw > EPS;
+  var done = full ? pool : takeIv(pool, 0, at);
+  // Other pages marked as revised within the cycle length count as done too.
+  var since = iso(addDays(parse(d), -st.cycleDays));
+  Object.keys(logs).forEach(function(k){ if (k > since && k <= d && Array.isArray(logs[k].ox)) done = unionIv(done, logs[k].ox); });
+  var doneIn = total - measure(subtractIv(pool, done));
+  return { pool: pool, total: total, done: done, doneIn: doneIn, pass: full ? pass : pass + 1, full: full };
+}
+function cycleHtml(st, logs, d){
+  var c = cycleState(st, logs, d); if (!c) return '';
+  var pct = Math.round(c.doneIn / c.total * 100), rows = [];
+  for (var j = 0; j < 30; j++){
+    var parts = juzSurahParts(j, c.pool); if (!parts.length) continue;
+    var stat = parts.map(function(s){
+      var left = measure(subtractIv(s.iv, c.done)), all = measure(s.iv);
+      return { s: s, k: left < EPS ? 'ok' : left < all - EPS ? 'part' : '' };
+    });
+    var nOk = stat.filter(function(x){ return x.k === 'ok'; }).length;
+    var pills = stat.map(function(x){
+      var pr = pageRanges(x.s.iv), whole = pr.length === 1 && pr[0][0] === STARTS[x.s.i] && pr[0][1] === ENDS[x.s.i];
+      return '<span class="rv ' + x.k + '">' + (x.k === 'ok' ? '✓ ' : x.k === 'part' ? '◐ ' : '') + esc(x.s.name) + (whole ? '' : '<small>' + pr.map(fmtR).join(', ') + '</small>') + '</span>';
+    }).join('');
+    var openJ = cyc.j === j || (cyc.j == null && nOk < stat.length && !rows.some(function(r){ return r.open; }));
+    rows.push({ open: openJ, h: '<details class="cj"' + (openJ ? ' open' : '') + ' data-cj="' + j + '"><summary><b>Juz ' + (j + 1) + '</b><span>' + (nOk === stat.length ? 'All done' : nOk + ' of ' + stat.length + ' done') + '</span></summary><div class="rvs">' + pills + '</div></details>' });
+  }
+  return '<details class="hall"' + (cyc.open ? ' open' : '') + ' data-cyc><summary>See what’s done this cycle</summary><div class="hadd">' +
+    '<div class="wtop"><b>' + (c.full ? 'Pass ' + c.pass + ' complete, alhamdulillah' : 'Pass ' + c.pass) + '</b><span>' + fmt1(c.doneIn) + ' of ' + fmt1(c.total) + ' pages · ' + pct + '%</span></div>' +
+    '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
+    '<p class="wnote"><span class="rv ok">✓ done</span> <span class="rv part">◐ part done</span> <span class="rv">not yet</span></p>' +
+    '<div class="ulist">' + rows.map(function(r){ return r.h; }).join('') + '</div></div></details>';
+}
 // The known part of each surah inside one juz, as page intervals.
 function juzSurahParts(j, known){
   var jv = juzIv(j), out = [];
@@ -1347,12 +1433,13 @@ function card(sd, target, done, why, active, extra, noAdd, lines, also){
   var fq = lines ? fmtL : fmtQ, uw = lines ? 'lines' : 'pages', tot = done + (also || 0);
   var pr = target > 0 ? Math.min(1, tot / target) : (tot > 0 ? 1 : 0);
   var rem = fq(target - tot), one = target - tot <= 1 + 1 / 30;
-  var togo = target > 0 ? (tot >= target - 0.001 ? 'Target met' : rem + ' ' + (one ? uw.slice(0, -1) : uw) + ' to go')
+  var extraDone = tot - target > 1 / 30 ? ' · ' + fq(tot - target) + ' extra' : '';
+  var togo = target > 0 ? (tot >= target - 0.001 ? 'Target met' + extraDone : rem + ' ' + (one ? uw.slice(0, -1) : uw) + ' to go')
     : (tot > 0 ? 'Extra logged' : (active ? '' : restWord));
   var k = sd.key;
   return '<section class="card s-' + sd.cls + '" aria-labelledby="h-' + k + '">' +
     '<div class="card-h"><div class="ttl"><h2 id="h-' + k + '">' + sd.name + '</h2></div>' +
-    '<div class="target"><b>' + (active ? fq(target) : '—') + '</b><span>' + uw + '</span></div></div>' +
+    '<div class="target"><span class="tl">' + (viewDate === todayIso() ? 'Today’s target' : 'Target') + '</span><div class="tv"><b>' + (active ? fq(target) : '—') + '</b><span>' + uw + '</span></div></div></div>' +
     '<p class="why">' + why + '</p>' + (extra || '') +
     '<div class="bar" role="progressbar" aria-label="' + sd.name + ' today" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(pr * 100) + '"><i style="width:' + (pr * 100) + '%"></i></div>' +
     '<div class="done"><label for="done-' + k + '">Done</label>' +
@@ -1432,14 +1519,14 @@ function viewToday(){
   var whyO = p.old <= 0 ? 'No older pages yet.'
     : fmtQ(p.old) + ' older pages, one full pass every ' + st.cycleDays + ' days.';
 
-  var ns = nextStart(st, P.logs), nsName = ns ? surahsFor(ns, ns)[0].name : '';
+  var nsa = nextStartAt(st, P.logs), ns = nsa ? nsa.p : null, nsName = nsa ? NAMES[nsa.i] : '';
   var nextLine = '<p class="wnote">' + (ns
     ? 'Learning on from <b>' + esc(nsName) + ' ' + fmtR([ns, ns]) + '</b>, going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + '. '
     : '<b>No unlearned pages left going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + ' from here</b>, so new pages cannot be added. Change where you learn from to keep going. ') +
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">Change</button></p>';
   var exN = whereHtml(sl.n, d === t ? 'New pages today' : 'New pages') + nextLine;
   var exR = spaced ? srHtml(st, P.logs, sr, d, t, lg.r || 0) : whereHtml(sl.r, 'Revise today');
-  var exO = whereHtml(sl.o, oxD > 0 ? 'Still to revise' : 'Revise today') + otherRevHtml(lg, d, t);
+  var exO = whereHtml(sl.o, oxD > 0 ? 'Still to revise' : 'Revise today') + otherRevHtml(lg, d, t) + cycleHtml(st, P.logs, d);
 
   var nLines = st.newUnit === 'lines';
   var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>Hud 11:88</figcaption></figure>';
@@ -1639,8 +1726,8 @@ function viewSettings(){
     '<div class="field"><span class="lab" id="lab-dir">Direction</span><div class="chips" role="group" aria-labelledby="lab-dir">' +
     '<button type="button" class="chip" data-a="dir" data-d="1" aria-pressed="' + (f.next.dir > 0) + '">Forward</button>' +
     '<button type="button" class="chip" data-a="dir" data-d="-1" aria-pressed="' + (f.next.dir < 0) + '">Backwards</button></div>' +
-    '<small class="hint">Forward moves towards An-Nas. Backwards moves towards Al-Fatihah.</small></div>' +
-    '<div class="field"><span class="lab">Start at</span><div class="rng2"><select class="inp" id="n-s" aria-label="Surah to continue from">' + surahOptions(surahIdxOfPage(np)) + '</select>' +
+    '<small class="hint">Forward moves towards An-Nas. Backwards goes surah by surah towards Al-Fatihah, learning each surah from its first page.</small></div>' +
+    '<div class="field"><span class="lab">Start at</span><div class="rng2"><select class="inp" id="n-s" aria-label="Surah to continue from">' + surahOptions(f.next.dir < 0 && f.next.s >= 0 ? f.next.s : surahIdxOfPage(np)) + '</select>' +
     '<input class="inp" id="n-p" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="Page to continue from" value="' + np + '"></div>' +
     '<small class="hint" id="nextHint"></small></div></section>' +
 
@@ -1687,8 +1774,8 @@ function updatePreview(){
   var hint = $('#nextHint');
   if (hint){
     var st = { base: draft.base, next: draft.next };
-    var ns = nextStart(st, cur().logs);
-    hint.textContent = ns ? 'Next new pages start at ' + surahsFor(ns, ns)[0].name + ' ' + fmtR([ns, ns]) + ', going ' + (draft.next.dir > 0 ? 'forward' : 'backwards') + '.'
+    var nsa = nextStartAt(st, cur().logs), ns = nsa ? nsa.p : null;
+    hint.textContent = ns ? 'Next new pages start at ' + NAMES[nsa.i] + ' ' + fmtR([ns, ns]) + ', going ' + (draft.next.dir > 0 ? 'forward' : 'backwards') + '.'
       : 'Nothing left to learn in this direction from here.';
   }
   var wh = $('#wkHint');
@@ -1882,7 +1969,9 @@ document.addEventListener('click', function(e){
     var list = normIv(draft.base); list.splice(Number(t.dataset.i), 1); draft.base = list; syncStart(); render();
   }
   else if (a === 'dir'){
-    var pg = nextPage(draft.next); draft.next.dir = Number(t.dataset.d); draft.next.x = nextX(pg, draft.next.dir); render();
+    var pg = nextPage(draft.next); draft.next.dir = Number(t.dataset.d); draft.next.x = nextX(pg);
+    if (draft.next.dir < 0) draft.next.s = lastSurahOn(pg); else delete draft.next.s;
+    render();
   }
   else if (a === 'mode'){
     draft.targetMode = t.dataset.m;
@@ -1976,7 +2065,11 @@ document.addEventListener('input', function(e){
   else if (id === 'r-tp'){ rng.tp = parseInt(e.target.value, 10); if (rng.tp >= 1 && rng.tp <= PAGES){ rng.ts = surahIdxOfPage(rng.tp); $('#r-ts').value = String(rng.ts); } }
   else if (id === 'n-p' && draft){
     var pg = parseInt(e.target.value, 10);
-    if (pg >= 1 && pg <= PAGES){ draft.next.x = nextX(pg, draft.next.dir); $('#n-s').value = String(surahIdxOfPage(pg)); updatePreview(); }
+    if (pg >= 1 && pg <= PAGES){
+      draft.next.x = nextX(pg);
+      if (draft.next.dir < 0) draft.next.s = lastSurahOn(pg);
+      $('#n-s').value = String(draft.next.dir < 0 ? draft.next.s : surahIdxOfPage(pg)); updatePreview();
+    }
   }
 });
 document.addEventListener('change', function(e){
@@ -1991,8 +2084,9 @@ document.addEventListener('change', function(e){
   else if (id === 'r-fs'){ rng.fs = Number(e.target.value); rng.fp = STARTS[rng.fs]; $('#r-fp').value = rng.fp; }
   else if (id === 'r-ts'){ rng.ts = Number(e.target.value); rng.tp = ENDS[rng.ts]; $('#r-tp').value = rng.tp; }
   else if (id === 'n-s' && draft){
-    var i = Number(e.target.value), pg = draft.next.dir > 0 ? STARTS[i] : ENDS[i];
-    draft.next.x = nextX(pg, draft.next.dir); $('#n-p').value = pg; updatePreview();
+    var i = Number(e.target.value), pg = STARTS[i];
+    draft.next.x = nextX(pg); if (draft.next.dir < 0) draft.next.s = i;
+    $('#n-p').value = pg; updatePreview();
   }
 });
 document.addEventListener('focusin', function(e){
