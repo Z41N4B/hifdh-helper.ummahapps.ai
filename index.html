@@ -669,6 +669,9 @@ function lastSurahOn(p){ var on = surahsFor(p, p); return on.length ? on[on.leng
 function advanceBack(known, x, s, n){
   var k = normIv(known || []), segs = [], got = 0, guard = 0;
   if (!Number.isInteger(s)) s = lastSurahOn(Math.max(1, Math.ceil(x - EPS)));
+  // Always work from the start of the surah, skipping what is known, so a surah is never begun from its end
+  // (for example when the starting page chosen is part way through it).
+  if (s >= 0) x = STARTS[s] - 1;
   while (n > EPS && s >= 0 && guard++ < 3000){
     var lo = STARTS[s] - 1, hi = ENDS[s];
     if (x < lo - EPS || x > hi + EPS) x = lo;
@@ -1856,7 +1859,7 @@ function viewSettings(){
     '<div class="field"><span class="lab" id="lab-dir">Direction</span><div class="chips" role="group" aria-labelledby="lab-dir">' +
     '<button type="button" class="chip" data-a="dir" data-d="1" aria-pressed="' + (f.next.dir > 0) + '">Forward</button>' +
     '<button type="button" class="chip" data-a="dir" data-d="-1" aria-pressed="' + (f.next.dir < 0) + '">Backwards</button></div>' +
-    '<small class="hint">Forward moves towards An-Nas. Backwards goes surah by surah towards Al-Fatihah, learning each surah from its first page.</small></div>' +
+    '<small class="hint">Forward moves towards An-Nas. Backwards goes surah by surah towards Al-Fatihah, learning each surah from its first page, so choosing a page picks the surah it is in.</small></div>' +
     '<div class="field"><span class="lab">Start at</span><div class="rng2"><select class="inp" id="n-s" aria-label="Surah to continue from">' + surahOptions(f.next.dir < 0 && f.next.s >= 0 ? f.next.s : surahIdxOfPage(np)) + '</select>' +
     '<input class="inp" id="n-p" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="Page to continue from" value="' + np + '"></div>' +
     '<small class="hint" id="nextHint"></small></div></section>' +
