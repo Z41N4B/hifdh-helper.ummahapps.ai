@@ -147,6 +147,7 @@
   --t-12:radial-gradient(circle, #F6C628 0 26%, #FFFFFF 30%);
   --warn-bg:#F7E2B0; --warn-ink:#6B4500;
   --bad-bg:#F5D4D0; --bad-ink:#8A1F17;
+  --hard:#D35E3A;
   --f-display:'Bricolage Grotesque','Avenir Next','Segoe UI',system-ui,sans-serif;
   --f-body:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
   --f-arabic:'Amiri','Geeza Pro','Traditional Arabic',serif;
@@ -328,11 +329,11 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .seg{display:flex; gap:4px}
 .seg>div{height:10px; background:var(--track); border-radius:999px; overflow:hidden; min-width:6px}
 .seg i{display:block; height:100%}
-.seg .s1 i{background:var(--new)} .seg .s2 i{background:var(--rec)} .seg .s3 i{background:var(--old)} .seg .s4 i{background:var(--accent)}
+.seg .s1 i{background:var(--new)} .seg .s2 i{background:var(--rec)} .seg .s3 i{background:var(--old)} .seg .s4 i{background:var(--accent)} .seg .s5 i{background:var(--hard)}
 .legend{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:13px; color:var(--muted)}
 .legend span{display:inline-flex; align-items:center; gap:6px}
 .sw{display:inline-block; width:9px; height:9px; border-radius:50%; flex:none}
-.sw.new{background:var(--new)} .sw.rec{background:var(--rec)} .sw.old{background:var(--old)} .sw.read{background:var(--accent)}
+.sw.new{background:var(--new)} .sw.rec{background:var(--rec)} .sw.old{background:var(--old)} .sw.read{background:var(--accent)} .sw.hard{background:var(--hard)}
 
 .note{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:var(--warn-bg); color:var(--warn-ink); border-radius:12px; padding:12px 14px; font-weight:500}
 
@@ -377,6 +378,8 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .term{font:600 11px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--ci); background:var(--cs); padding:3px 9px; border-radius:999px}
 .target{display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex:none}
 .target .tv{display:flex; align-items:baseline; gap:5px}
+.target .tdn{font-size:13px; color:var(--muted)}
+.target .tdn b{font:700 14px var(--f-body); color:var(--ink); letter-spacing:0}
 .target .tl{font:600 11px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
 .target b{font:700 40px/1 var(--f-display); letter-spacing:-.02em; color:var(--ci); font-variant-numeric:tabular-nums}
 .target span{color:var(--muted); font-size:13px}
@@ -799,41 +802,55 @@ function revLoad(st, n){
   var sp = srSteps(st), D = srDaily(st);
   return { daily: n * sp.length + n * D * kk / 7, pool: n * (D + sp[sp.length - 1]) * kk / 7 };
 }
-// Pages revised that were not on the day's revision list: [[from, to], ...] on the same x scale as everything else.
-// They count towards the day's revision but do not move the cycle on, so planned pages that were skipped come up next.
+// Pages marked as revised by tapping a surah or entering page numbers: [[from, to], ...] on the same x scale as everything else.
 function oxOf(l){ return l && Array.isArray(l.ox) ? measure(normIv(l.ox)) : 0; }
-// Planned older pages minus any marked as revised, in cycle order: what the Done box counts through.
+// Pages in `list`, in its order, that are not in `minus`.
 function planLeft(plan, ox){ var left = []; plan.forEach(function(r){ left = left.concat(subtractIv([r], ox || [])); }); return left; }
-// How far a day moves the revision cycle on. The Done amount covers the planned pages in order; planned pages
-// marked as revised also count, as long as everything before them in the plan was done too. A skipped planned
-// page stops the cycle there, so it comes up first next time.
-function cycleCredit(st, logs, k, before){
-  var l = logs[k], o = num(l.o);
-  if (!oxOf(l)) return o;
-  var pool = oldPool(st, logs, k), t = measure(pool), to = dayTargets(st, logs, k).to;
-  if (t < EPS || !(to > 0)) return o;
-  var plan = sliceIv(pool, before % t, to), cov = unionIv(l.ox, takeIv(planLeft(plan, l.ox), 0, o)), pre = 0;
-  for (var i = 0; i < plan.length; i++){
-    var r = plan[i], c = cov.filter(function(x){ return x[0] <= r[0] + EPS && x[1] > r[0] + EPS; })[0];
-    if (!c) break;
-    var part = Math.min(c[1], r[1]) - r[0]; pre += part;
-    if (part < r[1] - r[0] - EPS) break;
+// The older revision cycle, worked out day by day from the actual pages revised. Each pass goes through the older
+// pages in order, and a day's list is the first pages of the pass not done yet, so pages revised early (extra, or
+// tapped) are not asked for again in that pass. The Done amount covers the not-done pages in order; tapped pages
+// count as they are; a page counted both ways is counted once.
+function cycleDay(st, logs, k, before){
+  var l = logs[k] || {}, pool = oldPool(st, logs, k), total = measure(pool), done = before.done, pass = before.pass;
+  if (total > EPS && measure(subtractIv(pool, done)) < EPS){ done = []; pass++; }
+  var notDone = subtractIv(pool, done), to = dayTargets(st, logs, k).to;
+  var plan = takeIv(notDone, 0, to > 0 ? to : 0), o = num(l.o), ox = Array.isArray(l.ox) ? normIv(l.ox) : [];
+  var cover = takeIv(notDone, 0, o), rev = unionIv(cover, ox), amount = Math.max(o, measure(rev));
+  var after = unionIv(done, unionIv(cover, subtractIv(pool, subtractIv(pool, ox)))), passAfter = pass, completed = false;
+  if (total > EPS && measure(subtractIv(pool, after)) < EPS){
+    completed = true;
+    var over = o - measure(cover);
+    if (over > EPS){ passAfter = pass + 1; after = takeIv(pool, 0, over); }
   }
-  return Math.max(o, pre);
+  return { pool: pool, total: total, plan: plan, rev: rev, ox: ox, amount: amount, pass: pass,
+           after: { done: after, pass: passAfter }, completed: completed };
 }
-function oldOffset(st, logs, dateIso, pool){
-  var t = measure(pool); if (t < EPS) return 0;
-  var done = 0; Object.keys(logs).sort().forEach(function(k){ if (k < dateIso) done += cycleCredit(st, logs, k, done); });
-  return done % t;
+var cycMemo = null, cycVer = 0;
+function cycleRun(st, logs){
+  var key = cycVer + '|' + cur().id + '|' + todayIso();
+  if (cycMemo && cycMemo.key === key) return cycMemo;
+  var state = { done: [], pass: 1 }, days = {};
+  Object.keys(logs).sort().forEach(function(k){ var c = cycleDay(st, logs, k, state); days[k] = c; state = c.after; });
+  cycMemo = { key: key, days: days, keys: Object.keys(days).sort() };
+  return cycMemo;
 }
+// The cycle as it stands on a day: its list, what was revised that day, and the state after it.
+function cycleAt(st, logs, d){
+  var run = cycleRun(st, logs);
+  if (run.days[d]) return run.days[d];
+  var prev = run.keys.filter(function(k){ return k < d; }), before = prev.length ? run.days[prev[prev.length - 1]].after : { done: [], pass: 1 };
+  return cycleDay(st, logs, d, before);
+}
+// Pages revised on a day for the Revision card, counting each page once.
+function revAmount(st, logs, d){ var l = logs[d]; return l && (num(l.o) > 0 || oxOf(l) > 0) ? cycleAt(st, logs, d).amount : 0; }
 function nextPage(nx){ return Math.max(1, Math.min(PAGES, Math.floor(nx.x + EPS) + 1)); }
 function nextX(p){ return p - 1; }
 // First unknown page the next new hifz will land on, or null when the end has been reached.
 function nextStartAt(st, logs){
   var r = advance(allKnown(st, logs), st.next.x, st.next.dir, 0.001, st.next.s);
   if (!r.segs.length) return null;
-  var p = Math.min(PAGES, Math.floor(r.segs[0].a + EPS) + 1), si = r.segs[0].s;
-  return { p: p, i: Number.isInteger(si) ? si : surahsFor(p, p)[0].i };
+  var a0 = r.segs[0].a, p = Math.min(PAGES, Math.floor(a0 + EPS) + 1), si = r.segs[0].s;
+  return { p: p, i: Number.isInteger(si) ? si : surahsFor(p, p)[0].i, line: Math.floor((a0 - (p - 1)) * LINES + 1e-3) + 1 };
 }
 function nextStart(st, logs){ var r = nextStartAt(st, logs); return r ? r.p : null; }
 // Remove / add new-hifz pages for one day, keeping the exact pages and the pointer in step.
@@ -943,14 +960,13 @@ function slicesFor(st, logs, dateIso, todayStr, p, lg){
     if (rem > EPS) planned = advance(allKnown(st, logs), st.next.x, st.next.dir, rem, st.next.s).segs.map(function(s){ return [s.a, s.b]; });
   }
   out.n = pageRanges(day.concat(planned));
+  // The same stretches kept to the line, joined where one carries straight on from the last.
+  out.nIv = []; day.concat(planned).forEach(function(r){ var last = out.nIv[out.nIv.length - 1]; if (last && Math.abs(last[1] - r[0]) < 1e-4) last[1] = r[1]; else out.nIv.push([r[0], r[1]]); });
   if (p.active && st.revMode === 'window') out.r = pageRanges(recentIv(st, logs, dateIso));
-  // Other pages revised today count towards the amount, so fewer of the planned pages are left to show.
-  // Pages already marked as revised are left off the list too.
-  var needO = p.to - oxOf(logs[dateIso]);
-  if (p.active && needO > EPS){
-    var pool = oldPool(st, logs, dateIso), oxd = (logs[dateIso] && logs[dateIso].ox) || [];
-    var plan = sliceIv(pool, oldOffset(st, logs, dateIso, pool), Math.max(p.to, 0.05));
-    out.o = pageRanges(takeIv(planLeft(plan, oxd), 0, needO));
+  // The day's list is the first older pages not yet revised this pass, less anything already revised that day.
+  if (p.active && p.to > 0){
+    var cd = cycleAt(st, logs, dateIso);
+    out.o = pageRanges(planLeft(cd.plan, cd.rev));
   }
   return out;
 }
@@ -964,7 +980,7 @@ function weekStats(st, logs, dateIso, todayIso, p){
   var wd = weekDates(dateIso, st.weekStart);
   var act = wd.filter(function(x){ return studyOn(st, x); });
   var done = { n: 0, r: 0, o: 0 };
-  wd.forEach(function(x){ var l = logs[x]; if (l){ done.n += num(l.n); done.r += num(l.r); done.o += num(l.o) + oxOf(l); } });
+  wd.forEach(function(x){ var l = logs[x]; if (l){ done.n += num(l.n); done.r += num(l.r); done.o += revAmount(st, logs, x); } });
   var activeLeft = act.filter(function(x){ return x >= todayIso; }).length;
   return { wd: wd, nAct: act.length, done: done, activeLeft: activeLeft,
            plan: { n: p.wk ? p.wk.plan : p.n * act.length, r: st.revMode === 'window' ? p.r * act.length : srWeekPlan(st, logs, wd), o: p.o * act.length } };
@@ -977,7 +993,7 @@ function pace(st, logs, todayIso){
   var act = Math.max(1, countActive(st.days, from, todayIso));
   var cal = Math.max(1, diffDays(from, todayIso) + 1);
   var n = 0, o = 0;
-  for (var k in logs){ if (k >= from && k <= todayIso){ n += num(logs[k].n); o += num(logs[k].o) + oxOf(logs[k]); } }
+  for (var k in logs){ if (k >= from && k <= todayIso){ n += num(logs[k].n); o += revAmount(st, logs, k); } }
   return { perActive: n / act, oldPerCal: o / cal, from: from, spanDays: cal };
 }
 function projectFinish(st, remaining, perActive, todayIso){
@@ -1025,7 +1041,7 @@ function defaults(){
 var TINTS = ['Sage', 'Rose', 'Sky', 'Lavender', 'Peach', 'Aqua', 'Sunshine', 'Bubblegum', 'Ocean', 'Lime', 'Midnight', 'Plum', 'Daisy'];
 function newPerson(name, tint){
   var s = defaults(); s.startPages = 0; s.base = []; s.next = { x: 0, dir: 1 };
-  return { id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, tint: tint, settings: s, logs: {}, hard: [], reads: {} };
+  return { id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, tint: tint, settings: s, logs: {}, hard: [], reads: {}, hardLog: {} };
 }
 function nextTint(from, to){
   for (var t = from; t < to; t++){ if (!S.people.some(function(p){ return p.tint === t; })) return t; }
@@ -1068,9 +1084,14 @@ function normPerson(p, i){
   s.startPages = Math.round(measure(s.base) * 100) / 100;
   return { id: (p && p.id) || ('p' + i), name: (p && p.name) || 'Me', settings: s,
            tint: (p && Number.isInteger(p.tint) && p.tint >= 0 && p.tint < TINTS.length) ? p.tint : (i % 6),
-           logs: logs, hard: normHard(p && p.hard), reads: normReads(p && p.reads) };
+           logs: logs, hard: normHard(p && p.hard), reads: normReads(p && p.reads), hardLog: normCounts(p && p.hardLog) };
 }
 // Days ticked for reading pages not yet memorised: { 'YYYY-MM-DD': true }.
+function normCounts(o){
+  var out = {};
+  if (o && typeof o === 'object') Object.keys(o).forEach(function(k){ if (/^\d{4}-\d\d-\d\d$/.test(k) && Number.isInteger(o[k]) && o[k] > 0) out[k] = o[k]; });
+  return out;
+}
 function normReads(o){
   var out = {};
   if (o && typeof o === 'object') Object.keys(o).forEach(function(k){ if (o[k] === true && /^\d{4}-\d\d-\d\d$/.test(k)) out[k] = true; });
@@ -1118,11 +1139,13 @@ document.addEventListener('keydown', function(e){
 });
 var rng = { fs: 0, fp: 1, ts: 0, tp: 1, msg: '' };
 var cyc = { open: false, j: null };
+var hpJ = null, hpOpen = false;
 var pauseAsk = false;
 var oxr = { s: 0, f: '', t: '', open: false, pages: false, j: null, msg: '' };
 // Keep the "Revised other pages?" form open across redraws once it has been opened.
-document.addEventListener('toggle', function(e){ if (!e.target || !e.target.hasAttribute) return; if (e.target.hasAttribute('data-ox')) oxr.open = e.target.open; if (e.target.hasAttribute('data-oxpages')) oxr.pages = e.target.open;
+document.addEventListener('toggle', function(e){ if (!e.target || !e.target.hasAttribute) return; if (e.target.hasAttribute('data-oxpages')) oxr.pages = e.target.open;
   if (e.target.hasAttribute('data-cyc')) cyc.open = e.target.open;
+  if (e.target.hasAttribute('data-hp')) hpOpen = e.target.open;
   if (e.target.hasAttribute('data-cj')){ var cj = Number(e.target.getAttribute('data-cj')); if (e.target.open) cyc.j = cj; else if (cyc.j === cj || cyc.j == null) cyc.j = -1; } }, true);
 
 var $ = function(s){ return document.querySelector(s); };
@@ -1140,7 +1163,7 @@ function setSync(s){
 // Private browsing and blocked site data stop the browser from keeping anything, so say so instead of failing quietly.
 var canStore = (function(){ try { localStorage.setItem(KEY + '-test', '1'); localStorage.removeItem(KEY + '-test'); return true; } catch (e) { return false; } })();
 function persistLocal(){ try { localStorage.setItem(KEY, JSON.stringify(S)); canStore = true; } catch (e) { canStore = false; } }
-function touch(){ S.updatedAt = Date.now(); persistLocal(); if (remote){ clearTimeout(timer); timer = setTimeout(flush, 600); } }
+function touch(){ cycVer++; S.updatedAt = Date.now(); persistLocal(); if (remote){ clearTimeout(timer); timer = setTimeout(flush, 600); } }
 function flush(){
   if (saving){ again = true; return; }
   saving = true;
@@ -1149,7 +1172,7 @@ function flush(){
   });
 }
 function adopt(r){
-  S = normalize(r); persistLocal();
+  cycVer++; S = normalize(r); persistLocal();
   if (autoTab && cur().settings.setupDone) tab = 'today';
   var a = document.activeElement;
   if (!(a && a.tagName === 'INPUT')) render();
@@ -1198,11 +1221,20 @@ function rangeLabel(p1, p2){
   return f === l ? f : s.length === 2 ? f + ' and ' + l : f + ' to ' + l + ' (' + s.length + ' surahs)';
 }
 // A list of surahs and page numbers for a set of page ranges.
-function whereHtml(ranges, label){
+// A stretch of new hifz as pages, or as lines when it starts or ends part way down a page (15 lines a page).
+function fmtLines(a, b){
+  // A line split between two days (half a page is 7½ lines) is shown on both.
+  var p1 = Math.floor(a + EPS) + 1, l1 = Math.floor((a - (p1 - 1)) * LINES + 1e-3) + 1;
+  var p2 = Math.max(p1, Math.ceil(b - EPS)), l2 = Math.ceil((b - (p2 - 1)) * LINES - 1e-3); if (l2 <= 0) l2 = LINES;
+  if (l1 === 1 && l2 === LINES) return fmtR([p1, p2]);
+  if (p1 === p2) return 'p.' + p1 + (l1 === l2 ? ' line ' + l1 : ' lines ' + l1 + '–' + l2);
+  return 'p.' + p1 + ' line ' + l1 + ' – p.' + p2 + ' line ' + l2;
+}
+function whereHtml(ranges, label, headText){
   if (!ranges.length) return '';
   var items = [];
   ranges.forEach(function(r){ surahsFor(r[0], r[1]).forEach(function(s){ items.push(s); }); });
-  var head = ranges.slice(0, 3).map(fmtR).join(', ') + (ranges.length > 3 ? ' +' + (ranges.length - 3) + ' more' : '') + ' · ' + juzText(ranges);
+  var head = headText || (ranges.slice(0, 3).map(fmtR).join(', ') + (ranges.length > 3 ? ' +' + (ranges.length - 3) + ' more' : '') + ' · ' + juzText(ranges));
   var li = function(s){ return '<li><span>' + esc(s.name) + '</span><b>' + fmtR([s.a, s.b]) + '</b></li>'; };
   var h = '<div class="where"><div class="where-h"><span class="label">' + label + '</span><span>' + head + '</span></div><ul>' + items.slice(0, 4).map(li).join('') + '</ul>';
   if (items.length > 4) h += '<details><summary>+' + (items.length - 4) + ' more</summary><ul>' + items.slice(4).map(li).join('') + '</ul></details>';
@@ -1247,6 +1279,8 @@ function srHtml(st, logs, sr, d, t, doneR){
 function hardItem(h, st, extra){
   return '<li><span>' + esc(rangeLabel(h.pg, h.pg)) + '<small>Hard page · extra review ' + (st + 1) + ' of ' + HARD_STEPS.length + (extra || '') + '</small></span><b>p.' + h.pg + '</b></li>';
 }
+// Hard-page reviews done per day: { 'YYYY-MM-DD': count }.
+function hardLogOf(P){ return P.hardLog && typeof P.hardLog === 'object' ? P.hardLog : (P.hardLog = {}); }
 function readsOf(P){ return P.reads && typeof P.reads === 'object' ? P.reads : (P.reads = {}); }
 function readStreak(R, t){
   // Days in a row up to today, or up to yesterday if today isn't ticked yet.
@@ -1304,8 +1338,17 @@ function hardCard(P, d, t, groups){
         return '<button type="button" class="chip xs" data-a="hardadd" data-pg="' + n + '" aria-pressed="' + !!isHard[n] + '">' + n + '</button>';
       }).join('') + (g.pages.length > 40 ? '<span class="wnote">+' + (g.pages.length - 40) + ' more</span>' : '') + '</div></div>';
     }).join('');
+    var known = allKnown(P.settings, P.logs), kj = [];
+    for (var j = 0; j < 30; j++){ var jv = juzIv(j); if (overlapIv(known, jv[0], jv[1]) > EPS) kj.push(j); }
+    if (kj.indexOf(hpJ) < 0) hpJ = kj.length ? kj[0] : 0;
+    var jvv = juzIv(hpJ), kPages = [];
+    for (var pg = jvv[0] + 1; pg <= jvv[1]; pg++) if (overlapIv(known, pg - 1, pg) > EPS) kPages.push(pg);
+    var anyPick = kj.length ? '<div class="pgrp"><span class="label">Anything you’ve memorised</span><div class="jrow" role="group" aria-label="Juz">' +
+      kj.map(function(j){ return '<button type="button" class="chip xs" data-a="hardjuz" data-j="' + j + '" aria-pressed="' + (j === hpJ) + '" aria-label="Juz ' + (j + 1) + '">' + (j + 1) + '</button>'; }).join('') +
+      '</div><div class="pchips schips">' + kPages.map(function(n){ return '<button type="button" class="chip xs" data-a="hardadd" data-pg="' + n + '" aria-pressed="' + !!isHard[n] + '">' + n + '</button>'; }).join('') + '</div></div>' : '';
     h += '<div class="hadd"><label for="hardPg">Mark a page as hard</label><div class="hrow"><input class="inp" id="hardPg" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="Page number">' +
-      '<button class="btn sm solid" data-a="hardadd">Mark as hard</button></div>' + (pick ? '<details class="hall"><summary>Or pick from today’s pages</summary>' + pick + '</details>' : '') + '</div>';
+      '<button class="btn sm solid" data-a="hardadd">Mark as hard</button></div>' +
+      (pick || anyPick ? '<details class="hall"' + (hpOpen ? ' open' : '') + ' data-hp><summary>Or pick a page</summary>' + pick + anyPick + '</details>' : '') + '</div>';
   }
   return h + '</section>';
 }
@@ -1356,64 +1399,22 @@ var STREAMS = [
   { key: 'o', cls: 'old', name: 'Revision', t: 'to' }
 ];
 
-// The Revision card's list of other pages revised that day, and the form to add more.
-function otherRevHtml(lg, d, t){
-  var list = lg && Array.isArray(lg.ox) ? pageRanges(normIv(lg.ox)) : [], h = '';
-  if (list.length){
-    h += '<div class="where"><div class="where-h"><span class="label">Also revised</span><span>' + fmtQ(oxOf(lg)) + (oxOf(lg) > 1 ? ' pages' : ' page') + '</span></div><ul class="hlist">' +
-      list.map(function(r, i){
-        return '<li><div class="hl"><span>' + esc(rangeLabel(r[0], r[1])) + '</span><b>' + fmtR(r) + '</b>' +
-          '<button class="xbtn" data-a="oxrm" data-i="' + i + '" aria-label="Remove ' + fmtR(r) + '">×</button></div></li>';
-      }).join('') + '</ul></div>';
-  }
-  if (d > t) return h;
-  // Pick a juz, then tap the surahs revised in it. Only juz and surahs that are known are offered.
-  var known = allKnown(cur().settings, cur().logs), ox = lg && Array.isArray(lg.ox) ? lg.ox : [];
-  var juzList = []; for (var j = 0; j < 30; j++){ var jv = juzIv(j); if (overlapIv(known, jv[0], jv[1]) > EPS) juzList.push(j); }
-  if (!juzList.length) for (var j2 = 0; j2 < 30; j2++) juzList.push(j2);
-  if (juzList.indexOf(oxr.j) < 0) oxr.j = juzList[0];
-  var parts = juzSurahParts(oxr.j, known);
-  var jChips = juzList.map(function(j){
-    return '<button type="button" class="chip xs" data-a="oxjuz" data-j="' + j + '" aria-pressed="' + (j === oxr.j) + '" aria-label="Juz ' + (j + 1) + '">' + (j + 1) + '</button>';
-  }).join('');
-  var sChips = parts.map(function(s){
-    var on = overlapIv(ox, 0, PAGES) > EPS && measure(subtractIv(s.iv, ox)) < EPS;
-    var pr = pageRanges(s.iv), whole = pr.length === 1 && pr[0][0] === STARTS[s.i] && pr[0][1] === ENDS[s.i];
-    return '<button type="button" class="chip xs" data-a="oxsurah" data-j="' + oxr.j + '" data-s="' + s.i + '" aria-pressed="' + on + '">' + (on ? '✓ ' : '') + esc(s.name) +
-      (whole ? '' : '<small>' + pr.map(fmtR).join(', ') + '</small>') + '</button>';
-  }).join('');
-  return h + '<details class="hall"' + (oxr.open ? ' open' : '') + ' data-ox><summary>Revised other pages?</summary><div class="hadd">' +
-    '<p class="wnote">Pick a juz, then tap the surahs you revised. Planned pages you skip come up first next time.</p>' +
-    '<div class="jrow" role="group" aria-label="Juz">' + jChips + '</div>' +
-    '<div class="pchips schips" role="group" aria-label="Surahs in Juz ' + (oxr.j + 1) + '">' + (sChips || '<span class="wnote">Nothing known in this juz yet.</span>') + '</div>' +
-    '<details class="hall"' + (oxr.pages ? ' open' : '') + ' data-oxpages><summary>Or enter page numbers</summary><div class="hadd">' +
-    '<select class="inp" id="ox-s" aria-label="Surah revised">' + surahOptions(oxr.s) + '</select>' +
-    '<div class="hrow"><input class="inp" id="ox-f" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="From" aria-label="From page" value="' + esc(oxr.f) + '">' +
-    '<input class="inp" id="ox-t" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="To" aria-label="To page" value="' + esc(oxr.t) + '">' +
-    '<button class="btn sm solid" data-a="oxadd">Mark revised</button></div>' +
-    '<small class="hint">Choosing a surah fills in all of its pages. Change the page numbers for part of it.</small>' +
-    (oxr.msg ? '<small class="hint err">' + esc(oxr.msg) + '</small>' : '') + '</div></details></div></details>';
-}
 // Where the revision cycle stands at the end of a day: which older pages are done in the current pass.
 function cycleState(st, logs, d){
-  var pool = oldPool(st, logs, d), total = measure(pool);
-  if (total < EPS) return null;
-  var raw = 0;
-  Object.keys(logs).sort().forEach(function(k){ if (k <= d) raw += cycleCredit(st, logs, k, raw); });
-  var pass = Math.floor(raw / total + EPS), at = raw - pass * total;
-  // Finishing a pass exactly shows it as complete rather than as a new, empty one.
-  var full = at < EPS && raw > EPS;
-  var done = full ? pool : takeIv(pool, 0, at);
-  // Other pages marked as revised within the cycle length count as done too.
-  var since = iso(addDays(parse(d), -st.cycleDays));
-  Object.keys(logs).forEach(function(k){ if (k > since && k <= d && Array.isArray(logs[k].ox)) done = unionIv(done, logs[k].ox); });
-  var doneIn = total - measure(subtractIv(pool, done));
-  return { pool: pool, total: total, done: done, doneIn: doneIn, pass: full ? pass : pass + 1, full: full };
+  var c = cycleAt(st, logs, d); if (c.total < EPS) return null;
+  var done = c.completed ? c.pool : c.after.done;
+  return { pool: c.pool, total: c.total, done: done, doneIn: c.total - measure(subtractIv(c.pool, done)), pass: c.pass, full: c.completed };
 }
+// One place on the Revision card to see the cycle and mark what was revised: tap a surah not done yet, or enter pages.
 function cycleHtml(st, logs, d){
   var c = cycleState(st, logs, d); if (!c) return '';
-  var pct = Math.round(c.doneIn / c.total * 100), rows = [], canTap = d <= todayIso();
-  var oxD = (logs[d] && Array.isArray(logs[d].ox)) ? logs[d].ox : [], doneOther = subtractIv(c.done, oxD);
+  var t = todayIso(), canTap = d <= t, lg = logs[d] || {}, pct = Math.round(c.doneIn / c.total * 100), rows = [];
+  var marked = Array.isArray(lg.ox) ? pageRanges(normIv(lg.ox)) : [];
+  var markedHtml = marked.length ? '<div class="where"><div class="where-h"><span class="label">' + (d === t ? 'Marked today' : 'Marked') + '</span><span>' + fmtQ(oxOf(lg)) + (oxOf(lg) > 1 ? ' pages' : ' page') + '</span></div><ul class="hlist">' +
+    marked.map(function(r, i){
+      return '<li><div class="hl"><span>' + esc(rangeLabel(r[0], r[1])) + '</span><b>' + fmtR(r) + '</b>' +
+        (canTap ? '<button class="xbtn" data-a="oxrm" data-i="' + i + '" aria-label="Undo ' + fmtR(r) + '">×</button>' : '') + '</div></li>';
+    }).join('') + '</ul></div>' : '';
   for (var j = 0; j < 30; j++){
     var parts = juzSurahParts(j, c.pool); if (!parts.length) continue;
     var stat = parts.map(function(s){
@@ -1424,20 +1425,26 @@ function cycleHtml(st, logs, d){
     var pills = stat.map(function(x){
       var pr = pageRanges(x.s.iv), whole = pr.length === 1 && pr[0][0] === STARTS[x.s.i] && pr[0][1] === ENDS[x.s.i];
       var inner = (x.k === 'ok' ? '✓ ' : x.k === 'part' ? '◐ ' : '') + esc(x.s.name) + (whole ? '' : '<small>' + pr.map(fmtR).join(', ') + '</small>');
-      // Not done, part done, or marked on this day: tap to mark or unmark. Done on an earlier day: shown only.
-      var rest = subtractIv(x.s.iv, doneOther), mine = oxD.length && measure(rest) > EPS && measure(subtractIv(rest, oxD)) < EPS;
-      if (!canTap || (x.k === 'ok' && !mine)) return '<span class="rv ' + x.k + '">' + inner + '</span>';
-      return '<button type="button" class="rv ' + x.k + '" data-a="cycsurah" data-j="' + j + '" data-s="' + x.s.i + '" aria-pressed="' + !!mine + '">' + inner + '</button>';
+      // Done surahs are shown only; to undo a tap, use × in the Marked list.
+      if (!canTap || x.k === 'ok') return '<span class="rv ' + x.k + '">' + inner + '</span>';
+      return '<button type="button" class="rv ' + x.k + '" data-a="cycsurah" data-j="' + j + '" data-s="' + x.s.i + '">' + inner + '</button>';
     }).join('');
     var openJ = cyc.j === j || (cyc.j == null && nOk < stat.length && !rows.some(function(r){ return r.open; }));
     rows.push({ open: openJ, h: '<details class="cj"' + (openJ ? ' open' : '') + ' data-cj="' + j + '"><summary><b>Juz ' + (j + 1) + '</b><span>' + (nOk === stat.length ? 'All done' : nOk + ' of ' + stat.length + ' done') + '</span></summary><div class="rvs">' + pills + '</div></details>' });
   }
-  return '<details class="hall"' + (cyc.open ? ' open' : '') + ' data-cyc><summary>See what’s done this cycle</summary><div class="hadd">' +
+  var form = canTap ? '<details class="hall"' + (oxr.pages ? ' open' : '') + ' data-oxpages><summary>Or enter page numbers</summary><div class="hadd">' +
+    '<select class="inp" id="ox-s" aria-label="Surah revised">' + surahOptions(oxr.s) + '</select>' +
+    '<div class="hrow"><input class="inp" id="ox-f" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="From" aria-label="From page" value="' + esc(oxr.f) + '">' +
+    '<input class="inp" id="ox-t" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="To" aria-label="To page" value="' + esc(oxr.t) + '">' +
+    '<button class="btn sm solid" data-a="oxadd">Mark revised</button></div>' +
+    '<small class="hint">Choosing a surah fills in all of its pages. Change the page numbers for part of it.</small>' +
+    (oxr.msg ? '<small class="hint err">' + esc(oxr.msg) + '</small>' : '') + '</div></details>' : '';
+  return markedHtml + '<details class="hall"' + (cyc.open ? ' open' : '') + ' data-cyc><summary>Mark what you’ve revised · see this cycle</summary><div class="hadd">' +
     '<div class="wtop"><b>' + (c.full ? 'Pass ' + c.pass + ' complete, alhamdulillah' : 'Pass ' + c.pass) + '</b><span>' + fmt1(c.doneIn) + ' of ' + fmt1(c.total) + ' pages · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
     '<p class="wnote"><span class="rv ok">✓ done</span> <span class="rv part">◐ part done</span> <span class="rv">not yet</span></p>' +
-    (canTap ? '<p class="wnote">Tap a surah to mark it as revised ' + (d === todayIso() ? 'today' : 'on this day') + '. Tap it again to undo.</p>' : '') +
-    '<div class="ulist">' + rows.map(function(r){ return r.h; }).join('') + '</div></div></details>';
+    (canTap ? '<p class="wnote">Tap a surah you’ve revised that isn’t done yet. Your next list starts from the first pages not done.</p>' : '') +
+    '<div class="ulist">' + rows.map(function(r){ return r.h; }).join('') + '</div>' + form + '</div></details>';
 }
 // The known part of each surah inside one juz, as page intervals.
 function juzSurahParts(j, known){
@@ -1459,7 +1466,8 @@ function card(sd, target, done, why, active, extra, noAdd, lines, also){
   var k = sd.key;
   return '<section class="card s-' + sd.cls + '" aria-labelledby="h-' + k + '">' +
     '<div class="card-h"><div class="ttl"><h2 id="h-' + k + '">' + sd.name + '</h2></div>' +
-    '<div class="target"><span class="tl">' + (viewDate === todayIso() ? 'Today’s target' : 'Target') + '</span><div class="tv"><b>' + (active ? fq(target) : '—') + '</b><span>' + uw + '</span></div></div></div>' +
+    '<div class="target"><span class="tl">' + (viewDate === todayIso() ? 'Today’s target' : 'Target') + '</span><div class="tv"><b>' + (active ? fq(target) : '—') + '</b><span>' + uw + '</span></div>' +
+    '<span class="tdn">' + (viewDate === todayIso() ? 'Done today: ' : 'Done: ') + '<b>' + fq(tot) + '</b></span></div></div>' +
     '<p class="why">' + why + '</p>' + (extra || '') +
     '<div class="bar" role="progressbar" aria-label="' + sd.name + ' today" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(pr * 100) + '"><i style="width:' + (pr * 100) + '%"></i></div>' +
     '<div class="done"><label for="done-' + k + '">Done</label>' +
@@ -1506,7 +1514,7 @@ function viewToday(){
 
   // While new hifz is paused it is left off the front page, unless something was learned that day anyway.
   var hideN = p.newPaused && !(num(lg.n) > 0);
-  var oxD = oxOf(lg), tt = p.tn + p.tr + p.to, td = lg.n + lg.r + lg.o + oxD;
+  var revD = revAmount(st, P.logs, d), oxD = Math.max(0, revD - num(lg.o)), tt = p.tn + p.tr + p.to, td = lg.n + lg.r + revD;
   var segs = STREAMS.map(function(sd, i){
     if (hideN && sd.key === 'n') return '';
     var tg = p[sd.t], dn = (lg[sd.key] || 0) + (sd.key === 'o' ? oxD : 0), pr = tg > 0 ? Math.min(1, dn / tg) : (dn > 0 ? 1 : 0);
@@ -1515,13 +1523,16 @@ function viewToday(){
   }).join('') +
     // A small piece for daily reading: no pages to count, so it fills when the day is ticked.
     '<div class="s4" style="flex:' + (tt > 0 ? tt * 0.07 : 0.25) + '"><i style="width:' + (readsOf(P)[d] ? 100 : 0) + '%"></i></div>';
+  // And one for hard pages, on days some are due or were reviewed: it fills as each one is done.
+  var hDone = hardLogOf(P)[d] || 0, hDue = d === t ? hardOf(P).filter(function(x){ return hardDue(x) <= t; }).length : 0, hAll = hDone + hDue;
+  if (hAll > 0) segs += '<div class="s5" style="flex:' + (tt > 0 ? tt * 0.07 : 0.25) + '"><i style="width:' + Math.round(hDone / hAll * 100) + '%"></i></div>';
   var hero = '<section class="card" aria-label="Today in total">' +
     (p.active
       ? '<div class="hero-n"><b>' + fmtQ(td) + '</b><span>of about ' + fmtQ(tt) + ' pages today</span></div>'
       : p.notStarted ? '<div class="hero-n"><b>Not started</b><span>Your plan starts on ' + fmtDate(st.startDate, { weekday: 'long', day: 'numeric', month: 'long' }) + '. Anything you log still counts.</span></div>'
       : '<div class="hero-n"><b>Rest day</b><span>Anything you log still counts.</span></div>') +
     '<div class="seg" aria-hidden="true">' + segs + '</div>' +
-    '<div class="legend">' + (hideN ? '' : '<span><i class="sw new"></i>New hifz</span>') + '<span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span><span><i class="sw read"></i>Reading</span></div></section>';
+    '<div class="legend">' + (hideN ? '' : '<span><i class="sw new"></i>New hifz</span>') + '<span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span><span><i class="sw read"></i>Reading</span>' + (hAll > 0 ? '<span><i class="sw hard"></i>Hard pages ' + hDone + '/' + hAll + '</span>' : '') + '</div></section>';
 
   var baseN = p.wk ? p.wk.base : p.n, half = 0.5 / LINES;
   var adjN = !p.wk || !p.active ? ''
@@ -1547,12 +1558,13 @@ function viewToday(){
 
   var nsa = nextStartAt(st, P.logs), ns = nsa ? nsa.p : null, nsName = nsa ? NAMES[nsa.i] : '';
   var nextLine = '<p class="wnote">' + (ns
-    ? 'Learning on from <b>' + esc(nsName) + ' ' + fmtR([ns, ns]) + '</b>, going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + '. '
+    ? 'Learning on from <b>' + esc(nsName) + ' ' + fmtR([ns, ns]) + (nsa.line > 1 ? ' line ' + nsa.line : '') + '</b>, going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + '. '
     : '<b>No unlearned pages left going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + ' from here</b>, so new pages cannot be added. Change where you learn from to keep going. ') +
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">Change</button></p>';
-  var exN = whereHtml(sl.n, d === t ? 'New pages today' : 'New pages') + nextLine;
+  var nHead = sl.nIv.slice(0, 3).map(function(r){ return fmtLines(r[0], r[1]); }).join(', ') + (sl.nIv.length > 3 ? ' +' + (sl.nIv.length - 3) + ' more' : '') + (sl.n.length ? ' · ' + juzText(sl.n) : '');
+  var exN = whereHtml(sl.n, d === t ? 'New today' : 'New', nHead) + nextLine;
   var exR = spaced ? srHtml(st, P.logs, sr, d, t, lg.r || 0) : whereHtml(sl.r, 'Revise today');
-  var exO = whereHtml(sl.o, oxD > 0 ? 'Still to revise' : 'Revise today') + otherRevHtml(lg, d, t) + cycleHtml(st, P.logs, d);
+  var exO = (sl.o.length ? whereHtml(sl.o, revD > 0 ? 'Still to revise' : 'Revise today') : p.to > 0 && revD > 0 ? '<p class="wnote">Today’s list is done, alhamdulillah.</p>' : '') + cycleHtml(st, P.logs, d);
 
   var nLines = st.newUnit === 'lines';
   var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>Hud 11:88</figcaption></figure>';
@@ -1576,7 +1588,7 @@ function viewToday(){
     var done = w.done[sd.key], plan = w.plan[sd.key], left = Math.max(0, plan - done);
     var pr = plan > 0 ? Math.min(1, done / plan) : (done > 0 ? 1 : 0);
     // Once today's target for this stream is met, what is left falls on the study days after today.
-    var dl = w.activeLeft - (pT && pT.active && pT[sd.t] > 0 && num(lgT[sd.key]) >= pT[sd.t] - 0.001 ? 1 : 0);
+    var dl = w.activeLeft - (pT && pT.active && pT[sd.t] > 0 && (sd.key === 'o' ? revAmount(st, P.logs, t) : num(lgT[sd.key])) >= pT[sd.t] - 0.001 ? 1 : 0);
     var note = sd.key === 'n' && isPaused(st) && plan <= 0 ? 'New hifz is paused.' : plan <= 0 ? (done > 0 ? 'Logged ' + fmtQ(done) + ' this week.' : 'Nothing planned yet.')
       : left < 0.125 ? 'On target for the week.'
       : dl > 0 ? fmtQ(left) + ' to go, about ' + fmtQ(left / dl) + ' a day over ' + dl + ' study ' + (dl === 1 ? 'day' : 'days') + '.'
@@ -1960,7 +1972,8 @@ document.addEventListener('click', function(e){
   else if (a === 'fill'){
     var p = dayTargets(cur().settings, cur().logs, viewDate), sd = STREAMS.filter(function(s){ return s.key === t.dataset.k; })[0];
     var q = Math.round(p[sd.t] * 4) / 4; if (p[sd.t] > 0 && q === 0) q = 0.25;
-    if (sd.key === 'o'){ var ox0 = oxOf(cur().logs[viewDate]); if (ox0 > 0) q = Math.max(0, Math.round((p[sd.t] - ox0) * 4) / 4); }
+    // Mark done on Revision means the day's list is done; pages also tapped are not counted twice.
+    if (sd.key === 'o' && p[sd.t] > 0) q = Math.ceil(p[sd.t] * 1e4) / 1e4;
     if (sd.key === 'r' && cur().settings.revMode !== 'window' && p[sd.t] > 0) q = Math.ceil(p[sd.t] * 1e4) / 1e4;
     if (sd.key === 'n' && cur().settings.newUnit === 'lines'){ q = Math.max(1, Math.round(p[sd.t] * LINES)) / LINES; }
     setLog(t.dataset.k, q);
@@ -1973,7 +1986,7 @@ document.addEventListener('click', function(e){
     if (viewDate > todayIso()) return;
     var of = Math.round(num(oxr.f)), ot = Math.round(num(oxr.t));
     if (oxr.f !== '' && oxr.t === '') ot = of;
-    oxr.open = true;
+    cyc.open = true; oxr.pages = true;
     if (!(of >= 1 && ot <= PAGES && of <= ot)){ oxr.msg = 'Enter the pages you revised, from 1 to 604, with the first page not after the last.'; render(); return; }
     var Lx = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
     Lx.ox = unionIv(Lx.ox || [], [[of - 1, ot]]);
@@ -1999,26 +2012,11 @@ document.addEventListener('click', function(e){
     if (!cp) return;
     var Lc = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
     var haveC = Array.isArray(Lc.ox) ? Lc.ox : [];
-    // Only the part not already done this cycle counts as revised now, so a part-done surah adds just what was left.
-    var restC = subtractIv(cp.iv, subtractIv(cs0.done, haveC));
+    // Only the part not already done this pass is marked, so a part-done surah adds just what was left.
+    var restC = subtractIv(cp.iv, cs0.done);
     if (measure(restC) < EPS) return;
-    Lc.ox = haveC.length && measure(subtractIv(restC, haveC)) < EPS ? subtractIv(haveC, restC) : unionIv(haveC, restC);
-    if (!Lc.ox.length) delete Lc.ox;
-    if (!Lc.n && !Lc.r && !Lc.o && !Lc.ox) delete cur().logs[viewDate];
+    Lc.ox = unionIv(haveC, restC);
     cyc.open = true; cyc.j = Number(t.dataset.j); touch(); render();
-  }
-  else if (a === 'oxjuz'){ oxr.j = Number(t.dataset.j); oxr.open = true; render(); }
-  else if (a === 'oxsurah'){
-    if (viewDate > todayIso()) return;
-    var sp = juzSurahParts(Number(t.dataset.j), allKnown(cur().settings, cur().logs)).filter(function(s){ return s.i === Number(t.dataset.s); })[0];
-    if (!sp) return;
-    var Ls = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
-    var have = Array.isArray(Ls.ox) ? Ls.ox : [];
-    // Tapping a surah that is already marked takes it off again.
-    Ls.ox = have.length && measure(subtractIv(sp.iv, have)) < EPS ? subtractIv(have, sp.iv) : unionIv(have, sp.iv);
-    if (!Ls.ox.length) delete Ls.ox;
-    if (!Ls.n && !Ls.r && !Ls.o && !Ls.ox) delete cur().logs[viewDate];
-    oxr.open = true; touch(); render();
   }
   else if (a === 'oxrm'){
     var Lr = cur().logs[viewDate]; if (!Lr || !Array.isArray(Lr.ox)) return;
@@ -2072,12 +2070,14 @@ document.addEventListener('click', function(e){
     else H.push({ pg: pg, m: todayIso(), st: 0, last: null });
     touch(); render();
   }
+  else if (a === 'hardjuz'){ hpJ = Number(t.dataset.j); hpOpen = true; render(); }
   else if (a === 'hardok' || a === 'hardagain' || a === 'hardrm'){
     var H2 = hardOf(cur()), pg2 = Number(t.dataset.pg), hx = H2.filter(function(x){ return x.pg === pg2; })[0];
     if (!hx) return;
     if (a === 'hardrm') H2.splice(H2.indexOf(hx), 1);
-    else if (a === 'hardagain'){ hx.st = 0; hx.m = todayIso(); hx.last = null; }
-    else { hx.st++; hx.last = todayIso(); if (hx.st >= HARD_STEPS.length) H2.splice(H2.indexOf(hx), 1); }
+    if (a !== 'hardrm'){ var HL = hardLogOf(cur()); HL[todayIso()] = (HL[todayIso()] || 0) + 1; }
+    if (a === 'hardagain'){ hx.st = 0; hx.m = todayIso(); hx.last = null; }
+    else if (a === 'hardok'){ hx.st++; hx.last = todayIso(); if (hx.st >= HARD_STEPS.length) H2.splice(H2.indexOf(hx), 1); }
     touch(); render();
   }
   else if (a === 'updays'){ upDays = t.dataset.n === '7' ? 7 : 14; render(); }
@@ -2118,7 +2118,7 @@ document.addEventListener('click', function(e){
   }
   else if (a === 'reset'){
     if (!resetArmed){ resetArmed = true; render(); }
-    else { cur().logs = {}; cur().hard = []; cur().reads = {}; resetArmed = false; touch(); render(); }
+    else { cur().logs = {}; cur().hard = []; cur().reads = {}; cur().hardLog = {}; resetArmed = false; touch(); render(); }
   }
 });
 
