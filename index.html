@@ -891,6 +891,29 @@ function weeklyPages(st){ var a = num(st.weeklyAmount); return st.weeklyUnit ===
 function pausesOf(st){ return Array.isArray(st.pauses) ? st.pauses : []; }
 function pausedOn(st, x){ return pausesOf(st).some(function(p){ return x >= p.from && (!p.to || x < p.to); }); }
 function isPaused(st){ var ps = pausesOf(st); return !!(ps.length && !ps[ps.length - 1].to); }
+// Sick, travelling or on a period: each is { mode, from, to, opts } with to = null while it is on.
+// For a period, opts sets revision (rev), reading (read) and new hifz (nw) to normal, none or more, with how much more a day.
+var BREAK_NAMES = { sick: 'Sick', travel: 'Travelling', period: 'On my period' };
+function breaksOf(st){ return Array.isArray(st.breaks) ? st.breaks : []; }
+function breakOn(st, x){ var bs = breaksOf(st); for (var i = bs.length - 1; i >= 0; i--){ var b = bs[i]; if (x >= b.from && (!b.to || x < b.to)) return b; } return null; }
+function curBreak(st){ var bs = breaksOf(st), b = bs[bs.length - 1]; return b && !b.to ? b : null; }
+function periodDefaults(){ return { rev: 'normal', revMore: 1, read: 'normal', readMore: 5, nw: 'normal', nwMore: 0.5 }; }
+// What a day asks for in each area: normal, none or more (with the extra pages a day).
+function dayEffects(st, x){
+  var b = breakOn(st, x), e = { mode: b ? b.mode : null, rev: 'normal', revMore: 0, read: 'normal', readMore: 0, nw: pausedOn(st, x) ? 'none' : 'normal', nwMore: 0 };
+  if (!b) return e;
+  if (b.mode === 'sick'){ e.rev = e.read = e.nw = 'none'; }
+  else if (b.mode === 'travel'){ e.nw = 'none'; }
+  else if (b.mode === 'period'){
+    var o = Object.assign(periodDefaults(), b.opts || {});
+    e.rev = o.rev; e.read = o.read; if (e.nw !== 'none') e.nw = o.nw;
+    e.revMore = e.rev === 'more' ? Math.max(0, num(o.revMore)) : 0;
+    e.readMore = e.read === 'more' ? Math.max(0, num(o.readMore)) : 0;
+    e.nwMore = e.nw === 'more' ? Math.max(0, num(o.nwMore)) : 0;
+  }
+  return e;
+}
+function newOff(st, x){ return dayEffects(st, x).nw === 'none'; }
 // A study day is one of the chosen days of the week, on or after the start date if one is set.
 function studyOn(st, x){ return !!st.days[parse(x).getDay()] && !(st.startDate && x < st.startDate); }
 function targetInfo(st, remaining, dateIso){
@@ -927,12 +950,13 @@ function perDay(st, logs, dateIso){
 function weekNew(st, logs, dateIso){
   var wd = weekDates(dateIso, st.weekStart), p0 = perDay(st, logs, st.startDate && st.startDate > wd[0] ? st.startDate : wd[0]);
   if (p0.state !== 'ok') return null;
-  var act = wd.filter(function(x){ return studyOn(st, x) && !pausedOn(st, x) && (st.targetMode === 'weekly' || x <= st.goalDate); });
+  var act = wd.filter(function(x){ return studyOn(st, x) && !newOff(st, x) && (st.targetMode === 'weekly' || x <= st.goalDate); });
   var plan = Math.min(p0.remaining, p0.n * act.length), before = 0, t = todayIso();
   var daysFrom = function(x){ return act.filter(function(y){ return y >= x; }).length; };
   wd.forEach(function(x){
     if (x >= dateIso) return;
-    var got = logs[x] ? num(logs[x].n) : 0;
+    // Extra chosen for a period sits on top of the plan, so it does not make later days lighter.
+    var got = logs[x] ? Math.max(0, num(logs[x].n) - dayEffects(st, x).nwMore) : 0;
     // Looking ahead, study days from today on are assumed to reach their target.
     if (x >= t && act.indexOf(x) >= 0) got = Math.max(got, Math.max(0, plan - before) / daysFrom(x));
     before += got;
@@ -946,8 +970,11 @@ function dayTargets(st, logs, dateIso){
   p.notStarted = !!(st.startDate && dateIso < st.startDate);
   if (p.state === 'ok'){ p.wk = weekNew(st, logs, dateIso); if (p.wk) p.n = Math.min(p.remaining, p.wk.n); }
   p.active = active;
-  p.newPaused = pausedOn(st, dateIso);
-  p.tn = active && !p.newPaused ? p.n : 0; p.tr = active ? p.r : 0; p.to = active ? p.o : 0;
+  var e = p.fx = dayEffects(st, dateIso);
+  p.newPaused = e.nw === 'none'; p.revOff = e.rev === 'none';
+  p.tn = active && !p.newPaused ? p.n + e.nwMore : 0;
+  p.tr = active && !p.revOff ? p.r : 0;
+  p.to = active && !p.revOff ? p.o + e.revMore : 0;
   return p;
 }
 // Which pages go with each card on a given day.
@@ -1054,6 +1081,8 @@ function normPerson(p, i){
   if (s.revMode !== 'window') s.revMode = 'spaced';
   if (!(Number.isInteger(s.srDaily) && s.srDaily >= 0 && s.srDaily <= 90)) s.srDaily = 21;
   if (!(Number.isInteger(s.weekStart) && s.weekStart >= 0 && s.weekStart <= 6)) s.weekStart = 1;
+  s.breaks = breaksOf(s).filter(function(b){ return b && BREAK_NAMES[b.mode] && /^\d{4}-\d\d-\d\d$/.test(b.from) && (b.to == null || (/^\d{4}-\d\d-\d\d$/.test(b.to) && b.to > b.from)); })
+    .map(function(b){ var o = { mode: b.mode, from: b.from, to: b.to || null }; if (b.mode === 'period') o.opts = Object.assign(periodDefaults(), b.opts || {}); return o; });
   s.pauses = pausesOf(s).filter(function(p){ return p && /^\d{4}-\d\d-\d\d$/.test(p.from) && (p.to == null || (/^\d{4}-\d\d-\d\d$/.test(p.to) && p.to > p.from)); })
     .map(function(p){ return { from: p.from, to: p.to || null }; });
   if (!(typeof s.startDate === 'string' && /^\d{4}-\d\d-\d\d$/.test(s.startDate))) s.startDate = null;
@@ -1288,7 +1317,8 @@ function readStreak(R, t){
   while (R[x]){ n++; x = iso(addDays(parse(x), -1)); }
   return n;
 }
-function readCard(P, d, t){
+function readCard(P, d, t, fx){
+  fx = fx || {};
   var R = readsOf(P), on = !!R[d], future = d > t, wd = weekDates(d, P.settings.weekStart), streak = readStreak(R, t);
   var short = { weekday: 'short', day: 'numeric', month: 'short' };
   var label = on ? (d === t ? '✓ Read today' : '✓ Read on ' + fmtDate(d, short)) : future ? 'Not yet' : (d === t ? 'Tick for today' : 'Tick for ' + fmtDate(d, short));
@@ -1301,7 +1331,9 @@ function readCard(P, d, t){
     : weekN ? weekN + (weekN === 1 ? ' day' : ' days') + ' this week.'
     : 'A little each day adds up.';
   return '<section class="card s-read" aria-labelledby="h-read"><div class="card-h"><div class="ttl"><h2 id="h-read">Daily reading</h2></div></div>' +
-    '<p class="why">Read from pages you haven’t memorised yet. No pages to count, just a tick.</p>' +
+    '<p class="why">' + (fx.mode === 'sick' ? 'Resting while you’re unwell, so no reading is expected. Tick it if you do read.'
+      : fx.readMore > 0 ? 'Aim to read about ' + fmt1(fx.readMore) + ' ' + (fx.readMore > 1 ? 'pages' : 'page') + ' today from pages you haven’t memorised yet, as you chose for your period. Tick when done.'
+      : 'Read from pages you haven’t memorised yet. No pages to count, just a tick.') + '</p>' +
     '<button class="btn wide read' + (on ? ' solid' : '') + '" data-a="readtick" aria-pressed="' + on + '"' + (future ? ' disabled' : '') + '>' + label + '</button>' +
     '<div class="rdots" role="img" aria-label="Reading this week: ' + weekN + ' of 7 days">' + dots + '</div>' +
     '<p class="wnote">' + note + '</p></section>';
@@ -1512,34 +1544,51 @@ function viewToday(){
     (st.setupDone ? '' : '<div class="note"><span>These are example numbers. Enter real ones to get a plan that fits.</span>' +
     '<button class="btn solid sm" data-a="tab" data-tab="settings">Set my targets</button></div>');
 
-  // While new hifz is paused it is left off the front page, unless something was learned that day anyway.
-  var hideN = p.newPaused && !(num(lg.n) > 0);
+  // Paused areas are left off the front page (unless something was logged that day anyway). When sick, everything
+  // is paused but the cards stay, so anything done can still be added.
+  var fx = p.fx, sick = fx.mode === 'sick';
   var revD = revAmount(st, P.logs, d), oxD = Math.max(0, revD - num(lg.o)), tt = p.tn + p.tr + p.to, td = lg.n + lg.r + revD;
+  var hideN = p.newPaused && !sick && !(num(lg.n) > 0);
+  var hideRev = p.revOff && !sick && !(num(lg.r) > 0 || revD > 0);
+  var hideRead = fx.read === 'none' && !sick && !readsOf(P)[d];
   var segs = STREAMS.map(function(sd, i){
     if (hideN && sd.key === 'n') return '';
+    if (hideRev && sd.key !== 'n') return '';
     var tg = p[sd.t], dn = (lg[sd.key] || 0) + (sd.key === 'o' ? oxD : 0), pr = tg > 0 ? Math.min(1, dn / tg) : (dn > 0 ? 1 : 0);
     var grow = tt > 0 ? Math.max(tg, tt * 0.04) : 1;
     return '<div class="s' + (i + 1) + '" style="flex:' + grow + '"><i style="width:' + (pr * 100) + '%"></i></div>';
   }).join('') +
     // A small piece for daily reading: no pages to count, so it fills when the day is ticked.
-    '<div class="s4" style="flex:' + (tt > 0 ? tt * 0.07 : 0.25) + '"><i style="width:' + (readsOf(P)[d] ? 100 : 0) + '%"></i></div>';
+    (hideRead ? '' : '<div class="s4" style="flex:' + (tt > 0 ? tt * 0.07 : 0.25) + '"><i style="width:' + (readsOf(P)[d] ? 100 : 0) + '%"></i></div>');
   // And one for hard pages, on days some are due or were reviewed: it fills as each one is done.
-  var hDone = hardLogOf(P)[d] || 0, hDue = d === t ? hardOf(P).filter(function(x){ return hardDue(x) <= t; }).length : 0, hAll = hDone + hDue;
+  var hDone = hardLogOf(P)[d] || 0, hDue = d === t && !sick ? hardOf(P).filter(function(x){ return hardDue(x) <= t; }).length : 0, hAll = hDone + hDue;
   if (hAll > 0) segs += '<div class="s5" style="flex:' + (tt > 0 ? tt * 0.07 : 0.25) + '"><i style="width:' + Math.round(hDone / hAll * 100) + '%"></i></div>';
+  // A line under the total saying what a period or travelling changes today.
+  var fxBits = [];
+  if (fx.mode === 'period'){
+    if (fx.rev === 'none') fxBits.push('no revision'); else if (fx.revMore > 0) fxBits.push(fmtQ(fx.revMore) + ' extra ' + (fx.revMore > 1 ? 'pages' : 'page') + ' of revision');
+    if (fx.read === 'none') fxBits.push('no reading'); else if (fx.readMore > 0) fxBits.push('about ' + fmt1(fx.readMore) + ' ' + (fx.readMore > 1 ? 'pages' : 'page') + ' of reading');
+    if (fx.nw === 'none') fxBits.push('no new hifz'); else if (fx.nwMore > 0) fxBits.push(fmtQ(fx.nwMore) + ' extra ' + (fx.nwMore > 1 ? 'pages' : 'page') + ' of new hifz');
+  }
+  var fxNote = fx.mode === 'travel' ? '<p class="wnote">Travelling: new hifz is paused, everything else as normal. Safe travels.</p>'
+    : fx.mode === 'period' ? '<p class="wnote">On your period: ' + (fxBits.length ? listAnd(fxBits) : 'everything as normal') + '.</p>' : '';
   var hero = '<section class="card" aria-label="Today in total">' +
-    (p.active
-      ? '<div class="hero-n"><b>' + fmtQ(td) + '</b><span>of about ' + fmtQ(tt) + ' pages today</span></div>'
+    (sick ? '<div class="hero-n"><b>Sick</b><span>Everything is paused. Rest, and may Allah grant you shifa. Anything you do still counts.</span></div>' : p.active
+      ? '<div class="hero-n"><b>' + fmtQ(td) + '</b><span>' + (tt > 0 ? 'of about ' + fmtQ(tt) + ' pages today' : (td > 1 ? 'pages' : 'page') + ' done today') + '</span></div>'
       : p.notStarted ? '<div class="hero-n"><b>Not started</b><span>Your plan starts on ' + fmtDate(st.startDate, { weekday: 'long', day: 'numeric', month: 'long' }) + '. Anything you log still counts.</span></div>'
-      : '<div class="hero-n"><b>Rest day</b><span>Anything you log still counts.</span></div>') +
+      : '<div class="hero-n"><b>Rest day</b><span>Anything you log still counts.</span></div>') + fxNote +
     '<div class="seg" aria-hidden="true">' + segs + '</div>' +
-    '<div class="legend">' + (hideN ? '' : '<span><i class="sw new"></i>New hifz</span>') + '<span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span><span><i class="sw read"></i>Reading</span>' + (hAll > 0 ? '<span><i class="sw hard"></i>Hard pages ' + hDone + '/' + hAll + '</span>' : '') + '</div></section>';
+    '<div class="legend">' + (hideN ? '' : '<span><i class="sw new"></i>New hifz</span>') + (hideRev ? '' : '<span><i class="sw rec"></i>New revision</span><span><i class="sw old"></i>Revision</span>') + (hideRead ? '' : '<span><i class="sw read"></i>Reading</span>') + (hAll > 0 ? '<span><i class="sw hard"></i>Hard pages ' + hDone + '/' + hAll + '</span>' : '') + '</div></section>';
 
   var baseN = p.wk ? p.wk.base : p.n, half = 0.5 / LINES;
   var adjN = !p.wk || !p.active ? ''
     : p.wk.n <= EPS ? ' This week’s new hifz is already done, alhamdulillah. Nothing more is needed until next week.'
     : p.wk.n < baseN - half ? ' You did extra earlier this week, so today is lighter.'
     : p.wk.n > baseN + half ? ' A little more today to keep up with this week.' : '';
-  var whyN = p.newPaused ? 'New hifz is paused, so there is no target. Revision carries on as normal, and anything you do learn still counts.'
+  if (fx.nwMore > 0 && p.wk) adjN += ' Includes ' + fmtQ(fx.nwMore) + ' extra ' + (fx.nwMore > 1 ? 'pages' : 'page') + ' a day you chose for your period.';
+  var whyN = sick ? 'Paused while you rest. Anything you learn still counts.'
+    : fx.mode === 'travel' && p.newPaused ? 'New hifz is paused while you travel. Anything you learn still counts.'
+    : p.newPaused ? 'New hifz is paused, so there is no target. Revision carries on as normal, and anything you do learn still counts.'
     : p.state === 'done' ? 'Goal reached, alhamdulillah. Keep revising.'
     : p.state === 'overdue' ? 'The finish date has passed. Pick a new one in Settings.'
     : (st.targetMode === 'weekly'
@@ -1554,7 +1603,8 @@ function viewToday(){
     : p.recent <= 0 ? 'Nothing from the last ' + st.recentDays + ' days yet. Log new hifz and it shows up here.'
     : 'Everything from the last ' + st.recentDays + ' days of new hifz: ' + fmtQ(p.recent) + ' pages, once a day.';
   var whyO = p.old <= 0 ? 'No older pages yet.'
-    : fmtQ(p.old) + ' older pages, one full pass every ' + st.cycleDays + ' days.';
+    : fmtQ(p.old) + ' older pages, one full pass every ' + st.cycleDays + ' days.' + (fx.revMore > 0 ? ' Includes ' + fmtQ(fx.revMore) + ' extra ' + (fx.revMore > 1 ? 'pages' : 'page') + ' a day you chose for your period.' : '');
+  if (p.revOff){ whyR = whyO = sick ? 'Paused while you rest. Anything you revise still counts.' : 'Revision is paused today. Anything you revise still counts.'; }
 
   var nsa = nextStartAt(st, P.logs), ns = nsa ? nsa.p : null, nsName = nsa ? NAMES[nsa.i] : '';
   var nextLine = '<p class="wnote">' + (ns
@@ -1570,26 +1620,28 @@ function viewToday(){
   var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>Hud 11:88</figcaption></figure>';
   restWord = p.newPaused ? 'Paused' : p.notStarted ? 'Not started' : 'Rest day';
   var cardN = card(STREAMS[0], p.tn, lg.n || 0, whyN, p.active && !p.newPaused, exN, !ns, nLines);
+  restWord = p.revOff ? 'Paused' : p.notStarted ? 'Not started' : 'Rest day';
+  var cardsRev = card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active && !p.revOff, exR) +
+                 card(STREAMS[2], p.to, lg.o || 0, whyO, p.active && !p.revOff, exO, false, false, oxD);
   restWord = p.notStarted ? 'Not started' : 'Rest day';
-  var cards = ayah + (hideN ? '' : cardN) +
-              card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active, exR) +
-              card(STREAMS[2], p.to, lg.o || 0, whyO, p.active, exO, false, false, oxD);
+  var cards = ayah + (hideN ? '' : cardN) + (hideRev ? '' : cardsRev);
   // Pages being worked on today, so a hard one can be marked with a tap.
   var expand = function(rs){ var a = []; rs.forEach(function(r){ for (var n = r[0]; n <= r[1]; n++) a.push(n); }); return a; };
   var revPages = spaced ? expand(pageRanges(normIv([].concat.apply([], sr.due.map(function(it){ return it.b.iv; }))))) : expand(sl.r);
-  cards += readCard(P, d, t);
+  if (!hideRead) cards += readCard(P, d, t, fx);
   cards += hardCard(P, d, t, [{ name: 'New hifz', pages: expand(sl.n) }, { name: 'New revision', pages: revPages }, { name: 'Revision', pages: expand(sl.o) }]);
 
   var w = weekStats(st, P.logs, d, t, p), fmtQ0 = fmtQ;
   var pT = d === t ? p : w.wd.indexOf(t) >= 0 ? dayTargets(st, P.logs, t) : null, lgT = P.logs[t] || {};
   var rows = STREAMS.map(function(sd){
     if (sd.key === 'n' && hideN && !(w.done.n > 0)) return '';
+    if (sd.key !== 'n' && hideRev && !(w.done[sd.key] > 0)) return '';
     var L = sd.key === 'n' && nLines, fmtQ = L ? function(v){ return fmtL(v) + ' lines'; } : fmtQ0;
     var done = w.done[sd.key], plan = w.plan[sd.key], left = Math.max(0, plan - done);
     var pr = plan > 0 ? Math.min(1, done / plan) : (done > 0 ? 1 : 0);
     // Once today's target for this stream is met, what is left falls on the study days after today.
     var dl = w.activeLeft - (pT && pT.active && pT[sd.t] > 0 && (sd.key === 'o' ? revAmount(st, P.logs, t) : num(lgT[sd.key])) >= pT[sd.t] - 0.001 ? 1 : 0);
-    var note = sd.key === 'n' && isPaused(st) && plan <= 0 ? 'New hifz is paused.' : plan <= 0 ? (done > 0 ? 'Logged ' + fmtQ(done) + ' this week.' : 'Nothing planned yet.')
+    var note = sd.key === 'n' && p.newPaused && plan <= 0 ? 'New hifz is paused.' : plan <= 0 ? (done > 0 ? 'Logged ' + fmtQ(done) + ' this week.' : 'Nothing planned yet.')
       : left < 0.125 ? 'On target for the week.'
       : dl > 0 ? fmtQ(left) + ' to go, about ' + fmtQ(left / dl) + ' a day over ' + dl + ' study ' + (dl === 1 ? 'day' : 'days') + '.'
       : fmtQ(left) + ' short of the plan.';
@@ -1802,10 +1854,38 @@ function viewSettings(){
     '<section class="card"><h2 class="h">What this means</h2><div id="preview"></div></section>' +
     '<ul class="errs" id="formErr" role="alert"></ul>' +
     '<button class="btn solid wide" id="saveBtn" data-a="save">' + (first ? 'Save and start' : 'Save changes') + '</button>' +
+    breakCard(cur().settings) +
     '<section class="card"><h2 class="h">Logs</h2><p class="muted">Clearing removes every day logged for ' + esc(cur().name) + ', including the pages those days added. What is already known and where new hifz continues from stay as set.</p>' +
     '<button class="btn wide" data-a="reset">' + (resetArmed ? 'Tap again to erase all logs' : 'Clear all logs') + '</button></section>' +
     '<section class="card"><h2 class="h">Remove person</h2><p class="muted">' + (S.people.length < 2 ? 'Keep at least one person. Add someone else first if you want to remove this one.' : 'Deletes ' + esc(cur().name) + ' and all of their logs. This cannot be undone.') + '</p>' +
     '<button class="btn wide" data-a="remove"' + (S.people.length < 2 ? ' disabled' : '') + '>' + (removeArmed ? 'Tap again to remove ' : 'Remove ') + esc(cur().name) + '</button></section>' + pauseCard(cur().settings);
+}
+// Sick, travelling or on a period. Like pausing, this takes effect straight away, without Save.
+function breakCard(st){
+  var b = curBreak(st), h = '<section class="card" id="breakCard"><h2 class="h">Sick, travelling or on your period</h2>';
+  if (!b){
+    return h + '<p class="muted">Changes your targets from today until you turn it off.</p><div class="chips">' +
+      ['sick', 'travel', 'period'].map(function(m){ return '<button type="button" class="chip" data-a="brk" data-m="' + m + '">' + BREAK_NAMES[m] + '</button>'; }).join('') + '</div></section>';
+  }
+  var since = fmtDate(b.from, { weekday: 'long', day: 'numeric', month: 'long' });
+  var desc = b.mode === 'sick' ? 'Everything is paused: no targets for new hifz, revision or reading. Anything you do can still be added and counts.'
+    : b.mode === 'travel' ? 'New hifz is paused. Revision, reading and hard pages carry on as normal.'
+    : 'Choose what changes each day while it lasts.';
+  h += '<p><b>' + BREAK_NAMES[b.mode] + '</b> since ' + since + '.</p><p class="muted">' + desc + '</p>';
+  if (b.mode === 'period'){
+    var o = Object.assign(periodDefaults(), b.opts || {});
+    h += [['rev', 'Revision', 'Not revising', 'More revision'], ['read', 'Reading', 'Not reading', 'More reading'], ['nw', 'New hifz', 'No new hifz', 'More new hifz']].map(function(a){
+      var k = a[0];
+      return '<div class="field"><span class="lab" id="lab-brk-' + k + '">' + a[1] + '</span><div class="chips" role="group" aria-labelledby="lab-brk-' + k + '">' +
+        [['normal', 'As normal'], ['none', a[2]], ['more', a[3]]].map(function(c){
+          return '<button type="button" class="chip" data-a="brkopt" data-k="' + k + '" data-v="' + c[0] + '" aria-pressed="' + (o[k] === c[0]) + '">' + c[1] + '</button>';
+        }).join('') + '</div>' +
+        (o[k] === 'more' ? '<div class="hrow"><input class="inp" id="brk-' + k + '" type="number" inputmode="decimal" min="0.25" step="' + (k === 'read' ? 1 : 0.25) + '" value="' + val(num(o[k + 'More'])) + '" aria-label="How many more pages a day for ' + a[1].toLowerCase() + '"><span class="muted" style="align-self:center">more pages a day</span></div>' : '') +
+        '</div>';
+    }).join('');
+  }
+  var endLabel = b.mode === 'sick' ? 'I’m feeling better' : b.mode === 'travel' ? 'I’m back home' : 'My period has ended';
+  return h + '<button class="btn solid wide" data-a="brkend">' + endLabel + '</button></section>';
 }
 // Pausing new hifz takes effect straight away, without Save, like clearing logs.
 function pauseCard(st){
@@ -1992,6 +2072,24 @@ document.addEventListener('click', function(e){
     Lx.ox = unionIv(Lx.ox || [], [[of - 1, ot]]);
     oxr.msg = ''; oxr.f = ''; oxr.t = ''; touch(); render();
   }
+  else if (a === 'brk'){
+    var stB = cur().settings, m = t.dataset.m; if (!BREAK_NAMES[m] || curBreak(stB)) return;
+    var nb = { mode: m, from: todayIso(), to: null }; if (m === 'period') nb.opts = periodDefaults();
+    stB.breaks = breaksOf(stB).concat([nb]); if (draft) draft.breaks = clone(stB.breaks);
+    touch(); render();
+  }
+  else if (a === 'brkend'){
+    var stE = cur().settings, bs = breaksOf(stE), lb = bs[bs.length - 1];
+    if (lb && !lb.to){ if (lb.from >= todayIso()) bs.pop(); else lb.to = todayIso(); }
+    stE.breaks = bs; if (draft) draft.breaks = clone(bs);
+    touch(); render();
+  }
+  else if (a === 'brkopt'){
+    var cb = curBreak(cur().settings); if (!cb || cb.mode !== 'period') return;
+    cb.opts = Object.assign(periodDefaults(), cb.opts || {}); cb.opts[t.dataset.k] = t.dataset.v;
+    if (draft) draft.breaks = clone(breaksOf(cur().settings));
+    touch(); render();
+  }
   else if (a === 'pausenew'){ pauseAsk = true; render(); }
   else if (a === 'pausekeep'){ pauseAsk = false; render(); }
   else if (a === 'pauseyes'){
@@ -2094,7 +2192,7 @@ document.addEventListener('click', function(e){
   else if (a === 'save'){
     if (validate(draft).length) return;
     var f = clone(draft); var nm = String(f.name || '').trim().slice(0, 24); delete f.name; delete f._wTouched;
-    f.pauses = clone(pausesOf(cur().settings));
+    f.pauses = clone(pausesOf(cur().settings)); f.breaks = clone(breaksOf(cur().settings));
     var spp = srParse(f.srText); if (spp.steps) f.srSteps = spp.steps; delete f.srText;
     f.base = normIv(f.base); f.startPages = Math.round(measure(f.base) * 100) / 100; f.goalPages = Math.round(f.goalPages);
     f.cycleDays = Math.round(f.cycleDays); f.recentDays = Math.round(f.recentDays); f.setupDone = true;
@@ -2150,6 +2248,13 @@ document.addEventListener('input', function(e){
 document.addEventListener('change', function(e){
   var id = e.target.id;
   if (e.target.classList && e.target.classList.contains('num')){ if (typing && typing.el === e.target){ clearTimeout(typing.timer); typing = null; } var ev = parseFloat(e.target.value) || 0; if (e.target.dataset.u === 'lines') ev = Math.round(ev) / LINES; setLog(e.target.dataset.k, ev, pressing); return; }
+  if (/^brk-(rev|read|nw)$/.test(id)){
+    var cb2 = curBreak(cur().settings); if (!cb2 || cb2.mode !== 'period') return;
+    var kk = id.slice(4), v = parseFloat(e.target.value);
+    cb2.opts = Object.assign(periodDefaults(), cb2.opts || {}); cb2.opts[kk + 'More'] = v > 0 ? Math.round(v * 100) / 100 : periodDefaults()[kk + 'More'];
+    if (draft) draft.breaks = clone(breaksOf(cur().settings));
+    touch(); render(); return;
+  }
   if (id === 'f-start' && draft){
     draft.startDate = e.target.value || null;
     if (draft.startDate) draft.weekStart = parse(draft.startDate).getDay();
