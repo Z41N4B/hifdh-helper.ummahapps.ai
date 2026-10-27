@@ -295,6 +295,7 @@ h1,h2,p,ul,dl{margin:0}
 .known small{display:block; color:var(--muted)}
 .rng{display:grid; grid-template-columns:auto minmax(0,1fr) 92px; gap:8px; align-items:center}
 .rng2{display:grid; grid-template-columns:minmax(0,1fr) 92px; gap:8px}
+.rng3{display:grid; grid-template-columns:minmax(0,1fr) 76px 64px; gap:8px}
 .jzb{appearance:none; padding:0; cursor:pointer; font-family:inherit}
 .jrow{display:flex; gap:6px; overflow-x:auto; padding:2px 2px 6px; scrollbar-width:thin}
 .jrow .chip{flex:none; min-width:40px; justify-content:center}
@@ -594,6 +595,16 @@ function fmt1(v){ v = Math.round(num(v) * 10) / 10; return String(v).replace(/\.
 var NAMES = ["Al-Fatihah","Al-Baqarah","Aal-Imran","An-Nisa","Al-Ma'idah","Al-An'am","Al-A'raf","Al-Anfal","At-Tawbah","Yunus","Hud","Yusuf","Ar-Ra'd","Ibrahim","Al-Hijr","An-Nahl","Al-Isra","Al-Kahf","Maryam","Ta-Ha","Al-Anbiya","Al-Hajj","Al-Mu'minun","An-Nur","Al-Furqan","Ash-Shu'ara","An-Naml","Al-Qasas","Al-Ankabut","Ar-Rum","Luqman","As-Sajdah","Al-Ahzab","Saba","Fatir","Ya-Sin","As-Saffat","Sad","Az-Zumar","Ghafir","Fussilat","Ash-Shura","Az-Zukhruf","Ad-Dukhan","Al-Jathiyah","Al-Ahqaf","Muhammad","Al-Fath","Al-Hujurat","Qaf","Adh-Dhariyat","At-Tur","An-Najm","Al-Qamar","Ar-Rahman","Al-Waqi'ah","Al-Hadid","Al-Mujadila","Al-Hashr","Al-Mumtahanah","As-Saff","Al-Jumu'ah","Al-Munafiqun","At-Taghabun","At-Talaq","At-Tahrim","Al-Mulk","Al-Qalam","Al-Haqqah","Al-Ma'arij","Nuh","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyamah","Al-Insan","Al-Mursalat","An-Naba","An-Nazi'at","Abasa","At-Takwir","Al-Infitar","Al-Mutaffifin","Al-Inshiqaq","Al-Buruj","At-Tariq","Al-A'la","Al-Ghashiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Ad-Duha","Ash-Sharh","At-Tin","Al-Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-Adiyat","Al-Qari'ah","At-Takathur","Al-Asr","Al-Humazah","Al-Fil","Quraysh","Al-Ma'un","Al-Kawthar","Al-Kafirun","An-Nasr","Al-Masad","Al-Ikhlas","Al-Falaq","An-Nas"];
 var STARTS = [1,2,50,77,106,128,151,177,187,208,221,235,249,255,262,267,282,293,305,312,322,332,342,350,359,367,377,385,396,404,411,415,418,428,434,440,446,453,458,467,477,483,489,496,499,502,507,511,515,518,520,523,526,528,531,534,537,542,545,549,551,553,554,556,558,560,562,564,566,568,570,572,574,575,577,578,580,582,583,585,586,587,587,589,590,591,591,592,593,594,595,595,596,596,597,597,598,598,599,599,600,600,601,601,601,602,602,602,603,603,603,604,604,604];
 var ENDS = [1,49,76,106,127,150,176,186,207,221,235,248,255,261,267,281,293,304,312,321,331,341,349,359,366,376,385,396,404,410,414,417,427,434,440,445,452,458,467,476,482,489,495,498,502,506,510,515,517,520,523,525,528,531,534,537,541,545,548,551,552,554,555,557,559,561,564,566,568,570,571,573,575,577,578,580,581,583,584,585,586,587,589,589,590,591,592,592,594,594,595,596,596,596,597,597,598,599,599,600,600,600,601,601,601,602,602,602,603,603,603,604,604,604];
+// The line each surah starts on, counted from the top of page 1 (15 lines a page), at its title line. Most surahs
+// start part way down a page; a heading can sit at the foot of the page before (An-Nisa's title is on p.76 line 15).
+// From the 15-line Madinah mushaf layout used by quran.com.
+var SLINE = [0,15,735,1139,1580,1905,2250,2640,2790,3104,3306,3518,3720,3812,3915,3996,4215,4389,4560,4669,4815,4964,5114,5234,5380,5489,5639,5767,5932,6054,6150,6209,6254,6405,6502,6588,6674,6779,6858,6992,7140,7230,7324,7425,7469,7521,7589,7650,7716,7755,7796,7837,7874,7913,7954,8001,8050,8115,8166,8219,8256,8280,8301,8324,8354,8385,8415,8450,8483,8513,8539,8565,8595,8617,8645,8663,8691,8715,8737,8759,8775,8789,8800,8821,8835,8849,8857,8867,8880,8898,8909,8918,8928,8935,8940,8946,8955,8960,8972,8979,8986,8994,9000,9004,9010,9015,9020,9026,9030,9035,9040,9045,9049,9054];
+function surStart(i){ return SLINE[i] / LINES; }
+function surEnd(i){ return i < 113 ? SLINE[i + 1] / LINES : PAGES; }
+// The surah at a point on the x scale (the last one starting at or before it).
+function surahAtX(x){ var L = x * LINES + 1e-3, i = 0; while (i < 113 && SLINE[i + 1] <= L) i++; return i; }
+// The page and line of a point on the x scale.
+function lineOf(x){ var p = Math.floor(x + EPS) + 1; return { p: Math.min(PAGES, p), l: Math.min(LINES, Math.floor((x - (p - 1)) * LINES + 1e-3) + 1) }; }
 var JS0 = [1]; for (var jj = 1; jj < 30; jj++) JS0.push(2 + jj * 20);
 function juzIv(i){ return [JS0[i] - 1, (i < 29 ? JS0[i + 1] : 605) - 1]; }
 function juzOf(p){ return Math.min(30, Math.max(1, Math.floor((p - 2) / 20) + 1)); }
@@ -663,6 +674,8 @@ function pageRanges(ivs){
 }
 // Learn the next n unknown pages from x in a direction, skipping what is already known.
 // The surah to start from on a page when going backwards: the last one that begins there or carries over it.
+// Saved positions are rounded to 4 decimals but surah starts fall on fifteenths, so gaps smaller than this are no gap.
+var GAP = 1e-3;
 function lastSurahOn(p){ var on = surahsFor(p, p); return on.length ? on[on.length - 1].i : 0; }
 // Going backwards means surah by surah towards Al-Fatihah, but each surah is still learned from its first page.
 // s is the surah being learned; -1 once Al-Fatihah is done.
@@ -671,14 +684,14 @@ function advanceBack(known, x, s, n){
   if (!Number.isInteger(s)) s = lastSurahOn(Math.max(1, Math.ceil(x - EPS)));
   // Always work from the start of the surah, skipping what is known, so a surah is never begun from its end
   // (for example when the starting page chosen is part way through it).
-  if (s >= 0) x = STARTS[s] - 1;
+  if (s >= 0) x = surStart(s);
   while (n > EPS && s >= 0 && guard++ < 3000){
-    var lo = STARTS[s] - 1, hi = ENDS[s];
+    var lo = surStart(s), hi = surEnd(s);
     if (x < lo - EPS || x > hi + EPS) x = lo;
-    if (x >= hi - EPS){ s--; if (s >= 0) x = STARTS[s] - 1; continue; }
-    var iv = k.filter(function(r){ return r[0] <= x + EPS && r[1] > x + EPS; })[0];
+    if (x >= hi - EPS){ s--; if (s >= 0) x = surStart(s); continue; }
+    var iv = k.filter(function(r){ return r[0] <= x + GAP && r[1] > x + GAP; })[0];
     if (iv){ x = Math.min(iv[1], hi); continue; }
-    var nx = k.filter(function(r){ return r[0] > x + EPS; })[0];
+    var nx = k.filter(function(r){ return r[0] > x + GAP; })[0];
     var t = Math.min(n, Math.min(nx ? nx[0] : PAGES, hi) - x);
     segs.push({ a: x, b: x + t, d: -1, s: s }); k = unionIv(k, [[x, x + t]]); x += t; n -= t; got += t;
   }
@@ -691,9 +704,9 @@ function advance(known, x, dir, n, s){
     var iv, lim;
     if (dir > 0){
       if (x >= PAGES - EPS) break;
-      iv = k.filter(function(r){ return r[0] <= x + EPS && r[1] > x + EPS; })[0];
+      iv = k.filter(function(r){ return r[0] <= x + GAP && r[1] > x + GAP; })[0];
       if (iv){ x = iv[1]; continue; }
-      var nx = k.filter(function(r){ return r[0] > x + EPS; })[0];
+      var nx = k.filter(function(r){ return r[0] > x + GAP; })[0];
       lim = nx ? nx[0] : PAGES;
       var t = Math.min(n, lim - x);
       segs.push({ a: x, b: x + t, d: 1 }); x += t; n -= t; got += t;
@@ -888,7 +901,7 @@ function nextStartAt(st, logs){
   var r = advance(allKnown(st, logs), st.next.x, st.next.dir, 0.001, st.next.s);
   if (!r.segs.length) return null;
   var a0 = r.segs[0].a, p = Math.min(PAGES, Math.floor(a0 + EPS) + 1), si = r.segs[0].s;
-  return { p: p, i: Number.isInteger(si) ? si : surahsFor(p, p)[0].i, line: Math.floor((a0 - (p - 1)) * LINES + 1e-3) + 1 };
+  return { p: p, i: Number.isInteger(si) ? si : surahAtX(a0 + 1e-4), line: Math.floor((a0 - (p - 1)) * LINES + 1e-3) + 1 };
 }
 function nextStart(st, logs){ var r = nextStartAt(st, logs); return r ? r.p : null; }
 // Remove / add new-hifz pages for one day, keeping the exact pages and the pointer in step.
@@ -1520,7 +1533,7 @@ function cycleHtml(st, logs, d){
 function juzSurahParts(j, known){
   var jv = juzIv(j), out = [];
   surahsFor(jv[0] + 1, jv[1]).forEach(function(s){
-    var iv = normIv((known || []).map(function(r){ return [Math.max(r[0], s.a - 1, jv[0]), Math.min(r[1], s.b, jv[1])]; }));
+    var iv = normIv((known || []).map(function(r){ return [Math.max(r[0], surStart(s.i), jv[0]), Math.min(r[1], surEnd(s.i), jv[1])]; }));
     if (measure(iv) > EPS) out.push({ i: s.i, name: s.name, iv: iv });
   });
   return out;
@@ -1837,7 +1850,7 @@ function viewSettings(){
     return '<li><div><b>' + esc(rangeLabel(pr[0], pr[1])) + '</b><small>' + fmtR(pr) + ' · ' + fmt1(r[1] - r[0]) + ' pages</small></div>' +
       '<button type="button" class="btn sm" data-a="rmrange" data-i="' + i + '" aria-label="Remove ' + esc(rangeLabel(pr[0], pr[1])) + '">Remove</button></li>';
   }).join('') + '</ul>' : '<p class="muted">Nothing marked yet.</p>';
-  var np = nextPage(f.next), wk = f.targetMode === 'weekly';
+  var np = nextPage(f.next), nl = lineOf(f.next.x).l, wk = f.targetMode === 'weekly';
   return '<section class="card"><h2 class="h">' + (first ? 'Set up' : 'Person') + '</h2>' +
     '<p class="muted">' + (first ? 'Enter where they are and where they want to be. The daily amounts and the pages to revise are worked out from that.' : 'Change anything and the plan updates straight away. Your logs are kept.') + '</p>' +
     '<div class="field"><label for="f-name">Name</label><input class="inp" id="f-name" type="text" maxlength="24" autocomplete="off" value="' + esc(f.name || '') + '"></div>' +
@@ -1860,8 +1873,10 @@ function viewSettings(){
     '<button type="button" class="chip" data-a="dir" data-d="1" aria-pressed="' + (f.next.dir > 0) + '">Forward</button>' +
     '<button type="button" class="chip" data-a="dir" data-d="-1" aria-pressed="' + (f.next.dir < 0) + '">Backwards</button></div>' +
     '<small class="hint">Forward moves towards An-Nas. Backwards goes surah by surah towards Al-Fatihah, learning each surah from its first page, so choosing a page picks the surah it is in.</small></div>' +
-    '<div class="field"><span class="lab">Start at</span><div class="rng2"><select class="inp" id="n-s" aria-label="Surah to continue from">' + surahOptions(f.next.dir < 0 && f.next.s >= 0 ? f.next.s : surahIdxOfPage(np)) + '</select>' +
-    '<input class="inp" id="n-p" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="Page to continue from" value="' + np + '"></div>' +
+    '<div class="field"><span class="lab">Start at</span><div class="rng3"><select class="inp" id="n-s" aria-label="Surah to continue from">' + surahOptions(f.next.dir < 0 && f.next.s >= 0 ? f.next.s : surahAtX(f.next.x)) + '</select>' +
+    '<input class="inp" id="n-p" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="Page to continue from" value="' + np + '">' +
+    '<input class="inp" id="n-l" type="number" inputmode="numeric" min="1" max="15" step="1" aria-label="Line on that page, 1 to 15" value="' + nl + '"></div>' +
+    '<small class="hint">Surah, page and line. Choosing a surah goes to the line it starts on; change the line to start part way down a page.</small>' +
     '<small class="hint" id="nextHint"></small></div></section>' +
 
     '<section class="card"><h2 class="h">' + (first ? 'Set targets' : 'Targets') + '</h2>' +
@@ -2274,12 +2289,13 @@ document.addEventListener('input', function(e){
   else if (id === 'ox-t'){ oxr.t = e.target.value; }
   else if (id === 'r-fp'){ rng.fp = parseInt(e.target.value, 10); if (rng.fp >= 1 && rng.fp <= PAGES){ rng.fs = surahIdxOfPage(rng.fp); $('#r-fs').value = String(rng.fs); } }
   else if (id === 'r-tp'){ rng.tp = parseInt(e.target.value, 10); if (rng.tp >= 1 && rng.tp <= PAGES){ rng.ts = surahIdxOfPage(rng.tp); $('#r-ts').value = String(rng.ts); } }
-  else if (id === 'n-p' && draft){
-    var pg = parseInt(e.target.value, 10);
+  else if ((id === 'n-p' || id === 'n-l') && draft){
+    var pg = parseInt($('#n-p').value, 10), ln = parseInt($('#n-l').value, 10);
+    if (!(ln >= 1 && ln <= LINES)) ln = 1;
     if (pg >= 1 && pg <= PAGES){
-      draft.next.x = nextX(pg);
-      if (draft.next.dir < 0) draft.next.s = lastSurahOn(pg);
-      $('#n-s').value = String(draft.next.dir < 0 ? draft.next.s : surahIdxOfPage(pg)); updatePreview();
+      draft.next.x = nextX(pg) + (ln - 1) / LINES;
+      if (draft.next.dir < 0) draft.next.s = surahAtX(draft.next.x);
+      $('#n-s').value = String(draft.next.dir < 0 ? draft.next.s : surahAtX(draft.next.x)); updatePreview();
     }
   }
 });
@@ -2302,9 +2318,9 @@ document.addEventListener('change', function(e){
   else if (id === 'r-fs'){ rng.fs = Number(e.target.value); rng.fp = STARTS[rng.fs]; $('#r-fp').value = rng.fp; }
   else if (id === 'r-ts'){ rng.ts = Number(e.target.value); rng.tp = ENDS[rng.ts]; $('#r-tp').value = rng.tp; }
   else if (id === 'n-s' && draft){
-    var i = Number(e.target.value), pg = STARTS[i];
-    draft.next.x = nextX(pg); if (draft.next.dir < 0) draft.next.s = i;
-    $('#n-p').value = pg; updatePreview();
+    var i = Number(e.target.value), at = lineOf(surStart(i));
+    draft.next.x = surStart(i); if (draft.next.dir < 0) draft.next.s = i;
+    $('#n-p').value = at.p; $('#n-l').value = at.l; updatePreview();
   }
 });
 document.addEventListener('focusin', function(e){
