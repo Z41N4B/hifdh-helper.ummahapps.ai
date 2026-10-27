@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Hifdh Helper · Free Quran Memorisation (Hifz) Tracker and Planner</title>
-<meta name="description" content="Hifdh Helper is a free Quran memorisation tracker. Set a goal and get daily targets for new hifz, new revision and older revision, with spaced repetition and hard-page reviews, page by page in the 604-page Madinah mushaf.">
-<meta name="keywords" content="hifz tracker, hifdh tracker, Quran memorization app, Quran memorisation planner, hifz planner, hifz revision schedule, Quran revision schedule, spaced repetition Quran, hifz revision, memorize Quran">
+<meta name="description" content="Free Quran memorisation (hifz) tracker. Daily targets for new hifz, spaced repetition revision and a full revision cycle, with surah-by-surah progress, hard pages, and modes for being sick, travelling or on your period.">
+<meta name="keywords" content="hifz tracker, hifdh tracker, Quran memorization app, Quran memorisation planner, hifz planner, hifz revision tracker, Quran revision schedule, spaced repetition Quran, Juz Amma memorisation, hifz for kids, hifz on period, memorize Quran">
 <meta name="author" content="UmmahApps">
 <meta name="application-name" content="Hifdh Helper">
 <meta name="apple-mobile-web-app-title" content="Hifdh Helper">
@@ -25,7 +25,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Hifdh Helper">
 <meta property="og:title" content="Hifdh Helper · Free Quran Memorisation Tracker">
-<meta property="og:description" content="Turn your hifz goal into a daily plan: new hifz, new revision and older revision, with spaced repetition. Free, no sign-up.">
+<meta property="og:description" content="Turn your hifz goal into a daily plan: new hifz, spaced repetition revision and a full revision cycle you can track surah by surah. Free, no sign-up.">
 <meta property="og:url" content="https://hifdh-helper.ummahapps.ai/">
 <meta property="og:image" content="https://hifdh-helper.ummahapps.ai/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -34,7 +34,7 @@
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Hifdh Helper · Free Quran Memorisation Tracker">
-<meta name="twitter:description" content="Daily targets for new hifz, new revision and older revision, with spaced repetition. Free, no sign-up.">
+<meta name="twitter:description" content="Daily targets for new hifz and revision, surah-by-surah progress, hard pages, and sick, travel and period modes. Free, no sign-up.">
 <meta name="twitter:image" content="https://hifdh-helper.ummahapps.ai/og-image.png">
 
 <script type="application/ld+json">
@@ -61,7 +61,7 @@
       "name": "Hifdh Helper",
       "alternateName": ["Hifz Tracker", "Hifdh Tracker", "Quran memorisation planner"],
       "url": "https://hifdh-helper.ummahapps.ai/",
-      "description": "A free Quran memorisation (hifz) tracker and planner. It turns a goal into daily targets for new hifz, new revision and older revision, using spaced repetition and the 604-page Madinah mushaf.",
+      "description": "A free Quran memorisation (hifz) tracker and planner. It turns a goal into daily targets for new hifz, new revision and older revision, using spaced repetition and the 604-page Madinah mushaf, and tracks which surahs are revised in each cycle.",
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any (runs in a web browser)",
       "browserRequirements": "Requires JavaScript",
@@ -69,18 +69,22 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "inLanguage": "en",
       "image": "https://hifdh-helper.ummahapps.ai/og-image.png",
-      "dateModified": "2026-10-24",
+      "dateModified": "2026-10-27",
       "publisher": { "@id": "https://ummahapps.ai/#org" },
       "featureList": [
         "Daily targets for new hifz, new revision and older revision",
-        "Pace set by a finish date or by an amount each week, in pages or lines",
+        "Pace set by a finish date or by an amount each week, in pages or lines, from a chosen start date",
+        "New hifz shown to the exact page and line, including half pages",
+        "Weekly new hifz amount: doing extra one day makes the following days lighter",
         "Spaced repetition for new hifz: every study day for 21 days, then reviews after 3, 7, 14 and 30 days",
-        "Older revision cycle over everything memorised",
-        "Extra reviews for hard pages the next day, 3 days and 7 days later",
-        "Shows the exact surahs and page numbers to learn and revise each day",
-        "Juz-by-juz progress and projected finish date",
-        "Several people on one device, such as a family or a class",
-        "Daily reading tick with a streak"
+        "Older revision cycle that always continues from the first pages not yet revised",
+        "See which surahs are revised in the current cycle, juz by juz, and tap to mark any surah revised",
+        "Extra reviews for hard pages the next day, 3 days and 7 days later, chosen from any memorised page",
+        "Modes for being sick, travelling or on your period, and an option to pause new hifz",
+        "Memorise forward, or backwards surah by surah from Juz Amma, each surah from its first page",
+        "Juz-by-juz progress, current pace and projected finish date",
+        "Daily reading tick with a streak",
+        "Several people on one device, such as a family or a class, each with their own colour theme"
       ]
     },
     {
@@ -90,32 +94,47 @@
         {
           "@type": "Question",
           "name": "What is Hifdh Helper?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Hifdh Helper is a free web app for memorising the Quran. You enter what you already know and your goal, and it works out how much new hifz, new revision and older revision to do on each study day, with the exact surahs and page numbers." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Hifdh Helper is a free web app for memorising the Quran. You enter what you already know and your goal, and it works out how much new hifz, new revision and older revision to do on each study day, with the exact surahs, pages and lines." }
         },
         {
           "@type": "Question",
           "name": "What is the difference between new revision and revision?",
-          "acceptedAnswer": { "@type": "Answer", "text": "New revision covers what you memorised recently, on a spaced repetition schedule so it sticks. Revision covers everything older, revised in a full cycle. Together with new hifz they make up each study day." }
-        },
-        {
-          "@type": "Question",
-          "name": "How does the spaced repetition schedule work?",
-          "acceptedAnswer": { "@type": "Answer", "text": "By default each day of new hifz is revised every study day for 21 days, then comes back 3, 7, 14 and 30 days after that. Once those reviews are done it joins the older revision cycle. Missed reviews carry over to the next study day. Both the every-day period and the review gaps can be changed in Settings." }
+          "acceptedAnswer": { "@type": "Answer", "text": "New revision covers what you memorised recently, on a spaced repetition schedule so it sticks: every study day for 21 days by default, then 3, 7, 14 and 30 days later. Revision covers everything older, revised in a full cycle, every 30 days by default." }
         },
         {
           "@type": "Question",
           "name": "How are the daily amounts worked out?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Choose a finish date or an amount to memorise each week, in pages or lines. The remaining pages are spread over the days of the week you choose to study. Older revision is your older pages divided across your revision cycle, 30 days by default." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Choose a finish date or an amount to memorise each week, in pages or lines, and the date you start. New hifz is spread over the days of the week you study. Older revision is your older pages divided across your revision cycle." }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens if I do more or less than my target?",
+          "acceptedAnswer": { "@type": "Answer", "text": "For new hifz the week has a set amount, so doing extra one day makes the following days lighter. For revision the daily target stays the same, and each day’s list starts from the first pages you have not revised yet in this pass, so nothing is repeated or missed." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I mark revision of surahs that were not on today’s list?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. On the Revision card, tap any surah you revised that is not done yet, or enter page numbers. It counts towards the day, each page is counted once, and you can see which surahs are done in the current cycle, juz by juz." }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I am sick, travelling or on my period?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifz and keeps everything else. On your period you choose, for revision, reading and new hifz, whether to keep it as normal, stop it, or do more each day." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I memorise from the end of the Quran, such as Juz Amma?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Mark what you already know, then choose to go backwards. New hifz then goes surah by surah towards Al-Fatihah, learning each surah from its first page, and skips anything already known." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I track more than one person?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Add a person for each child or student. Each person has their own goal, schedule, logs and colour theme." }
         },
         {
           "@type": "Question",
           "name": "Which mushaf does it use?",
           "acceptedAnswer": { "@type": "Answer", "text": "The 604-page Madinah mushaf with 15 lines to a page, and 30 juz of about 20 pages each." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I track more than one person?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Add a person for each child or student. Each person has their own goal, schedule, logs and colour." }
         },
         {
           "@type": "Question",
@@ -504,27 +523,34 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
     <p><strong>Hifdh Helper</strong> is a free Quran memorisation (hifz) planner and tracker. Enter what you already know and your goal, and it works out what to do on each study day, with the exact surahs and page numbers in the 604-page Madinah mushaf.</p>
     <h3>Three parts to every day</h3>
     <ul>
-      <li><strong>New hifz:</strong> the new pages or lines to memorise today, spread evenly to reach your finish date or weekly amount.</li>
+      <li><strong>New hifz:</strong> the new pages or lines to memorise today, down to the exact line, spread over your study days to reach your finish date or weekly amount.</li>
       <li><strong>New revision:</strong> recent new hifz on a spaced repetition schedule. By default it is revised every study day for 21 days, then 3, 7, 14 and 30 days after that.</li>
-      <li><strong>Revision:</strong> everything older, revised in a full cycle, every 30 days by default.</li>
+      <li><strong>Revision:</strong> everything older, revised in a full cycle, every 30 days by default. Each day’s list starts from the first pages not yet revised in the cycle.</li>
     </ul>
     <h3>Also included</h3>
     <ul>
+      <li>See which surahs are revised this cycle, juz by juz, and tap any surah you revised to mark it.</li>
       <li>Hard pages come back the next day, 3 days later and 7 days later, on top of normal revision.</li>
+      <li>Modes for being sick, travelling or on your period, so your plan fits your day.</li>
+      <li>Memorise forward, or backwards surah by surah from Juz Amma.</li>
       <li>A daily reading tick with a streak, for reading pages not yet memorised.</li>
       <li>Juz-by-juz progress, your current pace and a projected finish date.</li>
-      <li>Revised different pages from the ones planned? Mark them as revised and they count towards the day.</li>
-      <li>Several people on one device, for a family or a class.</li>
+      <li>Several people on one device, for a family or a class, each with their own colour theme.</li>
     </ul>
   </section>
 
   <section class="card about" id="faq" aria-labelledby="faq-h">
     <h2 id="faq-h">Questions</h2>
     <div class="faq">
-      <div><h3>What is the difference between new revision and revision?</h3><p>New revision covers what you memorised recently, on a spaced repetition schedule so it sticks. Revision covers everything older, revised in a full cycle.</p></div>
-      <div><h3>How are the daily amounts worked out?</h3><p>Choose a finish date or an amount each week, in pages or lines. The remaining pages are spread over the days of the week you study. Older revision is your older pages divided across your revision cycle.</p></div>
-      <div><h3>Can I change the revision schedule?</h3><p>Yes. In Settings you can change the every-day period, the spaced review gaps, the length of the older revision cycle, or switch to revising the last few days of new hifz every day.</p></div>
-      <div><h3>Can I start from the end of the Quran?</h3><p>Yes. Mark any juz or page range as already known, then choose where new hifz continues from and whether it goes forward or backwards, for example from Juz Amma.</p></div>
+      <div><h3>What is Hifdh Helper?</h3><p>Hifdh Helper is a free web app for memorising the Quran. You enter what you already know and your goal, and it works out how much new hifz, new revision and older revision to do on each study day, with the exact surahs, pages and lines.</p></div>
+      <div><h3>What is the difference between new revision and revision?</h3><p>New revision covers what you memorised recently, on a spaced repetition schedule so it sticks: every study day for 21 days by default, then 3, 7, 14 and 30 days later. Revision covers everything older, revised in a full cycle, every 30 days by default.</p></div>
+      <div><h3>How are the daily amounts worked out?</h3><p>Choose a finish date or an amount to memorise each week, in pages or lines, and the date you start. New hifz is spread over the days of the week you study. Older revision is your older pages divided across your revision cycle.</p></div>
+      <div><h3>What happens if I do more or less than my target?</h3><p>For new hifz the week has a set amount, so doing extra one day makes the following days lighter. For revision the daily target stays the same, and each day’s list starts from the first pages you have not revised yet in this pass, so nothing is repeated or missed.</p></div>
+      <div><h3>Can I mark revision of surahs that were not on today’s list?</h3><p>Yes. On the Revision card, tap any surah you revised that is not done yet, or enter page numbers. It counts towards the day, each page is counted once, and you can see which surahs are done in the current cycle, juz by juz.</p></div>
+      <div><h3>What if I am sick, travelling or on my period?</h3><p>Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifz and keeps everything else. On your period you choose, for revision, reading and new hifz, whether to keep it as normal, stop it, or do more each day.</p></div>
+      <div><h3>Can I memorise from the end of the Quran, such as Juz Amma?</h3><p>Yes. Mark what you already know, then choose to go backwards. New hifz then goes surah by surah towards Al-Fatihah, learning each surah from its first page, and skips anything already known.</p></div>
+      <div><h3>Can I track more than one person?</h3><p>Yes. Add a person for each child or student. Each person has their own goal, schedule, logs and colour theme.</p></div>
+      <div><h3>Which mushaf does it use?</h3><p>The 604-page Madinah mushaf with 15 lines to a page, and 30 juz of about 20 pages each.</p></div>
       <div><h3>Is it free, and where is my data stored?</h3><p>It is free and needs no account. Your plan and logs are saved in your browser on your own device.</p></div>
     </div>
   </section>
@@ -708,7 +734,16 @@ var SR_DEFAULT = [3, 7, 14, 30];
 // A hard page gets extra reviews this many days apart, then leaves the list.
 var HARD_STEPS = [1, 3, 7];
 function hardOf(P){ return Array.isArray(P.hard) ? P.hard : (P.hard = []); }
-function hardDue(h){ return iso(addDays(parse(h.last || h.m), HARD_STEPS[h.st])); }
+// When a hard page's next extra review is due. Days off sick do not count, so reviews wait rather than pile up:
+// while still sick nothing is due, and afterwards each review is pushed back by the sick days.
+function hardDue(h){
+  var base = h.last || h.m, due = iso(addDays(parse(base), HARD_STEPS[h.st]));
+  breaksOf(cur().settings).filter(function(b){ return b.mode === 'sick'; }).forEach(function(b){
+    var from = b.from > base ? b.from : base, to = b.to || iso(addDays(parse(todayIso()), 1));
+    if (from <= due && to > from) due = iso(addDays(parse(due), diffDays(from, to)));
+  });
+  return due;
+}
 // Dates each hard page is expected back, assuming each extra review is done on the day it is due.
 function hardForecast(P, from, to){
   var out = {};
@@ -1331,7 +1366,7 @@ function readCard(P, d, t, fx){
     : weekN ? weekN + (weekN === 1 ? ' day' : ' days') + ' this week.'
     : 'A little each day adds up.';
   return '<section class="card s-read" aria-labelledby="h-read"><div class="card-h"><div class="ttl"><h2 id="h-read">Daily reading</h2></div></div>' +
-    '<p class="why">' + (fx.mode === 'sick' ? 'Resting while you’re unwell, so no reading is expected. Tick it if you do read.'
+    '<p class="why">' + (fx.mode === 'sick' ? 'Resting while you’re unwell. Tick it if you do read.'
       : fx.readMore > 0 ? 'Aim to read about ' + fmt1(fx.readMore) + ' ' + (fx.readMore > 1 ? 'pages' : 'page') + ' today from pages you haven’t memorised yet, as you chose for your period. Tick when done.'
       : 'Read from pages you haven’t memorised yet. No pages to count, just a tick.') + '</p>' +
     '<button class="btn wide read' + (on ? ' solid' : '') + '" data-a="readtick" aria-pressed="' + on + '"' + (future ? ' disabled' : '') + '>' + label + '</button>' +
@@ -1354,7 +1389,7 @@ function hardCard(P, d, t, groups){
           '<div class="hb"><button class="btn sm solid" data-a="hardok" data-pg="' + x.pg + '">Revised</button><button class="btn sm" data-a="hardagain" data-pg="' + x.pg + '">Still hard</button></div></li>';
       }).join('') + '</ul></div>';
   } else if (H.length && d === t){
-    h += '<p class="wnote">No hard pages due today.</p>';
+    h += '<p class="wnote">' + (dayEffects(P.settings, d).mode === 'sick' ? 'Hard pages are paused while you rest. Their reviews pick up again when you’re better.' : 'No hard pages due today.') + '</p>';
   }
   if (rest.length){
     h += '<details class="hall"' + (d !== t ? ' open' : '') + '><summary>' + (due.length ? 'Other hard pages' : 'All hard pages') + ' (' + rest.length + ')</summary><ul class="hlist">' +
@@ -1573,7 +1608,7 @@ function viewToday(){
   var fxNote = fx.mode === 'travel' ? '<p class="wnote">Travelling: new hifz is paused, everything else as normal. Safe travels.</p>'
     : fx.mode === 'period' ? '<p class="wnote">On your period: ' + (fxBits.length ? listAnd(fxBits) : 'everything as normal') + '.</p>' : '';
   var hero = '<section class="card" aria-label="Today in total">' +
-    (sick ? '<div class="hero-n"><b>Sick</b><span>Everything is paused. Rest, and may Allah grant you shifa. Anything you do still counts.</span></div>' : p.active
+    (sick ? '<div class="hero-n"><b>Sick</b><span>Everything is paused. Rest, and may Allah grant you shifa. You can still add anything you do.</span></div>' : p.active
       ? '<div class="hero-n"><b>' + fmtQ(td) + '</b><span>' + (tt > 0 ? 'of about ' + fmtQ(tt) + ' pages today' : (td > 1 ? 'pages' : 'page') + ' done today') + '</span></div>'
       : p.notStarted ? '<div class="hero-n"><b>Not started</b><span>Your plan starts on ' + fmtDate(st.startDate, { weekday: 'long', day: 'numeric', month: 'long' }) + '. Anything you log still counts.</span></div>'
       : '<div class="hero-n"><b>Rest day</b><span>Anything you log still counts.</span></div>') + fxNote +
@@ -1586,7 +1621,7 @@ function viewToday(){
     : p.wk.n < baseN - half ? ' You did extra earlier this week, so today is lighter.'
     : p.wk.n > baseN + half ? ' A little more today to keep up with this week.' : '';
   if (fx.nwMore > 0 && p.wk) adjN += ' Includes ' + fmtQ(fx.nwMore) + ' extra ' + (fx.nwMore > 1 ? 'pages' : 'page') + ' a day you chose for your period.';
-  var whyN = sick ? 'Paused while you rest. Anything you learn still counts.'
+  var whyN = sick ? 'Paused while you rest. You can still add anything you do.'
     : fx.mode === 'travel' && p.newPaused ? 'New hifz is paused while you travel. Anything you learn still counts.'
     : p.newPaused ? 'New hifz is paused, so there is no target. Revision carries on as normal, and anything you do learn still counts.'
     : p.state === 'done' ? 'Goal reached, alhamdulillah. Keep revising.'
@@ -1604,7 +1639,7 @@ function viewToday(){
     : 'Everything from the last ' + st.recentDays + ' days of new hifz: ' + fmtQ(p.recent) + ' pages, once a day.';
   var whyO = p.old <= 0 ? 'No older pages yet.'
     : fmtQ(p.old) + ' older pages, one full pass every ' + st.cycleDays + ' days.' + (fx.revMore > 0 ? ' Includes ' + fmtQ(fx.revMore) + ' extra ' + (fx.revMore > 1 ? 'pages' : 'page') + ' a day you chose for your period.' : '');
-  if (p.revOff){ whyR = whyO = sick ? 'Paused while you rest. Anything you revise still counts.' : 'Revision is paused today. Anything you revise still counts.'; }
+  if (p.revOff){ whyR = whyO = sick ? 'Paused while you rest. You can still add anything you do.' : 'Revision is paused today. Anything you revise still counts.'; }
 
   var nsa = nextStartAt(st, P.logs), ns = nsa ? nsa.p : null, nsName = nsa ? NAMES[nsa.i] : '';
   var nextLine = '<p class="wnote">' + (ns
@@ -1868,7 +1903,7 @@ function breakCard(st){
       ['sick', 'travel', 'period'].map(function(m){ return '<button type="button" class="chip" data-a="brk" data-m="' + m + '">' + BREAK_NAMES[m] + '</button>'; }).join('') + '</div></section>';
   }
   var since = fmtDate(b.from, { weekday: 'long', day: 'numeric', month: 'long' });
-  var desc = b.mode === 'sick' ? 'Everything is paused: no targets for new hifz, revision or reading. Anything you do can still be added and counts.'
+  var desc = b.mode === 'sick' ? 'Everything is paused: no targets for new hifz, revision, reading or hard pages. You can still add anything you do.'
     : b.mode === 'travel' ? 'New hifz is paused. Revision, reading and hard pages carry on as normal.'
     : 'Choose what changes each day while it lasts.';
   h += '<p><b>' + BREAK_NAMES[b.mode] + '</b> since ' + since + '.</p><p class="muted">' + desc + '</p>';
