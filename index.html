@@ -1561,7 +1561,10 @@ function cycleHtml(st, logs, d){
     var nOk = stat.filter(function(x){ return x.k === 'ok'; }).length;
     var pills = stat.map(function(x){
       var pr = pageRanges(x.s.iv), whole = pr.length === 1 && pr[0][0] === STARTS[x.s.i] && pr[0][1] === ENDS[x.s.i];
-      var inner = (x.k === 'ok' ? '✓ ' : x.k === 'part' ? '◐ ' : '') + esc(x.s.name) + (whole ? '' : '<small>' + pr.map(fmtR).join(', ') + '</small>');
+      // Part done: say which lines are still to revise in this pass.
+      var left = x.k === 'part' ? joinOn(subtractIv(x.s.iv, c.done)).filter(function(r){ return r[1] - r[0] > GAP; }) : [];
+      var leftTxt = left.length ? 'left: ' + left.slice(0, 2).map(function(r){ return fmtLines(r[0], r[1]); }).join(', ') + (left.length > 2 ? ' +' + (left.length - 2) + ' more' : '') : '';
+      var inner = (x.k === 'ok' ? '✓ ' : x.k === 'part' ? '◐ ' : '') + esc(x.s.name) + (leftTxt ? '<small>' + leftTxt + '</small>' : whole ? '' : '<small>' + pr.map(fmtR).join(', ') + '</small>');
       // Done surahs are shown only; to undo a tap, use × in the Marked list.
       if (!canTap || x.k === 'ok') return '<span class="rv ' + x.k + '">' + inner + '</span>';
       return '<button type="button" class="rv ' + x.k + '" data-a="cycsurah" data-j="' + j + '" data-s="' + x.s.i + '">' + inner + '</button>';
