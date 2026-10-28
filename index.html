@@ -256,6 +256,7 @@ h1,h2,p,ul,dl{margin:0}
 .muted{color:var(--muted)}
 
 .top{display:flex; align-items:center; justify-content:space-between; gap:12px}
+.btn.hardb{background:var(--hard); border-color:var(--hard); color:#fff}
 .installb{appearance:none; flex:none; border:1px solid var(--line); background:var(--surface); color:var(--ink); font:600 13px var(--f-body); padding:7px 13px; border-radius:999px; cursor:pointer; min-height:36px}
 #installHelp{flex-direction:column; align-items:stretch}
 #installHelp ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:4px}
@@ -744,7 +745,18 @@ function recentIv(st, logs, dateIso){
 }
 function oldPool(st, logs, dateIso){
   var recent = st.revMode === 'window' ? recentIv(st, logs, dateIso) : srAt(st, logs, dateIso).pool;
-  return subtractIv(knownBefore(st, logs, dateIso), recent);
+  return stripHeadings(subtractIv(knownBefore(st, logs, dateIso), recent));
+}
+// Pages marked known a whole page at a time can take in the next surah's title and bismillah at the foot of the page
+// (Al-Ahzab's title is the last line of As-Sajdah's last page). Where nothing else of that surah is included,
+// those heading lines are dropped, so the surah does not show as started.
+function stripHeadings(ivs){
+  var cut = [];
+  for (var i = 1; i < 114; i++){
+    var a = surStart(i), hd = a + (i === 8 ? 1 : 2) / LINES;
+    if (overlapIv(ivs, a, hd) > EPS && overlapIv(ivs, hd, surEnd(i)) < GAP) cut.push([a, hd]);
+  }
+  return cut.length ? subtractIv(ivs, cut) : ivs;
 }
 
 // ----- New revision by spaced repetition -----
@@ -1322,7 +1334,9 @@ function surahParts(ivs){
   (ivs || []).forEach(function(r){
     for (var i = surahAtX(r[0] + 1e-4); i < 114 && surStart(i) < r[1] - GAP; i++){
       var a = Math.max(r[0], surStart(i)), b = Math.min(r[1], surEnd(i));
-      if (b - a > GAP) out.push({ i: i, a: a, b: b });
+      // Only a surah's title and bismillah lines: not counted as that surah.
+      var headingOnly = i > 0 && a <= surStart(i) + GAP && b <= surStart(i) + (i === 8 ? 1 : 2) / LINES + GAP;
+      if (b - a > GAP && !headingOnly) out.push({ i: i, a: a, b: b });
     }
   });
   return out;
@@ -1461,7 +1475,7 @@ function hardCard(P, d, t, groups){
       kj.map(function(j){ return '<button type="button" class="chip xs" data-a="hardjuz" data-j="' + j + '" aria-pressed="' + (j === hpJ) + '" aria-label="Juz ' + (j + 1) + '">' + (j + 1) + '</button>'; }).join('') +
       '</div><div class="pchips schips">' + kPages.map(function(n){ return '<button type="button" class="chip xs" data-a="hardadd" data-pg="' + n + '" aria-pressed="' + !!isHard[n] + '">' + n + '</button>'; }).join('') + '</div></div>' : '';
     h += '<div class="hadd"><label for="hardPg">Mark a page as hard</label><div class="hrow"><input class="inp" id="hardPg" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="Page number">' +
-      '<button class="btn sm solid" data-a="hardadd">Mark as hard</button></div>' +
+      '<button class="btn sm hardb" data-a="hardadd">Mark as hard</button></div>' +
       (pick || anyPick ? '<details class="hall"' + (hpOpen ? ' open' : '') + ' data-hp><summary>Or pick a page</summary>' + pick + anyPick + '</details>' : '') + '</div>';
   }
   return h + '</section>';
@@ -1546,23 +1560,23 @@ function cycleHtml(st, logs, d){
     var openJ = cyc.j === j || (cyc.j == null && nOk < stat.length && !rows.some(function(r){ return r.open; }));
     rows.push({ open: openJ, h: '<details class="cj"' + (openJ ? ' open' : '') + ' data-cj="' + j + '"><summary><b>Juz ' + (j + 1) + '</b><span>' + (nOk === stat.length ? 'All done' : nOk + ' of ' + stat.length + ' done') + '</span></summary><div class="rvs">' + pills + '</div></details>' });
   }
-  var form = canTap ? '<details class="hall"' + (oxr.pages ? ' open' : '') + ' data-oxpages><summary>Or enter page numbers</summary><div class="hadd">' +
+  var form = canTap ? '<details class="hall"' + (oxr.pages ? ' open' : '') + ' data-oxpages><summary>Enter page numbers you revised</summary><div class="hadd">' +
     '<select class="inp" id="ox-s" aria-label="Surah revised">' + surahOptions(oxr.s) + '</select>' +
     '<div class="hrow"><input class="inp" id="ox-f" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="From" aria-label="From page" value="' + esc(oxr.f) + '">' +
     '<input class="inp" id="ox-t" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="To" aria-label="To page" value="' + esc(oxr.t) + '">' +
     '<button class="btn sm solid" data-a="oxadd">Mark revised</button></div>' +
     '<small class="hint">Choosing a surah fills in all of its pages. Change the page numbers for part of it.</small>' +
     (oxr.msg ? '<small class="hint err">' + esc(oxr.msg) + '</small>' : '') + '</div></details>' : '';
-  return markedHtml + '<details class="hall"' + (cyc.open ? ' open' : '') + ' data-cyc><summary>Mark what you’ve revised · see this cycle</summary><div class="hadd">' +
+  return markedHtml + '<details class="hall"' + (cyc.open ? ' open' : '') + ' data-cyc><summary>Mark what you’ve revised · see this cycle</summary><div class="hadd">' + form +
     '<div class="wtop"><b>' + (c.full ? 'Pass ' + c.pass + ' complete, alhamdulillah' : 'Pass ' + c.pass) + '</b><span>' + fmt1(c.doneIn) + ' of ' + fmt1(c.total) + ' pages · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
     '<p class="wnote"><span class="rv ok">✓ done</span> <span class="rv part">◐ part done</span> <span class="rv">not yet</span></p>' +
     (canTap ? '<p class="wnote">Tap a surah you’ve revised that isn’t done yet. Your next list starts from the first pages not done.</p>' : '') +
-    '<div class="ulist">' + rows.map(function(r){ return r.h; }).join('') + '</div>' + form + '</div></details>';
+    '<div class="ulist">' + rows.map(function(r){ return r.h; }).join('') + '</div></div></details>';
 }
 // The known part of each surah inside one juz, as page intervals.
 function juzSurahParts(j, known){
-  var jv = juzIv(j), out = [];
+  var jv = juzIv(j), out = []; known = stripHeadings(normIv(known || []));
   surahsFor(jv[0] + 1, jv[1]).forEach(function(s){
     var iv = normIv((known || []).map(function(r){ return [Math.max(r[0], surStart(s.i), jv[0]), Math.min(r[1], surEnd(s.i), jv[1])]; }));
     if (measure(iv) > EPS) out.push({ i: s.i, name: s.name, iv: iv });
