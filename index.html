@@ -766,6 +766,10 @@ function stripHeadings(ivs){
 var SR_DEFAULT = [3, 7, 14, 30];
 // A hard page gets extra reviews this many days apart, then leaves the list.
 var HARD_STEPS = [1, 3, 7];
+// Which part of the page a hard page is, as shown: "p.12", "p.12 lines 1–8" or "p.12 lines 8–15".
+var HALF_LINES = ['', ' lines 1–8', ' lines 8–15'];
+function hardPart(h){ return 'p.' + h.pg + HALF_LINES[h.half || 0]; }
+function hardKey(h){ return h.pg + '-' + (h.half || 0); }
 function hardOf(P){ return Array.isArray(P.hard) ? P.hard : (P.hard = []); }
 // When a hard page's next extra review is due. Days off sick do not count, so reviews wait rather than pile up:
 // while still sick nothing is due, and afterwards each review is pushed back by the sick days.
@@ -787,7 +791,7 @@ function hardForecast(P, from, to){
       if (st + 1 < HARD_STEPS.length) x = iso(addDays(parse(x), HARD_STEPS[st + 1]));
     }
   });
-  Object.keys(out).forEach(function(k){ out[k].sort(function(a, b){ return a.h.pg - b.h.pg; }); });
+  Object.keys(out).forEach(function(k){ out[k].sort(function(a, b){ return a.h.pg - b.h.pg || (a.h.half || 0) - (b.h.half || 0); }); });
   return out;
 }
 function srSteps(st){ return Array.isArray(st.srSteps) && st.srSteps.length ? st.srSteps : SR_DEFAULT; }
@@ -1195,15 +1199,17 @@ function normReads(o){
   if (o && typeof o === 'object') Object.keys(o).forEach(function(k){ if (o[k] === true && /^\d{4}-\d\d-\d\d$/.test(k)) out[k] = true; });
   return out;
 }
-// Pages marked hard: { pg: page number, m: date marked, st: extra reviews done, last: date of last one }.
+// Pages marked hard: { pg: page number, half: 0 whole / 1 first half / 2 second half, m: date marked, st: extra reviews done, last: date of last one }.
 function normHard(a){
   if (!Array.isArray(a)) return [];
   var seen = {};
   return a.filter(function(h){
-    if (!h || !Number.isInteger(h.pg) || h.pg < 1 || h.pg > PAGES || seen[h.pg] || !/^\d{4}-\d\d-\d\d$/.test(h.m || '')) return false;
+    if (!h || !Number.isInteger(h.pg) || h.pg < 1 || h.pg > PAGES || !/^\d{4}-\d\d-\d\d$/.test(h.m || '')) return false;
+    if (!(h.half === 1 || h.half === 2)) h.half = 0;
+    if (seen[hardKey(h)]) return false;
     if (!(Number.isInteger(h.st) && h.st >= 0 && h.st < HARD_STEPS.length)) h.st = 0;
     if (h.last && !/^\d{4}-\d\d-\d\d$/.test(h.last)) h.last = null;
-    return (seen[h.pg] = true);
+    return (seen[hardKey(h)] = true);
   });
 }
 function normalize(r){
@@ -1237,7 +1243,7 @@ document.addEventListener('keydown', function(e){
 });
 var rng = { fs: 0, fp: 1, ts: 0, tp: 1, msg: '' };
 var cyc = { open: false, j: null };
-var hpJ = null, hpOpen = false;
+var hpJ = null, hpOpen = false, hpHalf = 0;
 var pauseAsk = false;
 var oxr = { s: 0, f: '', t: '', open: false, pages: false, j: null, msg: '' };
 // Keep the "Revised other pages?" form open across redraws once it has been opened.
@@ -1402,7 +1408,7 @@ function srHtml(st, logs, sr, d, t, doneR){
   return h + '</div>' + fc + (left ? '<p class="wnote">Revise them in this order. What you log is ticked off from the top.</p>' : '') + nxt;
 }
 function hardItem(h, st, extra){
-  return '<li><span>' + esc(rangeLabel(h.pg, h.pg)) + '<small>Hard page · extra review ' + (st + 1) + ' of ' + HARD_STEPS.length + (extra || '') + '</small></span><b>p.' + h.pg + '</b></li>';
+  return '<li><span>' + esc(rangeLabel(h.pg, h.pg)) + '<small>Hard page · extra review ' + (st + 1) + ' of ' + HARD_STEPS.length + (extra || '') + '</small></span><b>' + hardPart(h) + '</b></li>';
 }
 // Hard-page reviews done per day: { 'YYYY-MM-DD': count }.
 function hardLogOf(P){ return P.hardLog && typeof P.hardLog === 'object' ? P.hardLog : (P.hardLog = {}); }
@@ -1436,8 +1442,8 @@ function readCard(P, d, t, fx){
 }
 function hardCard(P, d, t, groups){
   var H = hardOf(P), short = { weekday: 'short', day: 'numeric', month: 'short' };
-  var due = d === t ? H.filter(function(h){ return hardDue(h) <= t; }).sort(function(a, b){ return a.pg - b.pg; }) : [];
-  var rest = H.filter(function(h){ return due.indexOf(h) < 0; }).sort(function(a, b){ return hardDue(a) < hardDue(b) ? -1 : hardDue(a) > hardDue(b) ? 1 : a.pg - b.pg; });
+  var due = d === t ? H.filter(function(h){ return hardDue(h) <= t; }).sort(function(a, b){ return a.pg - b.pg || (a.half || 0) - (b.half || 0); }) : [];
+  var rest = H.filter(function(h){ return due.indexOf(h) < 0; }).sort(function(a, b){ return hardDue(a) < hardDue(b) ? -1 : hardDue(a) > hardDue(b) ? 1 : a.pg - b.pg || (a.half || 0) - (b.half || 0); });
   var h = '<section class="card s-hard" aria-labelledby="h-hard"><div class="card-h"><div class="ttl"><h2 id="h-hard">Hard pages</h2></div>' +
     '<span class="label">' + (H.length ? H.length + (H.length === 1 ? ' page' : ' pages') : '') + '</span></div>';
   h += '<p class="why">' + (H.length ? 'Each hard page comes back ' + listAnd(HARD_STEPS.map(function(n, i){ return i ? n + ' days later' : 'the next day'; })) + ', on top of your normal revision. Tap Still hard to start it again.'
@@ -1446,8 +1452,8 @@ function hardCard(P, d, t, groups){
     h += '<div class="where"><div class="where-h"><span class="label">Due today</span><span>' + due.length + (due.length === 1 ? ' page' : ' pages') + '</span></div><ul class="hlist">' +
       due.map(function(x){
         var dd = hardDue(x), late = dd < t ? ' · was due ' + fmtDate(dd, short) : '';
-        return '<li><div class="hl"><span>' + esc(rangeLabel(x.pg, x.pg)) + '<small>Extra review ' + (x.st + 1) + ' of ' + HARD_STEPS.length + late + '</small></span><b>p.' + x.pg + '</b></div>' +
-          '<div class="hb"><button class="btn sm solid" data-a="hardok" data-pg="' + x.pg + '">Revised</button><button class="btn sm" data-a="hardagain" data-pg="' + x.pg + '">Still hard</button></div></li>';
+        return '<li><div class="hl"><span>' + esc(rangeLabel(x.pg, x.pg)) + '<small>Extra review ' + (x.st + 1) + ' of ' + HARD_STEPS.length + late + '</small></span><b>' + hardPart(x) + '</b></div>' +
+          '<div class="hb"><button class="btn sm solid" data-a="hardok" data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '">Revised</button><button class="btn sm" data-a="hardagain" data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '">Still hard</button></div></li>';
       }).join('') + '</ul></div>';
   } else if (H.length && d === t){
     h += '<p class="wnote">' + (dayEffects(P.settings, d).mode === 'sick' ? 'Hard pages are paused while you rest. Their reviews pick up again when you’re better.' : 'No hard pages due today.') + '</p>';
@@ -1455,12 +1461,12 @@ function hardCard(P, d, t, groups){
   if (rest.length){
     h += '<details class="hall"' + (d !== t ? ' open' : '') + '><summary>' + (due.length ? 'Other hard pages' : 'All hard pages') + ' (' + rest.length + ')</summary><ul class="hlist">' +
       rest.map(function(x){
-        return '<li><div class="hl"><span>' + esc(rangeLabel(x.pg, x.pg)) + '<small>Next extra review ' + fmtDate(hardDue(x), short) + ' · ' + (x.st + 1) + ' of ' + HARD_STEPS.length + '</small></span><b>p.' + x.pg + '</b>' +
-          '<button class="xbtn" data-a="hardrm" data-pg="' + x.pg + '" aria-label="Take page ' + x.pg + ' off the hard list">×</button></div></li>';
+        return '<li><div class="hl"><span>' + esc(rangeLabel(x.pg, x.pg)) + '<small>Next extra review ' + fmtDate(hardDue(x), short) + ' · ' + (x.st + 1) + ' of ' + HARD_STEPS.length + '</small></span><b>' + hardPart(x) + '</b>' +
+          '<button class="xbtn" data-a="hardrm" data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '" aria-label="Take ' + hardPart(x) + ' off the hard list">×</button></div></li>';
       }).join('') + '</ul></details>';
   }
   if (d === t){
-    var isHard = {}; H.forEach(function(x){ isHard[x.pg] = true; });
+    var isHard = {}; H.forEach(function(x){ if ((x.half || 0) === hpHalf) isHard[x.pg] = true; });
     var pick = groups.filter(function(g){ return g.pages.length; }).map(function(g){
       return '<div class="pgrp"><span class="label">' + g.name + '</span><div class="pchips">' + g.pages.slice(0, 40).map(function(n){
         return '<button type="button" class="chip xs" data-a="hardadd" data-pg="' + n + '" aria-pressed="' + !!isHard[n] + '">' + n + '</button>';
@@ -1474,7 +1480,10 @@ function hardCard(P, d, t, groups){
     var anyPick = kj.length ? '<div class="pgrp"><span class="label">Anything you’ve memorised</span><div class="jrow" role="group" aria-label="Juz">' +
       kj.map(function(j){ return '<button type="button" class="chip xs" data-a="hardjuz" data-j="' + j + '" aria-pressed="' + (j === hpJ) + '" aria-label="Juz ' + (j + 1) + '">' + (j + 1) + '</button>'; }).join('') +
       '</div><div class="pchips schips">' + kPages.map(function(n){ return '<button type="button" class="chip xs" data-a="hardadd" data-pg="' + n + '" aria-pressed="' + !!isHard[n] + '">' + n + '</button>'; }).join('') + '</div></div>' : '';
-    h += '<div class="hadd"><label for="hardPg">Mark a page as hard</label><div class="hrow"><input class="inp" id="hardPg" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="Page number">' +
+    var halfChips = '<div class="chips" role="group" aria-label="Which part of the page">' + [['0', 'Whole page'], ['1', 'First half'], ['2', 'Second half']].map(function(c){
+      return '<button type="button" class="chip xs" data-a="hardhalf" data-half="' + c[0] + '" aria-pressed="' + (hpHalf === Number(c[0])) + '">' + c[1] + '</button>';
+    }).join('') + '</div>';
+    h += '<div class="hadd"><label for="hardPg">Mark a page as hard</label>' + halfChips + '<div class="hrow"><input class="inp" id="hardPg" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="Page number">' +
       '<button class="btn sm hardb" data-a="hardadd">Mark as hard</button></div>' +
       (pick || anyPick ? '<details class="hall"' + (hpOpen ? ' open' : '') + ' data-hp><summary>Or pick a page</summary>' + pick + anyPick + '</details>' : '') + '</div>';
   }
@@ -2259,15 +2268,16 @@ document.addEventListener('click', function(e){
   else if (a === 'hardadd'){
     var inp = $('#hardPg'), pg = t.dataset.pg ? Number(t.dataset.pg) : Math.round(parseFloat(inp && inp.value));
     if (!(pg >= 1 && pg <= PAGES)){ if (inp){ inp.focus(); inp.setAttribute('aria-invalid', 'true'); } return; }
-    var H = hardOf(cur()), ex = H.filter(function(x){ return x.pg === pg; })[0];
+    var H = hardOf(cur()), ex = H.filter(function(x){ return x.pg === pg && (x.half || 0) === hpHalf; })[0];
     if (ex && t.dataset.pg){ H.splice(H.indexOf(ex), 1); }            // tapping a marked page chip again unmarks it
     else if (ex){ ex.st = 0; ex.m = todayIso(); ex.last = null; }     // marking again starts its extra reviews over
-    else H.push({ pg: pg, m: todayIso(), st: 0, last: null });
+    else H.push({ pg: pg, half: hpHalf, m: todayIso(), st: 0, last: null });
     touch(); render();
   }
+  else if (a === 'hardhalf'){ hpHalf = Number(t.dataset.half) || 0; render(); }
   else if (a === 'hardjuz'){ hpJ = Number(t.dataset.j); hpOpen = true; render(); }
   else if (a === 'hardok' || a === 'hardagain' || a === 'hardrm'){
-    var H2 = hardOf(cur()), pg2 = Number(t.dataset.pg), hx = H2.filter(function(x){ return x.pg === pg2; })[0];
+    var H2 = hardOf(cur()), pg2 = Number(t.dataset.pg), hf2 = Number(t.dataset.half) || 0, hx = H2.filter(function(x){ return x.pg === pg2 && (x.half || 0) === hf2; })[0];
     if (!hx) return;
     if (a === 'hardrm') H2.splice(H2.indexOf(hx), 1);
     if (a !== 'hardrm'){ var HL = hardLogOf(cur()); HL[todayIso()] = (HL[todayIso()] || 0) + 1; }
