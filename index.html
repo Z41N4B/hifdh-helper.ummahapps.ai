@@ -256,6 +256,9 @@ h1,h2,p,ul,dl{margin:0}
 .muted{color:var(--muted)}
 
 .top{display:flex; align-items:center; justify-content:space-between; gap:12px}
+.installb{appearance:none; flex:none; border:1px solid var(--line); background:var(--surface); color:var(--ink); font:600 13px var(--f-body); padding:7px 13px; border-radius:999px; cursor:pointer; min-height:36px}
+#installHelp{flex-direction:column; align-items:stretch}
+#installHelp ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:4px}
 .brand{font:700 24px/1.1 var(--f-display); letter-spacing:-.015em; display:flex; align-items:center; gap:10px}
 .brand img{width:32px; height:32px; border-radius:8px; flex:none}
 .tagline{font-size:14px; color:var(--muted); margin-top:-6px}
@@ -506,7 +509,9 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
   <p class="bsm" lang="ar" dir="rtl">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
   <header class="top">
     <h1 class="brand"><img src="/favicon.svg" alt="" width="32" height="32">Hifdh Helper</h1>
+    <button type="button" class="installb" id="installBtn" data-a="install" hidden>Install app</button>
   </header>
+  <div class="note" id="installHelp" role="region" aria-label="How to install" hidden></div>
   <p class="tagline">A hifz tracker that helps you plan your Quran memorisation and revision, day by day.</p>
   <noscript><p class="noscript">Hifdh Helper needs JavaScript to build your plan. Please turn it on, or read how it works below.</p></noscript>
   <div class="people" id="people" role="group" aria-label="People"></div>
@@ -1044,7 +1049,8 @@ function slicesFor(st, logs, dateIso, todayStr, p, lg){
   // The day's list is the first older pages not yet revised this pass, less anything already revised that day.
   if (p.active && p.to > 0){
     var cd = cycleAt(st, logs, dateIso);
-    out.o = pageRanges(planLeft(cd.plan, cd.rev));
+    out.oIv = joinOn(planLeft(cd.plan, cd.rev));
+    out.o = pageRanges(out.oIv);
   }
   return out;
 }
@@ -1310,6 +1316,31 @@ function fmtLines(a, b){
   if (p1 === p2) return 'p.' + p1 + (l1 === l2 ? ' line ' + l1 : ' lines ' + l1 + '–' + l2);
   return 'p.' + p1 + ' line ' + l1 + ' – p.' + p2 + ' line ' + l2;
 }
+// Split stretches of the x scale at surah boundaries: [{ i, a, b }], each inside one surah.
+function surahParts(ivs){
+  var out = [];
+  (ivs || []).forEach(function(r){
+    for (var i = surahAtX(r[0] + 1e-4); i < 114 && surStart(i) < r[1] - GAP; i++){
+      var a = Math.max(r[0], surStart(i)), b = Math.min(r[1], surEnd(i));
+      if (b - a > GAP) out.push({ i: i, a: a, b: b });
+    }
+  });
+  return out;
+}
+// Join stretches that carry straight on from one another, keeping their order.
+function joinOn(ivs){ var out = []; (ivs || []).forEach(function(r){ var last = out[out.length - 1]; if (last && Math.abs(last[1] - r[0]) < GAP) last[1] = r[1]; else out.push([r[0], r[1]]); }); return out; }
+// Like whereHtml, but to the line: each surah only with its own lines.
+function whereLinesHtml(ivs, label){
+  ivs = joinOn(ivs); if (!ivs.length) return '';
+  var items = surahParts(ivs), pr = pageRanges(ivs);
+  var head = ivs.slice(0, 3).map(function(r){ return fmtLines(r[0], r[1]); }).join(', ') + (ivs.length > 3 ? ' +' + (ivs.length - 3) + ' more' : '') + ' · ' + juzText(pr);
+  var li = function(s){ return '<li><span>' + esc(NAMES[s.i]) + '</span><b>' + fmtLines(s.a, s.b) + '</b></li>'; };
+  var h = '<div class="where"><div class="where-h"><span class="label">' + label + '</span><span>' + head + '</span></div><ul>' + items.slice(0, 4).map(li).join('') + '</ul>';
+  if (items.length > 4) h += '<details><summary>+' + (items.length - 4) + ' more</summary><ul>' + items.slice(4).map(li).join('') + '</ul></details>';
+  return h + '</div>';
+}
+// Surah names in a set of stretches, each once.
+function namesIn(ivs){ var seen = {}, out = []; surahParts(ivs).forEach(function(s){ if (!seen[s.i]){ seen[s.i] = true; out.push(NAMES[s.i]); } }); return out.length > 2 ? out[0] + ' to ' + out[out.length - 1] : out.join(' and '); }
 function whereHtml(ranges, label, headText){
   if (!ranges.length) return '';
   var items = [];
@@ -1326,15 +1357,15 @@ function srItems(st, due, d){
   var dly = due.filter(function(it){ return it.daily; }), spc = due.filter(function(it){ return !it.daily; });
   var items = [];
   if (dly.length){
-    var drs = pageRanges(normIv([].concat.apply([], dly.map(function(it){ return it.b.iv; }))));
+    var drs = normIv([].concat.apply([], dly.map(function(it){ return it.b.iv; })));
     var dDone = dly.every(function(it){ return it.done; }), dPart = !dDone && dly.some(function(it){ return it.got > 0; });
-    var dNames = drs.map(function(r){ return rangeLabel(r[0], r[1]); }).join(', ');
+    var dNames = namesIn(drs);
     items.push('<li class="sri' + (dDone ? ' ok' : '') + '"><span>' + esc(dNames) + '<small>Every day · new hifz from the last ' + srDaily(st) + ' days · ' + fmtQ(dly.reduce(function(t, it){ return t + it.b.size; }, 0)) + ' pages</small></span><b>' +
-      (dDone ? '✓ ' : '') + drs.map(fmtR).join(', ') + (dPart ? ' · part' : '') + '</b></li>');
+      (dDone ? '✓ ' : '') + drs.map(function(r){ return fmtLines(r[0], r[1]); }).join(', ') + (dPart ? ' · part' : '') + '</b></li>');
   }
   items = items.concat(spc.map(function(it){
-    var rs = pageRanges(it.b.iv), names = rs.map(function(r){ return rangeLabel(r[0], r[1]); }).join(', ');
-    var tag = (it.done ? '✓ ' : '') + rs.map(fmtR).join(', ') + (!it.done && it.got > 0 ? ' · part' : '');
+    var rs = it.b.iv, names = namesIn(rs);
+    var tag = (it.done ? '✓ ' : '') + rs.map(function(r){ return fmtLines(r[0], r[1]); }).join(', ') + (!it.done && it.got > 0 ? ' · part' : '');
     var late = it.due < d ? ' · was due ' + fmtDate(it.due, { weekday: 'short', day: 'numeric', month: 'short' }) : '';
     return '<li class="sri' + (it.done ? ' ok' : '') + '"><span>' + esc(names) + '<small>Learned ' + fmtDate(it.b.d, { weekday: 'short', day: 'numeric', month: 'short' }) +
       ' · ' + ordinal(it.step + 1) + ' of ' + n + ' spaced reviews' + late + '</small></span><b>' + tag + '</b></li>';
@@ -1492,11 +1523,11 @@ function cycleState(st, logs, d){
 function cycleHtml(st, logs, d){
   var c = cycleState(st, logs, d); if (!c) return '';
   var t = todayIso(), canTap = d <= t, lg = logs[d] || {}, pct = Math.round(c.doneIn / c.total * 100), rows = [];
-  var marked = Array.isArray(lg.ox) ? pageRanges(normIv(lg.ox)) : [];
+  var marked = Array.isArray(lg.ox) ? normIv(lg.ox) : [];
   var markedHtml = marked.length ? '<div class="where"><div class="where-h"><span class="label">' + (d === t ? 'Marked today' : 'Marked') + '</span><span>' + fmtQ(oxOf(lg)) + (oxOf(lg) > 1 ? ' pages' : ' page') + '</span></div><ul class="hlist">' +
     marked.map(function(r, i){
-      return '<li><div class="hl"><span>' + esc(rangeLabel(r[0], r[1])) + '</span><b>' + fmtR(r) + '</b>' +
-        (canTap ? '<button class="xbtn" data-a="oxrm" data-i="' + i + '" aria-label="Undo ' + fmtR(r) + '">×</button>' : '') + '</div></li>';
+      return '<li><div class="hl"><span>' + esc(namesIn([r])) + '</span><b>' + fmtLines(r[0], r[1]) + '</b>' +
+        (canTap ? '<button class="xbtn" data-a="oxrm" data-i="' + i + '" aria-label="Undo ' + fmtLines(r[0], r[1]) + '">×</button>' : '') + '</div></li>';
     }).join('') + '</ul></div>' : '';
   for (var j = 0; j < 30; j++){
     var parts = juzSurahParts(j, c.pool); if (!parts.length) continue;
@@ -1662,10 +1693,9 @@ function viewToday(){
     ? 'Learning on from <b>' + esc(nsName) + ' ' + fmtR([ns, ns]) + (nsa.line > 1 ? ' line ' + nsa.line : '') + '</b>, going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + '. '
     : '<b>No unlearned pages left going ' + (st.next.dir > 0 ? 'forward' : 'backwards') + ' from here</b>, so new pages cannot be added. Change where you learn from to keep going. ') +
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">Change</button></p>';
-  var nHead = sl.nIv.slice(0, 3).map(function(r){ return fmtLines(r[0], r[1]); }).join(', ') + (sl.nIv.length > 3 ? ' +' + (sl.nIv.length - 3) + ' more' : '') + (sl.n.length ? ' · ' + juzText(sl.n) : '');
-  var exN = whereHtml(sl.n, d === t ? 'New today' : 'New', nHead) + nextLine;
+  var exN = whereLinesHtml(sl.nIv, d === t ? 'New today' : 'New') + nextLine;
   var exR = spaced ? srHtml(st, P.logs, sr, d, t, lg.r || 0) : whereHtml(sl.r, 'Revise today');
-  var exO = (sl.o.length ? whereHtml(sl.o, revD > 0 ? 'Still to revise' : 'Revise today') : p.to > 0 && revD > 0 ? '<p class="wnote">Today’s list is done, alhamdulillah.</p>' : '') + cycleHtml(st, P.logs, d);
+  var exO = (sl.o.length ? whereLinesHtml(sl.oIv, revD > 0 ? 'Still to revise' : 'Revise today') : p.to > 0 && revD > 0 ? '<p class="wnote">Today’s list is done, alhamdulillah.</p>' : '') + cycleHtml(st, P.logs, d);
 
   var nLines = st.newUnit === 'lines';
   var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>Hud 11:88</figcaption></figure>';
@@ -2171,8 +2201,8 @@ document.addEventListener('click', function(e){
   }
   else if (a === 'oxrm'){
     var Lr = cur().logs[viewDate]; if (!Lr || !Array.isArray(Lr.ox)) return;
-    var rr = pageRanges(normIv(Lr.ox))[Number(t.dataset.i)]; if (!rr) return;
-    Lr.ox = subtractIv(Lr.ox, [[rr[0] - 1, rr[1]]]);
+    var rr = normIv(Lr.ox)[Number(t.dataset.i)]; if (!rr) return;
+    Lr.ox = subtractIv(Lr.ox, [rr]);
     if (!Lr.ox.length) delete Lr.ox;
     if (!Lr.n && !Lr.r && !Lr.o && !Lr.ox) delete cur().logs[viewDate];
     touch(); render();
@@ -2326,6 +2356,35 @@ document.addEventListener('change', function(e){
 document.addEventListener('focusin', function(e){
   if (e.target.classList && e.target.classList.contains('num')){ try { e.target.select(); } catch (x) {} }
 });
+
+// ---------- install ----------
+// The browser's own install prompt where it has one (Chrome, Edge, Samsung Internet on Android, Chrome and Edge on
+// a computer). Otherwise, and on iPhone where there is no prompt, the button shows the steps for that device.
+var installEvt = null;
+function isInstalled(){ return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }
+function showInstallBtn(){ var b = $('#installBtn'); if (b) b.hidden = isInstalled(); }
+window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); installEvt = e; showInstallBtn(); });
+window.addEventListener('appinstalled', function(){ installEvt = null; $('#installBtn').hidden = true; $('#installHelp').hidden = true; });
+function installSteps(){
+  var ua = navigator.userAgent || '', ios = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var android = /Android/i.test(ua), steps;
+  if (ios) steps = ['Tap the <b>Share</b> button (the square with an arrow).', 'Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.', 'This works best in Safari. In another browser, open this page in Safari first if you can’t find it.'];
+  else if (android) steps = ['Tap the browser menu <b>⋮</b> at the top right.', 'Tap <b>Install app</b> or <b>Add to home screen</b>, then <b>Install</b>.', 'If it says the app was made for an older phone, open this page in <b>Chrome</b> and install it from there.'];
+  else steps = ['In Chrome or Edge, click the install icon at the right of the address bar, or the menu <b>⋮</b> then <b>Install Hifdh Helper</b>.', 'In Safari on a Mac, choose <b>File</b> then <b>Add to Dock</b>.'];
+  return '<span><b>Install Hifdh Helper</b> so it opens like an app from your home screen, even without internet.</span><ol>' +
+    steps.map(function(s){ return '<li>' + s + '</li>'; }).join('') + '</ol><button class="btn sm" data-a="installclose">Close</button>';
+}
+document.addEventListener('click', function(e){
+  var t = e.target.closest('[data-a="install"], [data-a="installclose"]'); if (!t) return;
+  var help = $('#installHelp');
+  if (t.dataset.a === 'installclose'){ help.hidden = true; return; }
+  if (installEvt){ installEvt.prompt(); installEvt.userChoice.then(function(){ installEvt = null; showInstallBtn(); }, function(){}); return; }
+  help.innerHTML = installSteps(); help.hidden = !help.hidden;
+});
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); });
+}
+showInstallBtn();
 
 setSync('');
 render();
