@@ -109,7 +109,7 @@
         {
           "@type": "Question",
           "name": "What happens if I do more or less than my target?",
-          "acceptedAnswer": { "@type": "Answer", "text": "For new hifz the week has a set amount, so doing extra one day makes the following days lighter. For revision the daily target stays the same, and each day’s list starts from the first pages you have not revised yet in this pass, so nothing is repeated or missed." }
+          "acceptedAnswer": { "@type": "Answer", "text": "For new hifz the week has a set amount, so doing extra one day makes the following days lighter. For revision the daily target stays the same, and each day’s list starts from the first pages you have not revised yet in this cycle, so nothing is repeated or missed." }
         },
         {
           "@type": "Question",
@@ -552,7 +552,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <div><h3>What is Hifdh Helper?</h3><p>Hifdh Helper is a free web app for memorising the Quran. You enter what you already know and your goal, and it works out how much new hifz, new revision and older revision to do on each study day, with the exact surahs, pages and lines.</p></div>
       <div><h3>What is the difference between new revision and revision?</h3><p>New revision covers what you memorised recently, on a spaced repetition schedule so it sticks: every study day for 21 days by default, then 3, 7, 14 and 30 days later. Revision covers everything older, revised in a full cycle, every 30 days by default.</p></div>
       <div><h3>How are the daily amounts worked out?</h3><p>Choose a finish date or an amount to memorise each week, in pages or lines, and the date you start. New hifz is spread over the days of the week you study. Older revision is your older pages divided across your revision cycle.</p></div>
-      <div><h3>What happens if I do more or less than my target?</h3><p>For new hifz the week has a set amount, so doing extra one day makes the following days lighter. For revision the daily target stays the same, and each day’s list starts from the first pages you have not revised yet in this pass, so nothing is repeated or missed.</p></div>
+      <div><h3>What happens if I do more or less than my target?</h3><p>For new hifz the week has a set amount, so doing extra one day makes the following days lighter. For revision the daily target stays the same, and each day’s list starts from the first pages you have not revised yet in this cycle, so nothing is repeated or missed.</p></div>
       <div><h3>Can I mark revision of surahs that were not on today’s list?</h3><p>Yes. On the Revision card, tap any surah you revised that is not done yet, or enter page numbers. It counts towards the day, each page is counted once, and you can see which surahs are done in the current cycle, juz by juz.</p></div>
       <div><h3>What if I am sick, travelling or on my period?</h3><p>Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifz and keeps everything else. On your period you choose, for revision, reading and new hifz, whether to keep it as normal, stop it, or do more each day.</p></div>
       <div><h3>Can I memorise from the end of the Quran, such as Juz Amma?</h3><p>Yes. Mark what you already know, then choose to go backwards. New hifz then goes surah by surah towards Al-Fatihah, learning each surah from its first page, and skips anything already known.</p></div>
@@ -1580,7 +1580,7 @@ function cycleHtml(st, logs, d){
     '<small class="hint">Choosing a surah fills in all of its pages. Change the page numbers for part of it.</small>' +
     (oxr.msg ? '<small class="hint err">' + esc(oxr.msg) + '</small>' : '') + '</div></details>' : '';
   return markedHtml + '<details class="hall"' + (cyc.open ? ' open' : '') + ' data-cyc><summary>Mark what you’ve revised · see this cycle</summary><div class="hadd">' + form +
-    '<div class="wtop"><b>' + (c.full ? 'Pass ' + c.pass + ' complete, alhamdulillah' : 'Pass ' + c.pass) + '</b><span>' + fmt1(c.doneIn) + ' of ' + fmt1(c.total) + ' pages · ' + pct + '%</span></div>' +
+    '<div class="wtop"><b>' + (c.full ? 'Cycle ' + c.pass + ' complete, alhamdulillah' : 'Cycle ' + c.pass) + '</b><span>' + fmt1(c.doneIn) + ' of ' + fmt1(c.total) + ' pages · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
     '<p class="wnote"><span class="rv ok">✓ done</span> <span class="rv part">◐ part done</span> <span class="rv">not yet</span></p>' +
     (canTap ? '<p class="wnote">Tap a surah you’ve revised that isn’t done yet. Your next list starts from the first pages not done.</p>' : '') +
@@ -1711,7 +1711,7 @@ function viewToday(){
     : p.recent <= 0 ? 'Nothing from the last ' + st.recentDays + ' days yet. Log new hifz and it shows up here.'
     : 'Everything from the last ' + st.recentDays + ' days of new hifz: ' + fmtQ(p.recent) + ' pages, once a day.';
   var whyO = p.old <= 0 ? 'No older pages yet.'
-    : fmtQ(p.old) + ' older pages, one full pass every ' + st.cycleDays + ' days.' + (fx.revMore > 0 ? ' Includes ' + fmtQ(fx.revMore) + ' extra ' + (fx.revMore > 1 ? 'pages' : 'page') + ' a day you chose for your period.' : '');
+    : fmtQ(p.old) + ' older pages, one full cycle every ' + st.cycleDays + ' days.' + (fx.revMore > 0 ? ' Includes ' + fmtQ(fx.revMore) + ' extra ' + (fx.revMore > 1 ? 'pages' : 'page') + ' a day you chose for your period.' : '');
   if (p.revOff){ whyR = whyO = sick ? 'Paused while you rest. You can still add anything you do.' : 'Revision is paused today. Anything you revise still counts.'; }
 
   var nsa = nextStartAt(st, P.logs), ns = nsa ? nsa.p : null, nsName = nsa ? NAMES[nsa.i] : '';
