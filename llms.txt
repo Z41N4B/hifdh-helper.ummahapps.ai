@@ -1,6 +1,6 @@
 # Hifdh Helper
 
-> Hifdh Helper (https://hifdh-helper.ummahapps.ai/) is a free web app for memorising the Quran (hifz or hifdh). You enter what you already know and your goal, and it works out what to do on each study day: new hifz, new revision and older revision, with the exact surahs, pages and lines in the 604-page Madinah mushaf. No account is needed; data stays in the browser on the user's device. Made by UmmahApps (https://ummahapps.ai/).
+> Hifdh Helper (https://hifdh-helper.ummahapps.ai/) is a free web app for memorising the Quran (hifz or hifdh). You enter what you already know and your goal, and it works out what to do on each study day: new hifz, new revision and older revision, with the exact surahs, pages and lines in the 604-page Madinah mushaf (15 lines) or the 847-page 13-line Indo-Pak mushaf. No account is needed; data stays in the browser on the user's device. Made by UmmahApps (https://ummahapps.ai/).
 
 ## What it does
 
@@ -20,7 +20,7 @@
 ## Good to know
 
 - Free to use, works in any modern browser on phone, tablet or computer, and can be added to the home screen.
-- Uses the Madinah mushaf: 604 pages, 30 juz of about 20 pages each.
+- Mushaf: the Madinah mushaf (604 pages, 15 lines a page) or the 13-line Indo-Pak mushaf (Taj Company, 847 pages), chosen at the top of Settings for each person. Changing it moves what is known and logged to the same places in the other mushaf.
 
 ## Pages
 

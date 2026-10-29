@@ -61,7 +61,7 @@
       "name": "Hifdh Helper",
       "alternateName": ["Hifz Tracker", "Hifdh Tracker", "Quran memorisation planner"],
       "url": "https://hifdh-helper.ummahapps.ai/",
-      "description": "A free Quran memorisation (hifz) tracker and planner. It turns a goal into daily targets for new hifz, new revision and older revision, using spaced repetition and the 604-page Madinah mushaf, and tracks which surahs are revised in each cycle.",
+      "description": "A free Quran memorisation (hifz) tracker and planner. It turns a goal into daily targets for new hifz, new revision and older revision, using spaced repetition and either the 604-page Madinah mushaf or the 13-line Indo-Pak mushaf, and tracks which surahs are revised in each cycle.",
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any (runs in a web browser)",
       "browserRequirements": "Requires JavaScript",
@@ -73,6 +73,7 @@
       "publisher": { "@id": "https://ummahapps.ai/#org" },
       "featureList": [
         "Daily targets for new hifz, new revision and older revision",
+        "Madinah mushaf (604 pages, 15 lines) or 13-line Indo-Pak mushaf (847 pages)",
         "Pace set by a finish date or by an amount each week, in pages or lines, from a chosen start date",
         "New hifz shown to the exact page and line, including half pages",
         "Weekly new hifz amount: doing extra one day makes the following days lighter",
@@ -141,7 +142,7 @@
         {
           "@type": "Question",
           "name": "Which mushaf does it use?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The 604-page Madinah mushaf with 15 lines to a page, and 30 juz of about 20 pages each." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Either the 604-page Madinah mushaf with 15 lines to a page, or the 847-page 13-line Indo-Pak mushaf (Taj Company). Choose it at the top of Settings; each person can have their own, and all pages, lines, surahs and juz follow it." }
         },
         {
           "@type": "Question",
@@ -546,7 +547,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 
   <section class="card about" id="about" aria-labelledby="about-h">
     <h2 id="about-h">About Hifdh Helper</h2>
-    <p><strong>Hifdh Helper</strong> is a free Quran memorisation (hifz) planner and tracker. Enter what you already know and your goal, and it works out what to do on each study day, with the exact surahs and page numbers in the 604-page Madinah mushaf.</p>
+    <p><strong>Hifdh Helper</strong> is a free Quran memorisation (hifz) planner and tracker. Enter what you already know and your goal, and it works out what to do on each study day, with the exact surahs and page numbers in the 604-page Madinah mushaf or the 847-page 13-line mushaf.</p>
     <h3>Three parts to every day</h3>
     <ul>
       <li><strong>New hifz:</strong> the new pages or lines to memorise today, down to the exact line, spread over your study days to reach your finish date or weekly amount.</li>
@@ -579,7 +580,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <div><h3>What if I am sick, travelling or on my period?</h3><p>Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifz and keeps everything else. On your period you choose, for revision, reading and new hifz, whether to keep it as normal, stop it, or do more each day.</p></div>
       <div><h3>Can I memorise from the end of the Quran, such as Juz Amma?</h3><p>Yes. Mark what you already know, then choose to go backwards. New hifz then goes surah by surah towards Al-Fatihah, learning each surah from its first page, and skips anything already known.</p></div>
       <div><h3>Can I track more than one person?</h3><p>Yes. Add a person for each child or student. Each person has their own goal, schedule, logs and colour theme.</p></div>
-      <div><h3>Which mushaf does it use?</h3><p>The 604-page Madinah mushaf with 15 lines to a page, and 30 juz of about 20 pages each.</p></div>
+      <div><h3>Which mushaf does it use?</h3><p>Either the 604-page Madinah mushaf with 15 lines to a page, or the 847-page 13-line Indo-Pak mushaf (Taj Company). Choose it at the top of Settings; each person can have their own, and all pages, lines, surahs and juz follow it.</p></div>
       <div><h3>Is it free, and where is my data stored?</h3><p>It is free and needs no account. Your plan and logs are saved in your browser on your own device.</p></div>
     </div>
   </section>
@@ -594,7 +595,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 'use strict';
 
 // <calc>
-var PAGES = 604, JUZ = PAGES / 30, LINES = 15, EPS = 1e-6;
+var PAGES = 604, JUZ = PAGES / 30, LINES = 15, EPS = 1e-6, MUSHAF = 15;
 function pad(n){ return String(n).padStart(2, '0'); }
 function iso(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
 function parse(s){ var p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
@@ -619,11 +620,12 @@ function fmtQ(v){
 function fmtL(v){ v = num(v); if (!(v > 0)) return '0'; var n = Math.round(v * LINES); return n < 1 ? '<1' : String(n); }
 function fmt1(v){ v = Math.round(num(v) * 10) / 10; return String(v).replace(/\.0$/, ''); }
 
-// ----- Quran map (Madinah mushaf, 604 pages). Page p covers x in [p-1, p). -----
+// ----- Quran map. Page p covers x in [p-1, p). These start as the Madinah mushaf (604 pages, 15 lines) and are
+// swapped for the 13-line mushaf by useMushaf. -----
 var NAMES = ["Al-Fatihah","Al-Baqarah","Aal-Imran","An-Nisa","Al-Ma'idah","Al-An'am","Al-A'raf","Al-Anfal","At-Tawbah","Yunus","Hud","Yusuf","Ar-Ra'd","Ibrahim","Al-Hijr","An-Nahl","Al-Isra","Al-Kahf","Maryam","Ta-Ha","Al-Anbiya","Al-Hajj","Al-Mu'minun","An-Nur","Al-Furqan","Ash-Shu'ara","An-Naml","Al-Qasas","Al-Ankabut","Ar-Rum","Luqman","As-Sajdah","Al-Ahzab","Saba","Fatir","Ya-Sin","As-Saffat","Sad","Az-Zumar","Ghafir","Fussilat","Ash-Shura","Az-Zukhruf","Ad-Dukhan","Al-Jathiyah","Al-Ahqaf","Muhammad","Al-Fath","Al-Hujurat","Qaf","Adh-Dhariyat","At-Tur","An-Najm","Al-Qamar","Ar-Rahman","Al-Waqi'ah","Al-Hadid","Al-Mujadila","Al-Hashr","Al-Mumtahanah","As-Saff","Al-Jumu'ah","Al-Munafiqun","At-Taghabun","At-Talaq","At-Tahrim","Al-Mulk","Al-Qalam","Al-Haqqah","Al-Ma'arij","Nuh","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyamah","Al-Insan","Al-Mursalat","An-Naba","An-Nazi'at","Abasa","At-Takwir","Al-Infitar","Al-Mutaffifin","Al-Inshiqaq","Al-Buruj","At-Tariq","Al-A'la","Al-Ghashiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Ad-Duha","Ash-Sharh","At-Tin","Al-Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-Adiyat","Al-Qari'ah","At-Takathur","Al-Asr","Al-Humazah","Al-Fil","Quraysh","Al-Ma'un","Al-Kawthar","Al-Kafirun","An-Nasr","Al-Masad","Al-Ikhlas","Al-Falaq","An-Nas"];
 var STARTS = [1,2,50,77,106,128,151,177,187,208,221,235,249,255,262,267,282,293,305,312,322,332,342,350,359,367,377,385,396,404,411,415,418,428,434,440,446,453,458,467,477,483,489,496,499,502,507,511,515,518,520,523,526,528,531,534,537,542,545,549,551,553,554,556,558,560,562,564,566,568,570,572,574,575,577,578,580,582,583,585,586,587,587,589,590,591,591,592,593,594,595,595,596,596,597,597,598,598,599,599,600,600,601,601,601,602,602,602,603,603,603,604,604,604];
 var ENDS = [1,49,76,106,127,150,176,186,207,221,235,248,255,261,267,281,293,304,312,321,331,341,349,359,366,376,385,396,404,410,414,417,427,434,440,445,452,458,467,476,482,489,495,498,502,506,510,515,517,520,523,525,528,531,534,537,541,545,548,551,552,554,555,557,559,561,564,566,568,570,571,573,575,577,578,580,581,583,584,585,586,587,589,589,590,591,592,592,594,594,595,596,596,596,597,597,598,599,599,600,600,600,601,601,601,602,602,602,603,603,603,604,604,604];
-// The line each surah starts on, counted from the top of page 1 (15 lines a page), at its title line. Most surahs
+// The line each surah starts on, counted from the top of page 1 (LINES a page), at its title line. Most surahs
 // start part way down a page; a heading can sit at the foot of the page before (An-Nisa's title is on p.76 line 15).
 // From the 15-line Madinah mushaf layout used by quran.com.
 var SLINE = [0,15,735,1139,1580,1905,2250,2640,2790,3104,3306,3518,3720,3812,3915,3996,4215,4389,4560,4669,4815,4964,5114,5234,5380,5489,5639,5767,5932,6054,6150,6209,6254,6405,6502,6588,6674,6779,6858,6992,7140,7230,7324,7425,7469,7521,7589,7650,7716,7755,7796,7837,7874,7913,7954,8001,8050,8115,8166,8219,8256,8280,8301,8324,8354,8385,8415,8450,8483,8513,8539,8565,8595,8617,8645,8663,8691,8715,8737,8759,8775,8789,8800,8821,8835,8849,8857,8867,8880,8898,8909,8918,8928,8935,8940,8946,8955,8960,8972,8979,8986,8994,9000,9004,9010,9015,9020,9026,9030,9035,9040,9045,9049,9054];
@@ -633,9 +635,25 @@ function surEnd(i){ return i < 113 ? SLINE[i + 1] / LINES : PAGES; }
 function surahAtX(x){ var L = x * LINES + 1e-3, i = 0; while (i < 113 && SLINE[i + 1] <= L) i++; return i; }
 // The page and line of a point on the x scale.
 function lineOf(x){ var p = Math.floor(x + EPS) + 1; return { p: Math.min(PAGES, p), l: Math.min(LINES, Math.floor((x - (p - 1)) * LINES + 1e-3) + 1) }; }
+// The page each juz starts on.
 var JS0 = [1]; for (var jj = 1; jj < 30; jj++) JS0.push(2 + jj * 20);
-function juzIv(i){ return [JS0[i] - 1, (i < 29 ? JS0[i + 1] : 605) - 1]; }
-function juzOf(p){ return Math.min(30, Math.max(1, Math.floor((p - 2) / 20) + 1)); }
+function juzIv(i){ return [JS0[i] - 1, (i < 29 ? JS0[i + 1] : PAGES + 1) - 1]; }
+function juzOf(p){ var j = 0; while (j < 29 && JS0[j + 1] <= p) j++; return j + 1; }
+// The 13-line Indo-Pak mushaf (Taj Company, 847 pages), from its layout in the Quranic Universal Library (qul.tarteel.ai).
+var M13 = { pages: 847, lines: 13,
+  starts: [1,2,67,105,146,176,208,245,259,287,307,327,345,354,363,371,392,407,424,434,448,461,476,486,500,510,524,536,551,561,570,576,580,594,602,610,617,627,634,646,658,667,676,685,690,696,703,709,715,720,724,728,731,735,739,744,749,756,760,765,769,772,774,776,779,782,786,789,793,796,799,802,805,807,810,812,815,818,819,821,823,824,825,827,828,829,830,831,832,834,835,836,837,837,838,838,839,839,840,841,842,842,843,843,843,844,844,845,845,845,846,846,846,847],
+  ends: [1,67,105,146,176,207,244,259,287,307,327,345,354,363,371,391,407,424,434,447,461,475,486,500,510,524,536,550,561,570,576,580,593,602,610,617,627,634,646,658,667,676,685,690,695,702,709,715,719,724,728,731,735,739,743,749,755,760,765,769,771,773,776,779,782,785,789,793,796,799,801,805,807,810,812,815,817,819,821,823,824,825,827,828,829,830,831,832,834,835,835,836,837,837,838,839,839,840,841,841,842,842,843,843,844,844,844,845,845,846,846,846,847,847],
+  sline: [0,13,859,1356,1886,2283,2691,3172,3357,3727,3979,4242,4481,4599,4716,4814,5083,5287,5505,5630,5811,5986,6175,6315,6494,6619,6802,6956,7150,7289,7402,7477,7531,7709,7818,7920,8017,8141,8236,8387,8550,8664,8785,8902,8958,9035,9126,9206,9292,9347,9401,9454,9500,9549,9600,9659,9726,9815,9877,9940,9990,10023,10049,10077,10116,10163,10205,10252,10299,10341,10378,10413,10453,10484,10523,10548,10587,10621,10644,10670,10690,10706,10718,10742,10758,10774,10784,10796,10811,10831,10844,10855,10868,10875,10881,10888,10899,10904,10917,10924,10933,10940,10946,10950,10956,10961,10966,10972,10976,10981,10986,10991,10995,11000],
+  juz: [1,28,56,84,112,140,167,196,224,252,279,308,336,363,392,420,448,476,504,531,558,586,612,640,666,696,726,756,786,818] };
+var MUSHAFS = { 15: { pages: 604, lines: 15, starts: STARTS, ends: ENDS, sline: SLINE, juz: JS0 }, 13: M13 };
+// Which mushaf the page and line numbers are in. Each person has their own; it is switched to theirs when they are on screen.
+function useMushaf(m){
+  m = m === 13 ? 13 : 15; if (m === MUSHAF) return;
+  var t = MUSHAFS[m]; MUSHAF = m; PAGES = t.pages; LINES = t.lines; JUZ = PAGES / 30;
+  STARTS = t.starts; ENDS = t.ends; SLINE = t.sline; JS0 = t.juz;
+  if (typeof cycVer === 'number') cycVer++;
+}
+function mushafName(m){ return m === 13 ? '13-line mushaf' : 'Madinah mushaf'; }
 function surahsFor(p1, p2){
   var out = [];
   for (var i = 0; i < 114; i++){
@@ -644,7 +662,7 @@ function surahsFor(p1, p2){
   return out;
 }
 
-// ----- interval sets over x in [0, 604] -----
+// ----- interval sets over x in [0, PAGES] -----
 function normIv(list){
   var a = list.map(function(r){ return [Math.max(0, Math.min(PAGES, r[0])), Math.max(0, Math.min(PAGES, r[1]))]; })
     .filter(function(r){ return r[1] - r[0] > EPS; }).sort(function(x, y){ return x[0] - y[0]; });
@@ -788,9 +806,8 @@ function stripHeadings(ivs){
 var SR_DEFAULT = [3, 7, 14, 30];
 // A hard page gets extra reviews this many days apart, then leaves the list.
 var HARD_STEPS = [1, 3, 7];
-// Which part of the page a hard page is, as shown: "p.12", "p.12 lines 1–8" or "p.12 lines 8–15".
-var HALF_LINES = ['', ' lines 1–8', ' lines 8–15'];
-function hardPart(h){ return 'p.' + h.pg + HALF_LINES[h.half || 0]; }
+// Which part of the page a hard page is, as shown: "p.12", "p.12 lines 1–8" or "p.12 lines 8–15" (1–7 and 7–13 in the 13-line mushaf).
+function hardPart(h){ var m = Math.ceil(LINES / 2); return 'p.' + h.pg + ['', ' lines 1–' + m, ' lines ' + m + '–' + LINES][h.half || 0]; }
 function hardKey(h){ return h.pg + '-' + (h.half || 0); }
 function hardOf(P){ return Array.isArray(P.hard) ? P.hard : (P.hard = []); }
 // When a hard page's next extra review is due. Days off sick do not count, so reviews wait rather than pile up:
@@ -1192,9 +1209,9 @@ var KEY = 'hifz-tracker-v1';
 var todayIso = function(){ return iso(new Date()); };
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function defaults(){
-  return { startPages: 60, base: [[0, 60]], next: { x: 60, dir: 1 }, goalPages: 604, goalDate: iso(addDays(new Date(), 730)),
+  return { startPages: 60, base: [[0, 60]], next: { x: 60, dir: 1 }, goalPages: PAGES, goalDate: iso(addDays(new Date(), 730)),
            targetMode: 'date', weeklyAmount: 7, weeklyUnit: 'pages', ramadan: null,
-           cycleDays: 30, recentDays: 5, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', revMode: 'spaced', srSteps: SR_DEFAULT.slice(), srDaily: 21, weekStart: 1, startDate: null };
+           cycleDays: 30, recentDays: 5, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', revMode: 'spaced', srSteps: SR_DEFAULT.slice(), srDaily: 21, weekStart: 1, startDate: null, mushaf: MUSHAF };
 }
 var TINTS = ['Sage', 'Rose', 'Sky', 'Lavender', 'Peach', 'Aqua', 'Sunshine', 'Bubblegum', 'Ocean', 'Lime', 'Midnight', 'Plum', 'Daisy'];
 function newPerson(name, tint){
@@ -1207,7 +1224,9 @@ function nextTint(from, to){
 }
 function normPerson(p, i){
   var src = (p && p.settings) || {};
+  useMushaf(src.mushaf);
   var s = Object.assign(defaults(), src);
+  s.mushaf = MUSHAF;
   if (!Array.isArray(s.days) || s.days.length !== 7) s.days = defaults().days;
   if (s.revMode !== 'window') s.revMode = 'spaced';
   if (!(Number.isInteger(s.srDaily) && s.srDaily >= 0 && s.srDaily <= 90)) s.srDaily = 21;
@@ -1290,8 +1309,48 @@ try { var raw = localStorage.getItem(KEY); if (raw) S = normalize(JSON.parse(raw
 var ACTIVE_KEY = 'hifz-tracker-active', activeId = null;
 try { activeId = localStorage.getItem(ACTIVE_KEY); } catch (e) {}
 function cur(){
-  for (var i = 0; i < S.people.length; i++) if (S.people[i].id === activeId) return S.people[i];
-  activeId = S.people[0].id; return S.people[0];
+  var P = null;
+  for (var i = 0; i < S.people.length; i++) if (S.people[i].id === activeId){ P = S.people[i]; break; }
+  if (!P){ P = S.people[0]; activeId = P.id; }
+  useMushaf(P.settings.mushaf);
+  return P;
+}
+// Moves a person's saved places to another mushaf. Each point keeps its place within its surah, to the nearest line,
+// so what is known, what was learned on each day and what was revised stay the same; amounts in pages scale with the mushaf.
+function moveMushaf(P, to){
+  var A = MUSHAFS[MUSHAF], B = MUSHAFS[to], k = B.pages / A.pages, kl = (B.pages * B.lines) / (A.pages * A.lines);
+  if (A === B) return;
+  function mx(x){
+    var L = num(x) * A.lines, i = 0; while (i < 113 && A.sline[i + 1] <= L + 1e-3) i++;
+    var a0 = A.sline[i], a1 = i < 113 ? A.sline[i + 1] : A.pages * A.lines, b0 = B.sline[i], b1 = i < 113 ? B.sline[i + 1] : B.pages * B.lines;
+    var f = a1 > a0 ? Math.max(0, Math.min(1, (L - a0) / (a1 - a0))) : 0;
+    return Math.round(b0 + f * (b1 - b0)) / B.lines;
+  }
+  function miv(a){ return Array.isArray(a) ? a.map(function(r){ return [mx(r[0]), mx(r[1])]; }) : a; }
+  function mpg(p){ return Math.max(1, Math.min(B.pages, Math.floor(mx(p - 0.5)) + 1)); }
+  function amt(v, q){ return Math.round(num(v) * k * q) / q; }
+  function moveSettings(s){
+    s.base = miv(s.base);
+    if (s.next) s.next.x = mx(s.next.x);
+    s.goalPages = num(s.goalPages) >= A.pages - EPS ? B.pages : Math.max(1, Math.round(num(s.goalPages) * k));
+    if (num(s.weeklyAmount) > 0) s.weeklyAmount = s.weeklyUnit === 'lines' ? Math.max(1, Math.round(s.weeklyAmount * kl)) : Math.max(0.5, amt(s.weeklyAmount, 2));
+    if (s.ramadan){ s.ramadan.startPage = mpg(s.ramadan.startPage); }
+    s.mushaf = to;
+  }
+  moveSettings(P.settings);
+  if (draft) moveSettings(draft);
+  Object.keys(P.logs).forEach(function(d){
+    var l = P.logs[d];
+    if (Array.isArray(l.segs) && l.segs.length){
+      l.segs.forEach(function(g){ g.a = mx(g.a); g.b = mx(g.b); });
+      l.n = Math.round(l.segs.reduce(function(t, g){ return t + Math.abs(g.b - g.a); }, 0) * 1e4) / 1e4;
+    } else if (l.n) l.n = amt(l.n, 100);
+    if (l.r) l.r = amt(l.r, 100);
+    if (l.o) l.o = amt(l.o, 100);
+    if (Array.isArray(l.ox)) l.ox = miv(l.ox);
+  });
+  (P.hard || []).forEach(function(x){ x.pg = mpg(x.pg); });
+  Object.keys(P.rlog || {}).forEach(function(d){ P.rlog[d] = amt(P.rlog[d], 10); });
 }
 function saveActive(){ try { localStorage.setItem(ACTIVE_KEY, activeId); } catch (e) {} }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -1393,7 +1452,7 @@ function rangeLabel(p1, p2){
   return f === l ? f : s.length === 2 ? f + ' and ' + l : f + ' to ' + l + ' (' + s.length + ' surahs)';
 }
 // A list of surahs and page numbers for a set of page ranges.
-// A stretch of new hifz as pages, or as lines when it starts or ends part way down a page (15 lines a page).
+// A stretch of new hifz as pages, or as lines when it starts or ends part way down a page.
 function fmtLines(a, b){
   // A line split between two days (half a page is 7½ lines) is shown on both.
   var p1 = Math.floor(a + EPS) + 1, l1 = Math.floor((a - (p1 - 1)) * LINES + 1e-3) + 1;
@@ -2047,7 +2106,7 @@ function listAnd(a){ return a.length < 2 ? String(a[0]) : a.slice(0, -1).join(',
 function validate(f){
   var e = [], t = todayIso();
   if (!f.name || !String(f.name).trim()) e.push('Enter a name.');
-  if (!(f.goalPages >= 1 && f.goalPages <= PAGES)) e.push('The goal must be between 1 and 604 pages.');
+  if (!(f.goalPages >= 1 && f.goalPages <= PAGES)) e.push('The goal must be between 1 and ' + PAGES + ' pages.');
   else if (f.startPages > f.goalPages + 0.001) e.push('More pages are marked as known than the goal. Raise the goal or remove a range.');
   if (f.targetMode === 'weekly'){
     var wpg = f.weeklyUnit === 'lines' ? f.weeklyAmount / LINES : f.weeklyAmount;
@@ -2103,7 +2162,13 @@ function viewSettings(){
       '<button type="button" class="btn sm" data-a="rmrange" data-i="' + i + '" aria-label="Remove ' + esc(rangeLabel(pr[0], pr[1])) + '">Remove</button></li>';
   }).join('') + '</ul>' : '<p class="muted">Nothing marked yet.</p>';
   var np = nextPage(f.next), nl = lineOf(f.next.x).l, wk = f.targetMode === 'weekly';
-  return '<section class="card"><h2 class="h">' + (first ? 'Set up' : 'Person') + '</h2>' +
+  var mus = '<section class="card"><h2 class="h">Mushaf</h2>' +
+    '<div class="chips" role="group" aria-label="Mushaf">' + [[15, 'Madinah, 15 lines', '604 pages'], [13, '13 lines', '847 pages']].map(function(m){
+      return '<button type="button" class="chip" data-a="mushaf" data-m="' + m[0] + '" aria-pressed="' + (MUSHAF === m[0]) + '">' + m[1] + '<small>' + m[2] + '</small></button>';
+    }).join('') + '</div>' +
+    '<small class="hint">' + (MUSHAF === 13 ? 'The 13-line Indo-Pak mushaf (Taj Company), 847 pages.' : 'The Madinah mushaf, 604 pages with 15 lines to a page.') +
+    ' All pages and lines are shown in this mushaf. Changing it moves what is already known and logged to the same places in the other one.</small></section>';
+  return mus + '<section class="card"><h2 class="h">' + (first ? 'Set up' : 'Person') + '</h2>' +
     '<p class="muted">' + (first ? 'Enter where they are and where they want to be. The daily amounts and the pages to revise are worked out from that.' : 'Change anything and the plan updates straight away. Your logs are kept.') + '</p>' +
     '<div class="field"><label for="f-name">Name</label><input class="inp" id="f-name" type="text" maxlength="24" autocomplete="off" value="' + esc(f.name || '') + '"></div>' +
     '<div class="field"><span class="lab" id="lab-tint">Colour</span><div class="chips" role="group" aria-labelledby="lab-tint">' + TINTS.map(function(n, i){ return '<button type="button" class="swatch" style="background:var(--t-' + i + ')" data-a="tint" data-i="' + i + '" aria-label="' + n + '" aria-pressed="' + (cur().tint === i) + '"></button>'; }).join('') + '</div></div></section>' +
@@ -2113,9 +2178,9 @@ function viewSettings(){
     '<div class="juz" role="group" aria-label="Juz known">' + juzTiles(normIv(f.base), PAGES, true) + '</div>' +
     '<p class="wnote"><b>' + fmt1(f.startPages) + ' pages</b> known, about ' + fmt1(f.startPages / JUZ) + ' juz.</p>' + knownList +
     '<div class="field"><span class="lab">Add a range</span><div class="rng">' +
-    '<span>From</span><select class="inp" id="r-fs" aria-label="From surah">' + surahOptions(rng.fs) + '</select><input class="inp" id="r-fp" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="From page" value="' + val(rng.fp) + '">' +
-    '<span>To</span><select class="inp" id="r-ts" aria-label="To surah">' + surahOptions(rng.ts) + '</select><input class="inp" id="r-tp" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="To page" value="' + val(rng.tp) + '"></div>' +
-    '<small class="hint">Choosing a surah fills in its first page for From and its last page for To. Change the page numbers for part of a surah. Page 1 to 604 is the whole Quran.</small>' +
+    '<span>From</span><select class="inp" id="r-fs" aria-label="From surah">' + surahOptions(rng.fs) + '</select><input class="inp" id="r-fp" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" aria-label="From page" value="' + val(rng.fp) + '">' +
+    '<span>To</span><select class="inp" id="r-ts" aria-label="To surah">' + surahOptions(rng.ts) + '</select><input class="inp" id="r-tp" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" aria-label="To page" value="' + val(rng.tp) + '"></div>' +
+    '<small class="hint">Choosing a surah fills in its first page for From and its last page for To. Change the page numbers for part of a surah. Page 1 to ' + PAGES + ' is the whole Quran.</small>' +
     (rng.msg ? '<small class="hint err">' + esc(rng.msg) + '</small>' : '') +
     '<button type="button" class="btn" data-a="addrange">Add this range</button></div></section>' +
 
@@ -2126,13 +2191,13 @@ function viewSettings(){
     '<button type="button" class="chip" data-a="dir" data-d="-1" aria-pressed="' + (f.next.dir < 0) + '">Backwards</button></div>' +
     '<small class="hint">Forward moves towards An-Nas. Backwards goes surah by surah towards Al-Fatihah, learning each surah from its first page, so choosing a page picks the surah it is in.</small></div>' +
     '<div class="field"><span class="lab">Start at</span><div class="rng3"><select class="inp" id="n-s" aria-label="Surah to continue from">' + surahOptions(f.next.dir < 0 && f.next.s >= 0 ? f.next.s : surahAtX(f.next.x)) + '</select>' +
-    '<input class="inp" id="n-p" type="number" inputmode="numeric" min="1" max="604" step="1" aria-label="Page to continue from" value="' + np + '">' +
-    '<input class="inp" id="n-l" type="number" inputmode="numeric" min="1" max="15" step="1" aria-label="Line on that page, 1 to 15" value="' + nl + '"></div>' +
+    '<input class="inp" id="n-p" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" aria-label="Page to continue from" value="' + np + '">' +
+    '<input class="inp" id="n-l" type="number" inputmode="numeric" min="1" max="' + LINES + '" step="1" aria-label="Line on that page, 1 to ' + LINES + '" value="' + nl + '"></div>' +
     '<small class="hint">Surah, page and line. Choosing a surah goes to the line it starts on; change the line to start part way down a page.</small>' +
     '<small class="hint" id="nextHint"></small></div></section>' +
 
     '<section class="card"><h2 class="h">' + (first ? 'Set targets' : 'Targets') + '</h2>' +
-    '<div class="field"><label for="f-goal">Goal, in pages</label><input class="inp" id="f-goal" type="number" inputmode="decimal" min="1" max="604" step="1" value="' + val(f.goalPages) + '"><small class="hint">604 pages is the whole Quran in the Madinah mushaf, 15 lines to a page.</small></div>' +
+    '<div class="field"><label for="f-goal">Goal, in pages</label><input class="inp" id="f-goal" type="number" inputmode="decimal" min="1" max="' + PAGES + '" step="1" value="' + val(f.goalPages) + '"><small class="hint">' + PAGES + ' pages is the whole Quran in the ' + mushafName(MUSHAF) + ', ' + LINES + ' lines to a page.</small></div>' +
     '<div class="field"><label for="f-start">Start on</label><input class="inp" id="f-start" type="date" value="' + (f.startDate || todayIso()) + '"><small class="hint">The day you begin. Your weeks then start on that day of the week too. Days before it have no targets.</small></div>' +
     '<div class="field"><span class="lab" id="lab-mode">Set the pace by</span><div class="chips" role="group" aria-labelledby="lab-mode">' +
     '<button type="button" class="chip" data-a="mode" data-m="date" aria-pressed="' + !wk + '">Finish date</button>' +
@@ -2142,7 +2207,7 @@ function viewSettings(){
         '<div class="chips" role="group" aria-label="Unit">' +
         '<button type="button" class="chip" data-a="unit" data-u="pages" aria-pressed="' + (f.weeklyUnit !== 'lines') + '">Pages</button>' +
         '<button type="button" class="chip" data-a="unit" data-u="lines" aria-pressed="' + (f.weeklyUnit === 'lines') + '">Lines</button></div>' +
-        '<small class="hint" id="wkHint"></small><small class="hint">15 lines make one page. The amount is spread over your study days, and the finish date follows from it.</small></div>'
+        '<small class="hint" id="wkHint"></small><small class="hint">' + LINES + ' lines make one page. The amount is spread over your study days, and the finish date follows from it.</small></div>'
       : '<div class="field"><label for="f-date">Finish by</label><input class="inp" id="f-date" type="date" value="' + (f.goalDate || '') + '"></div>') +
     '<div class="field"><label for="f-cycle">Revise everything older every (days)</label><input class="inp" id="f-cycle" type="number" inputmode="numeric" min="1" max="365" step="1" value="' + val(f.cycleDays) + '"><small class="hint">A shorter cycle means more revision each day. Many students aim for 7 to 30 days.</small></div>' +
     '<div class="field"><span class="lab" id="lab-rev">New revision</span><div class="chips" role="group" aria-labelledby="lab-rev">' +
@@ -2431,7 +2496,7 @@ document.addEventListener('click', function(e){
     var of = Math.round(num(oxr.f)), ot = Math.round(num(oxr.t));
     if (oxr.f !== '' && oxr.t === '') ot = of;
     cyc.open = true; oxr.pages = true;
-    if (!(of >= 1 && ot <= PAGES && of <= ot)){ oxr.msg = 'Enter the pages you revised, from 1 to 604, with the first page not after the last.'; render(); return; }
+    if (!(of >= 1 && ot <= PAGES && of <= ot)){ oxr.msg = 'Enter the pages you revised, from 1 to ' + PAGES + ', with the first page not after the last.'; render(); return; }
     var Lx = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
     Lx.ox = unionIv(Lx.ox || [], [[of - 1, ot]]);
     oxr.msg = ''; oxr.f = ''; oxr.t = ''; touch(); render();
@@ -2496,7 +2561,7 @@ document.addEventListener('click', function(e){
   }
   else if (a === 'addrange'){
     var fp = Math.round(num(rng.fp)), tp = Math.round(num(rng.tp));
-    if (fp < 1 || tp > PAGES || fp > tp){ rng.msg = 'Choose a start page that is not after the end page, between 1 and 604.'; render(); return; }
+    if (fp < 1 || tp > PAGES || fp > tp){ rng.msg = 'Choose a start page that is not after the end page, between 1 and ' + PAGES + '.'; render(); return; }
     rng.msg = ''; draft.base = unionIv(draft.base, [[fp - 1, tp]]); syncStart(); render();
   }
   else if (a === 'rmrange'){
@@ -2564,6 +2629,17 @@ document.addEventListener('click', function(e){
     cur().settings = f; cur().name = nm; draft = null; touch(); goTab('today');
   }
   else if (a === 'tint'){ cur().tint = Number(t.dataset.i); touch(); render(); }
+  else if (a === 'mushaf'){
+    var mto = Number(t.dataset.m) === 13 ? 13 : 15, Pm = cur();
+    if (mto !== MUSHAF){
+      // Unsaved changes in Settings are moved too; otherwise Settings is redrawn from the moved data.
+      var ix = S.people.indexOf(Pm), keep = draft && draftDirty() ? draft : null;
+      moveMushaf(Pm, mto);
+      S.people[ix] = normPerson(Pm, ix);
+      draft = keep;
+      touch(); render();
+    }
+  }
   else if (a === 'person'){ if (t.dataset.id !== activeId && !leaveSettingsOk()) return; activeId = t.dataset.id; saveActive(); draft = null; resetArmed = false; removeArmed = false; render(); }
   else if (a === 'addperson'){
     if (!leaveSettingsOk()) return;
