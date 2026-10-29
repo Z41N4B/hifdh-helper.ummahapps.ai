@@ -1,6 +1,6 @@
 # Hifdh Helper
 
-> Hifdh Helper (https://hifdh-helper.ummahapps.ai/) is a free web app for memorising the Quran (hifz or hifdh). You enter what you already know and your goal, and it works out what to do on each study day: new hifz, new revision and older revision, with the exact surahs, pages and lines in the 604-page Madinah mushaf (15 lines) or the 847-page 13-line Indo-Pak mushaf. No account is needed; data stays in the browser on the user's device. Made by UmmahApps (https://ummahapps.ai/).
+> Hifdh Helper (https://hifdh-helper.ummahapps.ai/) is a free web app for memorising the Quran (hifz or hifdh). You enter what you already know and your goal, and it works out what to do on each study day: new hifz, new revision and older revision, with the exact surahs, pages and lines in the 604-page Madinah mushaf (15 lines), the 610-page 15-line Indo-Pak mushaf or the 847-page 13-line Indo-Pak mushaf. No account is needed; data stays in the browser on the user's device. Made by UmmahApps (https://ummahapps.ai/).
 
 ## What it does
 
@@ -8,9 +8,10 @@
 - Weekly new hifz: each week has a set amount, so doing extra one day makes the following days lighter, and doing less adds a little to them. The day the week starts on can be chosen.
 - New revision: spaced repetition. By default each day of new hifz is revised every study day for 21 days, then comes back 3, 7, 14 and 30 days after that, before joining the older cycle. Missed reviews carry over. Alternatively, revise the last few days of new hifz every day.
 - Revision: everything older is revised in a full cycle, every 30 days by default. Each day's list starts from the first pages not yet revised in the current cycle, so pages revised early are not asked for again and skipped pages come up first. The daily target stays the same.
+- Removing anything already marked done takes two taps, so it is not undone by accident.
 - Revision progress: see which surahs are revised in the current cycle, juz by juz, and tap any surah not yet done to mark it revised, or enter page numbers. Each page is counted once. Revision is always marked by surah or page, or by marking the day's list done, so the cycle knows exactly which pages were revised. Finished juz can be hidden.
 - Hard pages: a page marked hard, chosen from any memorised page, comes back the next day, 3 days later and 7 days later, on top of normal revision.
-- Sick, travelling or on a period: set in Settings. Sick pauses everything (anything done can still be added) and pauses hard page reviews. Travelling pauses new hifz only. On a period, revision, reading and new hifz can each be kept as normal, stopped, or increased by a chosen amount a day. New hifz can also be paused on its own.
+- Sick, travelling or on a period: set in Settings. Sick pauses everything (anything done can still be added) and pauses hard page reviews. Being sick or travelling can be turned on during a period. Travelling pauses new hifz only. On a period, revision, reading and new hifz can each be kept as normal, stopped, or increased by a chosen amount a day. New hifz can also be paused on its own.
 - Daily reading tick with a streak, for reading pages not yet memorised.
 - Ramadan mode: set the first day (suggested from the Umm al-Qura calendar) and 29 or 30 days, how many full readings of the Quran (khatm) to finish, and the page to start from, anywhere in the Quran. Each day shows the pages to read and where they run from and to, spread over the days left. A Ramadan tracker shows pages read each day and progress towards each khatm. Revision and new hifz can be kept as normal, stopped or increased, as for a period.
 - Plan view: juz-by-juz progress, current pace, projected finish date, a bar chart of past revision cycles (days each took against the plan), and how daily revision grows as more is memorised.
@@ -20,7 +21,7 @@
 ## Good to know
 
 - Free to use, works in any modern browser on phone, tablet or computer, and can be added to the home screen.
-- Mushaf: the Madinah mushaf (604 pages, 15 lines a page) or the 13-line Indo-Pak mushaf (Taj Company, 847 pages), chosen at the top of Settings for each person. Changing it moves what is known and logged to the same places in the other mushaf.
+- Mushaf: the Madinah mushaf (604 pages, 15 lines a page), the 15-line Indo-Pak mushaf (610 pages) or the 13-line Indo-Pak mushaf (Taj Company, 847 pages, as used in South Africa), chosen at the top of Settings for each person. Changing it moves what is known and logged to the same places in the other mushaf.
 
 ## Pages
 
