@@ -1815,9 +1815,8 @@ function card(sd, target, done, why, active, extra, noAdd, lines, also){
     '<p class="why">' + why + '</p>' + (extra || '') +
     '<div class="bar" role="progressbar" aria-label="' + sd.name + ' today" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(pr * 100) + '"><i style="width:' + (pr * 100) + '%"></i></div>' +
     (k === 'o'
-      ? '<div class="done"><span class="togo">' + togo + '</span></div><div class="btns">' +
-        '<button class="btn solid" data-a="fill" data-k="o"' + (target > 0 && !noAdd ? '' : ' disabled') + '>Mark today’s list done</button>' +
-        (done > 0 ? '<button class="btn" data-a="ounlist">Undo list</button>' : '') + '</div></section>' :
+      ? '<div class="done"><span class="togo">' + togo + '</span></div>' +
+        (done > 0 ? '<div class="btns"><button class="btn" data-a="ounlist">Undo list</button></div>' : '') + '</section>' :
     '<div class="done"><label for="done-' + k + '">Done</label>' +
     '<input class="num" id="done-' + k + '" type="number" inputmode="' + (lines ? 'numeric' : 'decimal') + '" min="0" step="' + (lines ? 1 : 0.25) + '" value="' + (lines ? Math.round((done || 0) * LINES) : Math.round((done || 0) * 100) / 100) + '" data-k="' + k + '"' + (lines ? ' data-u="lines"' : '') + ' aria-label="' + sd.name + ' done, in ' + uw + '">' +
     (sd.key === 'n' ? '<span class="uchips" role="group" aria-label="Count new hifz in"><button type="button" class="chip xs" data-a="nunit" data-u="pages" aria-pressed="' + !lines + '">Pages</button><button type="button" class="chip xs" data-a="nunit" data-u="lines" aria-pressed="' + !!lines + '">Lines</button></span>' : '') +
