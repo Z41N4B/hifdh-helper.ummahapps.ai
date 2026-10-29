@@ -1541,7 +1541,7 @@ function ramProgressHtml(s, t){
     return '<i class="' + (x.d > t ? 'fut' : x.v > 0 ? '' : 'zero') + (x.d === t ? ' cur' : '') + '" style="height:' + h + '%" title="Day ' + (i + 1) + ', ' + fmtDate(x.d, short) + ': ' + fmt1(x.v) + ' pages"></i>';
   }).join('');
   var note = s.all >= s.total ? (R.khatms > 1 ? 'All ' + R.khatms + ' readings' : 'Your khatm') + ' finished, alhamdulillah. May Allah accept it from you.'
-    : t < R.from ? 'Ramadan starts on ' + fmtDate(R.from, { weekday: 'long', day: 'numeric', month: 'long' }) + '.'
+    : t < R.from ? 'Ramadan starts on ' + fmtDate(R.from, { weekday: 'long', day: 'numeric', month: 'long' }) + ', insha’Allah.'
     : diff >= 1 ? fmt1(diff) + ' pages ahead of an even pace.' : diff <= -1 ? fmt1(-diff) + ' pages behind an even pace. It is spread over the days left.' : 'Right on an even pace.';
   return '<div class="wtop"><b>' + (R.khatms > 1 ? 'Khatm ' + Math.min(R.khatms, k + 1) + ' of ' + R.khatms : 'Khatm') + '</b><span>' + fmt1(readN) + ' of ' + s.total + ' pages · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
@@ -1882,7 +1882,8 @@ function viewToday(){
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">Change</button></p>';
   var exN = whereLinesHtml(sl.nIv, d === t ? 'New today' : 'New') + nextLine;
   var exR = spaced ? srHtml(st, P.logs, sr, d, t, lg.r || 0) : whereHtml(sl.r, 'Revise today');
-  var exO = (sl.o.length ? whereLinesHtml(sl.oIv, revD > 0 ? 'Still to revise' : 'Revise today') : p.to > 0 && revD > 0 ? '<p class="wnote">Today’s list is done, alhamdulillah.</p>' : '') + cycleHtml(st, P.logs, d);
+  var markList = d <= t && p.to > 0 ? '<div class="hb"><button class="btn sm solid" data-a="fill" data-k="o">Mark ' + (d === t ? 'today’s' : 'this day’s') + ' list done</button></div>' : '';
+  var exO = (sl.o.length ? whereLinesHtml(sl.oIv, revD > 0 ? 'Still to revise' : 'Revise today') + markList : p.to > 0 && revD > 0 ? '<p class="wnote">Today’s list is done, alhamdulillah.</p>' : '') + cycleHtml(st, P.logs, d);
 
   var nLines = st.newUnit === 'lines';
   var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>Hud 11:88</figcaption></figure>';
@@ -2022,7 +2023,8 @@ function viewPlan(){
       }).join('') + '</tbody></table></div>' +
       '<p class="wnote">Daily revision is new revision plus older revision.</p></section>';
   }
-  return ramPlanCard(P, t) + upcomingCard(st, P.logs, t) + memCard + knownCard + paceCard + revCard + cycleStatsCard(st, P.logs, t) + msCard;
+  var ramNow = !!ramadanOn(st, t);
+  return (ramNow ? ramPlanCard(P, t) : '') + upcomingCard(st, P.logs, t) + (ramNow ? '' : ramPlanCard(P, t)) + memCard + knownCard + paceCard + revCard + cycleStatsCard(st, P.logs, t) + msCard;
 }
 
 function srParse(txt){
