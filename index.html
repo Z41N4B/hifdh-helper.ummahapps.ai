@@ -142,7 +142,7 @@
         {
           "@type": "Question",
           "name": "Which mushaf does it use?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The 604-page Madinah mushaf with 15 lines to a page, the 610-page 15-line Indo-Pak mushaf, or the 847-page 13-line Indo-Pak mushaf (Taj Company) used in South Africa. Choose it at the top of Settings; each person can have their own, and all pages, lines, surahs and juz follow it." }
+          "acceptedAnswer": { "@type": "Answer", "text": "The 604-page Madinah mushaf with 15 lines to a page, the 610-page 15-line Indo-Pak mushaf, or the 847-page 13-line Indo-Pak mushaf. Choose it at the top of Settings; each person can have their own, and all pages, lines, surahs and juz follow it." }
         },
         {
           "@type": "Question",
@@ -584,7 +584,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <div><h3>What if I am sick, travelling or on my period?</h3><p>Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifz and keeps everything else. On your period you choose, for revision, reading and new hifz, whether to keep it as normal, stop it, or do more each day. You can also be sick or travelling during your period.</p></div>
       <div><h3>Can I memorise from the end of the Quran, such as Juz Amma?</h3><p>Yes. Mark what you already know, then choose to go backwards. New hifz then goes surah by surah towards Al-Fatihah, learning each surah from its first page, and skips anything already known.</p></div>
       <div><h3>Can I track more than one person?</h3><p>Yes. Add a person for each child or student. Each person has their own goal, schedule, logs and colour theme.</p></div>
-      <div><h3>Which mushaf does it use?</h3><p>The 604-page Madinah mushaf with 15 lines to a page, the 610-page 15-line Indo-Pak mushaf, or the 847-page 13-line Indo-Pak mushaf (Taj Company) used in South Africa. Choose it at the top of Settings; each person can have their own, and all pages, lines, surahs and juz follow it.</p></div>
+      <div><h3>Which mushaf does it use?</h3><p>The 604-page Madinah mushaf with 15 lines to a page, the 610-page 15-line Indo-Pak mushaf, or the 847-page 13-line Indo-Pak mushaf. Choose it at the top of Settings; each person can have their own, and all pages, lines, surahs and juz follow it.</p></div>
       <div><h3>Is it free, and where is my data stored?</h3><p>It is free and needs no account. Your plan and logs are saved in your browser on your own device.</p></div>
     </div>
   </section>
@@ -643,7 +643,7 @@ function lineOf(x){ var p = Math.floor(x + EPS) + 1; return { p: Math.min(PAGES,
 var JS0 = [1]; for (var jj = 1; jj < 30; jj++) JS0.push(2 + jj * 20);
 function juzIv(i){ return [JS0[i] - 1, (i < 29 ? JS0[i + 1] : PAGES + 1) - 1]; }
 function juzOf(p){ var j = 0; while (j < 29 && JS0[j + 1] <= p) j++; return j + 1; }
-// The 13-line Indo-Pak mushaf (Taj Company, 847 pages), from its layout in the Quranic Universal Library (qul.tarteel.ai).
+// The 13-line Indo-Pak mushaf (847 pages), from its layout in the Quranic Universal Library (qul.tarteel.ai).
 var M13 = { pages: 847, lines: 13,
   starts: [1,2,67,105,146,176,208,245,259,287,307,327,345,354,363,371,392,407,424,434,448,461,476,486,500,510,524,536,551,561,570,576,580,594,602,610,617,627,634,646,658,667,676,685,690,696,703,709,715,720,724,728,731,735,739,744,749,756,760,765,769,772,774,776,779,782,786,789,793,796,799,802,805,807,810,812,815,818,819,821,823,824,825,827,828,829,830,831,832,834,835,836,837,837,838,838,839,839,840,841,842,842,843,843,843,844,844,845,845,845,846,846,846,847],
   ends: [1,67,105,146,176,207,244,259,287,307,327,345,354,363,371,391,407,424,434,447,461,475,486,500,510,524,536,550,561,570,576,580,593,602,610,617,627,634,646,658,667,676,685,690,695,702,709,715,719,724,728,731,735,739,743,749,755,760,765,769,771,773,776,779,782,785,789,793,796,799,801,805,807,810,812,815,817,819,821,823,824,825,827,828,829,830,831,832,834,835,835,836,837,837,838,839,839,840,841,841,842,842,843,843,844,844,844,845,845,846,846,846,847,847],
@@ -659,7 +659,7 @@ var MUSHAFS = { 15: { pages: 604, lines: 15, starts: STARTS, ends: ENDS, sline: 
 // The choices in Settings: key, label, page count, and how each is named.
 var MUSHAF_LIST = [[15, 'Madinah, 15 lines', 'Madinah mushaf', 'The Madinah mushaf, 604 pages with 15 lines to a page.'],
   ['ip15', 'Indo-Pak, 15 lines', '15-line Indo-Pak mushaf', 'The 15-line Indo-Pak mushaf, 610 pages.'],
-  [13, 'Indo-Pak, 13 lines', '13-line mushaf', 'The 13-line Indo-Pak mushaf (Taj Company), 847 pages, as used in South Africa.']];
+  [13, 'Indo-Pak, 13 lines', '13-line mushaf', 'The 13-line Indo-Pak mushaf, 847 pages.']];
 // Which mushaf the page and line numbers are in. Each person has their own; it is switched to theirs when they are on screen.
 function useMushaf(m){
   m = m === 13 || m === 'ip15' ? m : 15; if (m === MUSHAF) return;

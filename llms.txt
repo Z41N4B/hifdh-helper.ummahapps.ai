@@ -21,7 +21,7 @@
 ## Good to know
 
 - Free to use, works in any modern browser on phone, tablet or computer, and can be added to the home screen.
-- Mushaf: the Madinah mushaf (604 pages, 15 lines a page), the 15-line Indo-Pak mushaf (610 pages) or the 13-line Indo-Pak mushaf (Taj Company, 847 pages, as used in South Africa), chosen at the top of Settings for each person. Changing it moves what is known and logged to the same places in the other mushaf.
+- Mushaf: the Madinah mushaf (604 pages, 15 lines a page), the 15-line Indo-Pak mushaf (610 pages) or the 13-line Indo-Pak mushaf (847 pages), chosen at the top of Settings for each person. Changing it moves what is known and logged to the same places in the other mushaf.
 
 ## Pages
 
