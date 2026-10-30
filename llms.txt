@@ -21,6 +21,7 @@
 ## Good to know
 
 - Free to use, works in any modern browser on phone, tablet or computer, and can be added to the home screen.
+- About and FAQs have their own About tab.
 - Setting up: the first time, Settings goes one step at a time (mushaf, name, what you have already memorised, where to start, goal, revision, study days). The goal has quick buttons for 1, 2, 3, 5 or 10 juz or the whole Qur’an, and the pace starts at 1 page a week.
 - Mushaf: the Madinah mushaf (604 pages, 15 lines a page), the 15-line Indo-Pak mushaf (610 pages) or the 13-line Indo-Pak mushaf (847 pages), chosen at the top of Settings for each person. Changing it moves what is learned and logged to the same places in the other mushaf.
 

@@ -330,7 +330,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .chip small{font-weight:500; opacity:.75; margin-left:5px}
 .hint.err{color:var(--bad-ink); font-weight:600}
 .pchip.add{border-style:dashed; color:var(--muted)}
-.tabs{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; background:var(--track); padding:4px; border-radius:12px}
+.tabs{display:grid; grid-template-columns:repeat(4,1fr); gap:4px; background:var(--track); padding:4px; border-radius:12px}
 .tab{appearance:none; border:0; background:transparent; color:var(--muted); font:600 14px var(--f-body); padding:10px 0; border-radius:9px; cursor:pointer; min-height:44px}
 .tab.nudge{position:relative; color:var(--ink)}
 .tab.nudge::after{content:""; position:absolute; top:8px; right:calc(50% - 40px); width:8px; height:8px; border-radius:50%; background:var(--accent); animation:nudge 1.6s ease-in-out infinite}
@@ -559,11 +559,13 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
     <button class="tab" role="tab" id="tab-today" data-a="tab" data-tab="today">Today</button>
     <button class="tab" role="tab" id="tab-plan" data-a="tab" data-tab="plan">Plan</button>
     <button class="tab" role="tab" id="tab-settings" data-a="tab" data-tab="settings">Settings</button>
+    <button class="tab" role="tab" id="tab-about" data-a="tab" data-tab="about">About</button>
   </nav>
   <main id="app"></main>
   <figure class="dua" id="dua" aria-label="Dua of the day"></figure>
   <p class="foot" id="sync"></p>
-
+  <!-- About and FAQs: shown in the About tab (and to search engines and without JavaScript). -->
+  <div id="info">
   <section class="card about" id="about" aria-labelledby="about-h">
     <h2 id="about-h">About Hifdh Helper</h2>
     <p><strong>Hifdh Helper</strong> is a free Qur’an memorisation (hifdh) planner and tracker. Enter what you have already memorised and your goal, and it works out what to do on each study day, with the exact surahs and page numbers in the 604-page Madinah mushaf, the 610-page 15-line Indo-Pak mushaf or the 847-page 13-line mushaf.</p>
@@ -588,7 +590,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
   </section>
 
   <section class="card about" id="faq" aria-labelledby="faq-h">
-    <h2 id="faq-h">Questions</h2>
+    <h2 id="faq-h">FAQs</h2>
     <div class="faq">
       <div><h3>What is Hifdh Helper?</h3><p>Hifdh Helper is a free web app for memorising the Qur’an. You enter what you have already memorised and your goal, and it works out how much new hifdh, new revision and older revision to do on each study day, with the exact surahs, pages and lines.</p></div>
       <div><h3>What is the difference between new revision and revision?</h3><p>New revision covers what you memorised recently, on a spaced repetition schedule so it sticks: each week’s new hifdh is revised every day that week and for 21 days after by default, then 3, 7, 14 and 30 days later. Revision covers everything older, revised in a full cycle, every 30 days by default.</p></div>
@@ -603,6 +605,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <div><h3>Is it free, and where is my data stored?</h3><p>It is free and needs no account. Your plan and logs are saved in your browser on your own device.</p></div>
     </div>
   </section>
+  </div>
 
   <footer class="site-foot">
     <span>Hifdh Helper is made by <a href="https://ummahapps.ai/">UmmahApps</a>.</span>
@@ -1391,7 +1394,8 @@ function moveMushaf(P, to){
 function saveActive(){ try { localStorage.setItem(ACTIVE_KEY, activeId); } catch (e) {} }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
-var tab = 'today';
+// A link to #about or #faq opens the About tab.
+var tab = /^#(about|faq)$/.test(location.hash) ? 'about' : 'today';
 var viewDate = todayIso();
 var draft = null;
 var resetArmed = false, removeArmed = false;
@@ -1902,8 +1906,8 @@ function viewToday(){
 
   var banner = (canStore ? '' : '<div class="note"><span>This browser is not letting Hifdh Helper save, so progress is lost when the page is reloaded or closed. This usually happens in private browsing, or when site data is blocked in the browser’s settings.</span></div>') +
     (st.setupDone ? '' : '<section class="card welcome"><h2 class="h">Welcome to Hifdh Helper</h2>' +
-    '<p>This page shows what to do each day: <b>new hifdh</b> to memorise, <b>new revision</b> of what you learned recently, and <b>revision</b> of everything older.</p>' +
-    '<p class="muted">The numbers below are only an example. Set up your own plan in 7 short steps and they change to fit you.</p>' +
+    '<p>Set up your personal plan in ' + SETUP_STEPS.length + ' simple steps. Based on your goals and current memorisation level, Hifdh Helper will create a daily schedule showing you what to memorise, what to revise from your recent learning, and what to review from your older memorisation.</p>' +
+    '<p class="muted">The schedule below is just an example. Once you’ve set up your plan, it will be replaced with your own daily schedule.</p>' +
     '<button class="btn solid wide" data-a="tab" data-tab="settings">Set up my plan</button></section>');
 
   // Paused areas are left off the front page (unless something was logged that day anyway). When sick, everything
@@ -2440,8 +2444,9 @@ function render(){
   renderPeople();
   document.body.setAttribute('data-tint', String(cur().tint));
   var app = $('#app');
-  app.innerHTML = tab === 'today' ? viewToday() : tab === 'plan' ? viewPlan() : viewSettings();
-  ['today', 'plan', 'settings'].forEach(function(k){ $('#tab-' + k).setAttribute('aria-selected', String(k === tab)); });
+  app.innerHTML = tab === 'today' ? viewToday() : tab === 'plan' ? viewPlan() : tab === 'about' ? '' : viewSettings();
+  $('#info').hidden = tab !== 'about'; $('#dua').hidden = $('#sync').hidden = tab === 'about';
+  ['today', 'plan', 'settings', 'about'].forEach(function(k){ $('#tab-' + k).setAttribute('aria-selected', String(k === tab)); });
   // A dot on Settings until the plan is set up.
   $('#tab-settings').classList.toggle('nudge', !cur().settings.setupDone && tab !== 'settings');
   if (tab === 'settings') updatePreview();
