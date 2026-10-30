@@ -2182,6 +2182,16 @@ function previewHtml(f){
 function surahOptions(sel){
   return NAMES.map(function(n, i){ return '<option value="' + i + '"' + (i === sel ? ' selected' : '') + '>' + (i + 1) + '. ' + esc(n) + '</option>'; }).join('');
 }
+// Already added means every page from From to To is marked already, so adding it would change nothing.
+function rangeAdded(){
+  var fp = Math.round(num(rng.fp)), tp = Math.round(num(rng.tp));
+  return !!draft && fp >= 1 && tp <= PAGES && fp <= tp && overlapIv(normIv(draft.base), fp - 1, tp) >= tp - fp + 1 - EPS;
+}
+function addRangeBtn(){
+  var done = rangeAdded();
+  return '<button type="button" class="btn" id="addRange" data-a="addrange"' + (done ? ' disabled' : '') + '>' + (done ? 'Already added this range' : 'Add this range') + '</button>';
+}
+function syncAddRange(){ var b = $('#addRange'); if (b) b.outerHTML = addRangeBtn(); }
 function surahIdxOfPage(p){ var s = surahsFor(p, p); return s.length ? s[0].i : 0; }
 function syncStart(){ draft.startPages = Math.round(measure(draft.base) * 100) / 100; }
 
@@ -2234,7 +2244,7 @@ function viewSettings(){
     '<span>To page</span><input class="inp" id="r-tp" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" aria-label="To page" value="' + val(rng.tp) + '"></div>' +
     '<small class="hint">Choosing a surah fills in its first and last page. Page 1 to ' + PAGES + ' is the whole Qur’an.</small></details>' +
     (rng.msg ? '<small class="hint err">' + esc(rng.msg) + '</small>' : '') +
-    '<button type="button" class="btn" data-a="addrange">Add this range</button></div></section>',
+    addRangeBtn() + '</div></section>',
 
     '<section class="card" id="nextCard"><h2 class="h">Where do you want your new hifdh to start from?</h2>' +
     '<p class="muted">New pages are learned from here, and skip anything already learned. Move it whenever you switch to a different part of the Qur’an.</p>' +
@@ -2753,8 +2763,8 @@ document.addEventListener('input', function(e){
   if (m && draft){ draft[m[0]] = m[1](e.target.value); if (id === 'f-weekly') draft._wTouched = true; updatePreview(); return; }
   if (id === 'ox-f'){ oxr.f = e.target.value; var pf = parseInt(oxr.f, 10); if (pf >= 1 && pf <= PAGES){ oxr.s = surahIdxOfPage(pf); $('#ox-s').value = String(oxr.s); } }
   else if (id === 'ox-t'){ oxr.t = e.target.value; }
-  else if (id === 'r-fp'){ rng.fp = parseInt(e.target.value, 10); if (rng.fp >= 1 && rng.fp <= PAGES){ rng.fs = surahIdxOfPage(rng.fp); $('#r-fs').value = String(rng.fs); } }
-  else if (id === 'r-tp'){ rng.tp = parseInt(e.target.value, 10); if (rng.tp >= 1 && rng.tp <= PAGES){ rng.ts = surahIdxOfPage(rng.tp); $('#r-ts').value = String(rng.ts); } }
+  else if (id === 'r-fp'){ rng.fp = parseInt(e.target.value, 10); if (rng.fp >= 1 && rng.fp <= PAGES){ rng.fs = surahIdxOfPage(rng.fp); $('#r-fs').value = String(rng.fs); } syncAddRange(); }
+  else if (id === 'r-tp'){ rng.tp = parseInt(e.target.value, 10); if (rng.tp >= 1 && rng.tp <= PAGES){ rng.ts = surahIdxOfPage(rng.tp); $('#r-ts').value = String(rng.ts); } syncAddRange(); }
   else if ((id === 'n-p' || id === 'n-l') && draft){
     var pg = parseInt($('#n-p').value, 10), ln = parseInt($('#n-l').value, 10);
     if (!(ln >= 1 && ln <= LINES)) ln = 1;
@@ -2792,8 +2802,8 @@ document.addEventListener('change', function(e){
     render(); return;
   }
   if (id === 'ox-s'){ oxr.s = Number(e.target.value); oxr.f = String(STARTS[oxr.s]); oxr.t = String(ENDS[oxr.s]); $('#ox-f').value = oxr.f; $('#ox-t').value = oxr.t; }
-  else if (id === 'r-fs'){ rng.fs = Number(e.target.value); rng.fp = STARTS[rng.fs]; $('#r-fp').value = rng.fp; }
-  else if (id === 'r-ts'){ rng.ts = Number(e.target.value); rng.tp = ENDS[rng.ts]; $('#r-tp').value = rng.tp; }
+  else if (id === 'r-fs'){ rng.fs = Number(e.target.value); rng.fp = STARTS[rng.fs]; $('#r-fp').value = rng.fp; syncAddRange(); }
+  else if (id === 'r-ts'){ rng.ts = Number(e.target.value); rng.tp = ENDS[rng.ts]; $('#r-tp').value = rng.tp; syncAddRange(); }
   else if (id === 'n-s' && draft){
     var i = Number(e.target.value), at = lineOf(surStart(i));
     draft.next.x = surStart(i); if (draft.next.dir < 0) draft.next.s = i;
