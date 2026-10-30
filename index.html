@@ -1697,6 +1697,7 @@ function hardCard(P, d, t, groups){
         return '<li><div class="hl"><span>' + esc(rangeLabel(x.pg, x.pg)) + '<small>Extra review ' + (x.st + 1) + ' of ' + HARD_STEPS.length + late + '</small></span><b>' + hardPart(x) + '</b></div>' +
           '<div class="hb"><button class="btn sm solid" data-a="hardok" data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '">Revised</button><button class="btn sm" data-a="hardagain" data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '">Still hard</button></div></li>';
       }).join('') + '</ul></div>';
+    if (!P.settings.days[parse(d).getDay()]) h += '<p class="wnote">It’s a rest day, so do whatever you can. Anything you can’t do today carries on to tomorrow.</p>';
   } else if (H.length && d === t){
     h += '<p class="wnote">' + (dayEffects(P.settings, d).mode === 'sick' ? 'Hard pages are paused while you rest. Their reviews pick up again when you’re better.' : 'No hard pages due today.') + '</p>';
   }
