@@ -332,6 +332,12 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .pchip.add{border-style:dashed; color:var(--muted)}
 .tabs{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; background:var(--track); padding:4px; border-radius:12px}
 .tab{appearance:none; border:0; background:transparent; color:var(--muted); font:600 14px var(--f-body); padding:10px 0; border-radius:9px; cursor:pointer; min-height:44px}
+.tab.nudge{position:relative; color:var(--ink)}
+.tab.nudge::after{content:""; position:absolute; top:8px; right:calc(50% - 40px); width:8px; height:8px; border-radius:50%; background:var(--accent); animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{50%{transform:scale(1.5); opacity:.6}}
+@media (prefers-reduced-motion: reduce){ .tab.nudge::after{animation:none} }
+.welcome{border:2px solid var(--accent)}
+.welcome p{margin:0 0 10px}
 .tab[aria-selected="true"]{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgb(0 0 0 / .14)}
 
 .card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px; min-width:0}
@@ -1385,8 +1391,7 @@ function moveMushaf(P, to){
 function saveActive(){ try { localStorage.setItem(ACTIVE_KEY, activeId); } catch (e) {} }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
-var tab = cur().settings.setupDone ? 'today' : 'settings';
-var autoTab = !cur().settings.setupDone;
+var tab = 'today';
 var viewDate = todayIso();
 var draft = null;
 var resetArmed = false, removeArmed = false;
@@ -1434,7 +1439,6 @@ function flush(){
 }
 function adopt(r){
   cycVer++; S = normalize(r); persistLocal();
-  if (autoTab && cur().settings.setupDone) tab = 'today';
   var a = document.activeElement;
   if (!(a && a.tagName === 'INPUT')) render();
 }
@@ -1897,8 +1901,10 @@ function viewToday(){
     '<button class="icon" data-a="wk" data-step="7" aria-label="Next week">›</button></div></div>';
 
   var banner = (canStore ? '' : '<div class="note"><span>This browser is not letting Hifdh Helper save, so progress is lost when the page is reloaded or closed. This usually happens in private browsing, or when site data is blocked in the browser’s settings.</span></div>') +
-    (st.setupDone ? '' : '<div class="note"><span>These are example numbers. Enter real ones to get a plan that fits.</span>' +
-    '<button class="btn solid sm" data-a="tab" data-tab="settings">Set my targets</button></div>');
+    (st.setupDone ? '' : '<section class="card welcome"><h2 class="h">Welcome to Hifdh Helper</h2>' +
+    '<p>This page shows what to do each day: <b>new hifdh</b> to memorise, <b>new revision</b> of what you learned recently, and <b>revision</b> of everything older.</p>' +
+    '<p class="muted">The numbers below are only an example. Set up your own plan in 7 short steps and they change to fit you.</p>' +
+    '<button class="btn solid wide" data-a="tab" data-tab="settings">Set up my plan</button></section>');
 
   // Paused areas are left off the front page (unless something was logged that day anyway). When sick, everything
   // is paused but the cards stay, so anything done can still be added.
@@ -2436,6 +2442,8 @@ function render(){
   var app = $('#app');
   app.innerHTML = tab === 'today' ? viewToday() : tab === 'plan' ? viewPlan() : viewSettings();
   ['today', 'plan', 'settings'].forEach(function(k){ $('#tab-' + k).setAttribute('aria-selected', String(k === tab)); });
+  // A dot on Settings until the plan is set up.
+  $('#tab-settings').classList.toggle('nudge', !cur().settings.setupDone && tab !== 'settings');
   if (tab === 'settings') updatePreview();
 }
 
@@ -2498,7 +2506,7 @@ document.addEventListener('visibilitychange', function(){
 });
 function goTab(k){
   if (k !== 'settings' && !leaveSettingsOk()) return;
-  tab = k; autoTab = false; resetArmed = false; removeArmed = false; pauseAsk = false; ramOffArmed = false;
+  tab = k; resetArmed = false; removeArmed = false; pauseAsk = false; ramOffArmed = false;
   if (k !== 'settings') draft = null;
   render();
   try { window.scrollTo(0, 0); } catch (e) {}
