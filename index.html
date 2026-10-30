@@ -2245,7 +2245,7 @@ function viewSettings(){
     '<button type="button" class="chip" data-a="mode" data-m="date" aria-pressed="' + !wk + '">Finish date</button>' +
     '<button type="button" class="chip" data-a="mode" data-m="weekly" aria-pressed="' + wk + '">Amount a week</button></div></div>' +
     (wk
-      ? '<div class="field"><label for="f-weekly">Memorise each week</label><input class="inp" id="f-weekly" type="number" inputmode="decimal" min="0" step="0.5" value="' + val(f.weeklyAmount) + '">' +
+      ? '<div class="field"><label for="f-weekly">How much to memorise each week</label><input class="inp" id="f-weekly" type="number" inputmode="decimal" min="0" step="0.5" value="' + val(f.weeklyAmount) + '">' +
         '<div class="chips" role="group" aria-label="Unit">' +
         '<button type="button" class="chip" data-a="unit" data-u="pages" aria-pressed="' + (f.weeklyUnit !== 'lines') + '">Pages</button>' +
         '<button type="button" class="chip" data-a="unit" data-u="lines" aria-pressed="' + (f.weeklyUnit === 'lines') + '">Lines</button></div>' +
