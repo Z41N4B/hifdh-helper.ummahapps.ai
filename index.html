@@ -83,7 +83,7 @@
         "Extra reviews for hard pages the next day, 3 days and 7 days later, chosen from any memorised page",
         "Modes for being sick, travelling or on your period, and an option to pause new hifdh",
         "Ramadan mode: choose how revision and new hifdh change, set how many full readings (khatm) to finish from any starting page, and track pages read each day",
-        "Bar chart of past revision cycles on the Plan page",
+        "Bar chart of past revision cycles in Your plan",
         "Memorise forward, or backwards surah by surah from Juz Amma, each surah from its first page",
         "Juz-by-juz progress, current pace and projected finish date",
         "Daily reading tick with a streak",
@@ -219,6 +219,12 @@ body{
   padding-left:max(16px, env(safe-area-inset-left, 0px));
   padding-right:max(16px, env(safe-area-inset-right, 0px));
 }
+body{--pc:var(--accent); --on-pc:var(--on-accent)}
+body[data-tint="0"]{--pc:#3E8A5E; --on-pc:#fff} body[data-tint="1"]{--pc:#C2577A; --on-pc:#fff} body[data-tint="2"]{--pc:#3F7FC0; --on-pc:#fff}
+body[data-tint="3"]{--pc:#8A68C2; --on-pc:#fff} body[data-tint="4"]{--pc:#CC7A35; --on-pc:#fff} body[data-tint="5"]{--pc:#2E95A6; --on-pc:#fff}
+body[data-tint="6"]{--pc:#E0AE12; --on-pc:#1F1A05} body[data-tint="7"]{--pc:#E0559A; --on-pc:#fff} body[data-tint="8"]{--pc:#1E90D8; --on-pc:#fff}
+body[data-tint="9"]{--pc:#5FA21C; --on-pc:#fff} body[data-tint="10"]{--pc:#7FB0FF; --on-pc:#06122B} body[data-tint="11"]{--pc:#E0A8F5; --on-pc:#2A0F38}
+body[data-tint="12"]{--pc:#F6C628; --on-pc:#1F3A1E}
 body[data-tint="0"]{--page:var(--t-0)} body[data-tint="1"]{--page:var(--t-1)} body[data-tint="2"]{--page:var(--t-2)}
 body[data-tint="6"]{--page:var(--t-6)} body[data-tint="7"]{--page:var(--t-7)} body[data-tint="8"]{--page:var(--t-8)} body[data-tint="9"]{--page:var(--t-9)}
 body[data-tint="3"]{--page:var(--t-3)} body[data-tint="4"]{--page:var(--t-4)} body[data-tint="5"]{--page:var(--t-5)}
@@ -445,6 +451,16 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .btn.solid{background:var(--ink); color:var(--bg); border-color:var(--ink)}
 .btn.sm{min-height:36px; padding:6px 12px}
 .btn.wide{width:100%}
+.brkstrip{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin:-4px 2px 2px; font-size:13px; color:var(--muted)}
+.brkstrip .chips{gap:6px}
+.foldbar{appearance:none; width:100%; display:flex; justify-content:space-between; align-items:center; gap:10px; border:1px solid var(--line); background:var(--surface); color:var(--ink); font:600 15px var(--f-body); padding:12px 16px; border-radius:16px; cursor:pointer; text-align:left}
+.foldbar small{color:var(--muted); font-weight:600; font-size:13px}
+.foldc.open .foldbar{margin-bottom:8px}
+.olist{list-style:none; padding:0; margin:0}
+.olist li{display:grid; grid-template-columns:1fr auto auto; gap:6px; align-items:center; padding:6px 0; border-bottom:1px solid var(--line)}
+.olist li:last-child{border-bottom:0}
+.olist small{color:var(--muted)}
+.olist .btn{min-width:40px}
 .sect{font:600 13px var(--f-body); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 2px}
 .sectp{margin:0 0 12px}
 .fold{margin-top:10px}
@@ -465,8 +481,8 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .wnote{font-size:13px; color:var(--muted)}
 .crows{display:grid; gap:12px; margin:10px 0 6px}
 .cbar{position:relative; height:14px; margin:4px 0; background:var(--track); border-radius:999px}
-.cbar i{position:absolute; left:0; top:0; bottom:0; background:var(--old); border-radius:999px}
-.cbar i.now{background:repeating-linear-gradient(45deg, var(--old) 0 6px, var(--old-soft) 6px 12px)}
+.cbar i{position:absolute; left:0; top:0; bottom:0; background:var(--pc); border-radius:999px}
+.cbar i.now{background:repeating-linear-gradient(45deg, var(--pc) 0 6px, var(--track) 6px 12px)}
 .cbar u{position:absolute; top:-4px; bottom:-4px; width:2px; margin-left:-1px; background:var(--ink); opacity:.5}
 
 /* plan */
@@ -475,8 +491,8 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .juz{display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:4px}
 .jz{position:relative; height:34px; border:1px solid var(--line); border-radius:8px; background:var(--bg); display:flex; align-items:center; justify-content:center; font:600 12px var(--f-body); color:var(--muted); overflow:hidden; font-variant-numeric:tabular-nums}
 .jz span{position:relative}
-.jz i{position:absolute; left:0; bottom:0; height:5px; background:var(--accent)}
-.jz.full{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.jz i{position:absolute; left:0; bottom:0; height:5px; background:var(--pc)}
+.jz.full{background:var(--pc); border-color:var(--pc); color:var(--on-pc)}
 .jz.full i{display:none}
 .jz.beyond{border-style:dashed; opacity:.45}
 .kv{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px 14px}
@@ -557,7 +573,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
   <div class="people" id="people" role="group" aria-label="People"></div>
   <nav class="tabs" role="tablist" aria-label="Sections">
     <button class="tab" role="tab" id="tab-today" data-a="tab" data-tab="today">Today</button>
-    <button class="tab" role="tab" id="tab-plan" data-a="tab" data-tab="plan">Plan</button>
+    <button class="tab" role="tab" id="tab-plan" data-a="tab" data-tab="plan">Your plan</button>
     <button class="tab" role="tab" id="tab-settings" data-a="tab" data-tab="settings">Settings</button>
     <button class="tab" role="tab" id="tab-about" data-a="tab" data-tab="about">About</button>
   </nav>
@@ -581,7 +597,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <li>Hard pages come back the next day, 3 days later and 7 days later, on top of normal revision.</li>
       <li>Modes for being sick, travelling or on your period, so your plan fits your day.</li>
       <li>A Ramadan mode: set how many times you want to read the whole Qur’an (khatm), start anywhere, and track the pages you read each day.</li>
-      <li>A bar chart of your past revision cycles on the Plan page.</li>
+      <li>A bar chart of your past revision cycles in Your plan.</li>
       <li>Memorise forward, or backwards surah by surah from Juz Amma.</li>
       <li>A daily reading tick with a streak, for reading pages not yet memorised.</li>
       <li>Juz-by-juz progress, your current pace and a projected finish date.</li>
@@ -831,6 +847,12 @@ var SR_DEFAULT = [3, 7, 14, 30];
 var HARD_STEPS = [1, 3, 7];
 // Which part of the page a hard page is, as shown: "p.12", "p.12 lines 1–8" or "p.12 lines 8–15" (1–7 and 7–13 in the 13-line mushaf).
 function hardPart(h){ var m = Math.ceil(LINES / 2); return 'p.' + h.pg + ['', ' lines 1–' + m, ' lines ' + m + '–' + LINES][h.half || 0]; }
+// The lines a hard page covers, and its size in pages.
+function hardIv(h){
+  var m = Math.ceil(LINES / 2), a = h.pg - 1;
+  return h.half === 1 ? [a, a + m / LINES] : h.half === 2 ? [a + (m - 1) / LINES, h.pg] : [a, h.pg];
+}
+function hardName(h){ return namesIn([hardIv(h)]) || rangeLabel(h.pg, h.pg); }
 function hardKey(h){ return h.pg + '-' + (h.half || 0); }
 function hardOf(P){ return Array.isArray(P.hard) ? P.hard : (P.hard = []); }
 // When a hard page's next extra review is due. Days off sick do not count, so reviews wait rather than pile up:
@@ -1097,7 +1119,11 @@ function dayEffects(st, x){
     e.nwMore = e.nw === 'more' ? Math.max(0, num(o.nwMore)) : 0;
   }
   if (b.mode === 'sick'){ e.rev = e.read = e.nw = 'none'; e.revMore = e.readMore = e.nwMore = 0; }
-  else if (b.mode === 'travel'){ e.nw = 'none'; e.nwMore = 0; }
+  else if (b.mode === 'travel'){
+    e.nw = 'none'; e.nwMore = 0;
+    // Travelling during a period: revision and reading take the lighter of the two, so no extra pages.
+    if (pb){ if (e.rev === 'more'){ e.rev = 'normal'; e.revMore = 0; } if (e.read === 'more'){ e.read = 'normal'; e.readMore = 0; } }
+  }
   return e;
 }
 function newOff(st, x){ return dayEffects(st, x).nw === 'none'; }
@@ -1303,7 +1329,7 @@ function normPerson(p, i){
   s.startPages = Math.round(measure(s.base) * 100) / 100;
   return { id: (p && p.id) || ('p' + i), name: (p && p.name) || 'Me', settings: s,
            tint: (p && Number.isInteger(p.tint) && p.tint >= 0 && p.tint < TINTS.length) ? p.tint : (i % 6),
-           logs: logs, hard: normHard(p && p.hard), reads: normReads(p && p.reads), hardLog: normCounts(p && p.hardLog), rlog: normPagesLog(p && p.rlog) };
+           logs: logs, hard: normHard(p && p.hard), reads: normReads(p && p.reads), listens: normReads(p && p.listens), hardLog: normCounts(p && p.hardLog), rlog: normPagesLog(p && p.rlog) };
 }
 // Days ticked for reading pages not yet memorised: { 'YYYY-MM-DD': true }.
 function normCounts(o){
@@ -1399,7 +1425,7 @@ var tab = /^#(about|faq)$/.test(location.hash) ? 'about' : 'today';
 var viewDate = todayIso();
 var draft = null;
 var resetArmed = false, removeArmed = false;
-var upDays = 14;
+var upDays = 3;
 document.addEventListener('keydown', function(e){
   if (e.key === 'Enter' && e.target && e.target.id === 'hardPg'){ e.preventDefault(); var b = document.querySelector('.hadd [data-a="hardadd"]'); if (b) b.click(); }
   if (e.key === 'Enter' && e.target && (e.target.id === 'ox-f' || e.target.id === 'ox-t')){ e.preventDefault(); var ob = document.querySelector('[data-a="oxadd"]'); if (ob) ob.click(); }
@@ -1573,7 +1599,7 @@ function srHtml(st, logs, sr, d, t, doneR){
   return h + '</div>' + fc + (left ? '<p class="wnote">Revise them in this order. What you log is ticked off from the top.</p>' : '') + nxt;
 }
 function hardItem(h, st, extra){
-  return '<li><span>' + esc(rangeLabel(h.pg, h.pg)) + '<small>Hard page · extra review ' + (st + 1) + ' of ' + HARD_STEPS.length + (extra || '') + '</small></span><b>' + hardPart(h) + '</b></li>';
+  return '<li><span>' + esc(hardName(h)) + '<small>Hard ' + (h.half ? 'half page' : 'page') + ' · extra review ' + (st + 1) + ' of ' + HARD_STEPS.length + (extra || '') + '</small></span><b>' + hardPart(h) + '</b></li>';
 }
 // Hard-page reviews done per day: { 'YYYY-MM-DD': count }.
 function hardLogOf(P){ return P.hardLog && typeof P.hardLog === 'object' ? P.hardLog : (P.hardLog = {}); }
@@ -1584,25 +1610,35 @@ function readStreak(R, t){
   while (R[x]){ n++; x = iso(addDays(parse(x), -1)); }
   return n;
 }
+function listensOf(P){ return P.listens && typeof P.listens === 'object' ? P.listens : (P.listens = {}); }
 function readCard(P, d, t, fx){
   fx = fx || {};
-  var R = readsOf(P), on = !!R[d], future = d > t, wd = weekDates(d, P.settings.weekStart), streak = readStreak(R, t);
+  return tickCard(readsOf(P), d, t, P.settings.weekStart, { id: 'read', title: 'Daily reading', did: 'Read', verb: 'Read', act: 'readtick', ask: 'Tick for today',
+    why: fx.mode === 'sick' ? 'Resting while you’re unwell. Tick it if you do read.'
+      : fx.readMore > 0 ? 'Aim to read about ' + fmt1(fx.readMore) + ' ' + (fx.readMore > 1 ? 'pages' : 'page') + ' today from pages you haven’t memorised yet, as you chose for your period. Tick when done.'
+      : 'Read from pages you haven’t memorised yet. No pages to count, just a tick.' });
+}
+function listenCard(P, d, t){
+  return tickCard(listensOf(P), d, t, P.settings.weekStart, { id: 'listen', title: 'Listening', did: 'Listened', verb: 'Listen', act: 'listentick', ask: 'I have listened to my new hifdh',
+    why: 'Listen to your new hifdh recited, as many times as you can. No pages to count, just a tick.' });
+}
+// A card with one tick a day and a week of dots: daily reading and listening.
+function tickCard(R, d, t, ws, o){
+  var on = !!R[d], future = d > t, wd = weekDates(d, ws), streak = readStreak(R, t);
   var short = { weekday: 'short', day: 'numeric', month: 'short' };
-  var label = on ? (d === t ? '✓ Read today' : '✓ Read on ' + fmtDate(d, short)) : future ? 'Not yet' : (d === t ? 'Tick for today' : 'Tick for ' + fmtDate(d, short));
+  var label = on ? (d === t ? '✓ ' + o.did + ' today' : '✓ ' + o.did + ' on ' + fmtDate(d, short)) : future ? 'Not yet' : (d === t ? o.ask : 'Tick for ' + fmtDate(d, short));
   var dots = wd.map(function(x){
     var cls = R[x] ? 'on' : x > t ? 'fut' : '';
-    return '<span class="rd ' + cls + (x === d ? ' cur' : '') + '" title="' + fmtDate(x, short) + (R[x] ? ', read' : '') + '"><i>' + (R[x] ? '✓' : '') + '</i><small>' + fmtDate(x, { weekday: 'narrow' }) + '</small></span>';
+    return '<span class="rd ' + cls + (x === d ? ' cur' : '') + '" title="' + fmtDate(x, short) + (R[x] ? ', done' : '') + '"><i>' + (R[x] ? '✓' : '') + '</i><small>' + fmtDate(x, { weekday: 'narrow' }) + '</small></span>';
   }).join('');
   var weekN = wd.filter(function(x){ return R[x]; }).length;
-  var note = streak > 1 ? streak + ' days in a row' + (R[t] ? '' : '. Read today to keep it going') + '.'
+  var note = streak > 1 ? streak + ' days in a row' + (R[t] ? '' : '. ' + o.verb + ' today to keep it going') + '.'
     : weekN ? weekN + (weekN === 1 ? ' day' : ' days') + ' this week.'
     : 'A little each day adds up.';
-  return '<section class="card s-read" aria-labelledby="h-read"><div class="card-h"><div class="ttl"><h2 id="h-read">Daily reading</h2></div></div>' +
-    '<p class="why">' + (fx.mode === 'sick' ? 'Resting while you’re unwell. Tick it if you do read.'
-      : fx.readMore > 0 ? 'Aim to read about ' + fmt1(fx.readMore) + ' ' + (fx.readMore > 1 ? 'pages' : 'page') + ' today from pages you haven’t memorised yet, as you chose for your period. Tick when done.'
-      : 'Read from pages you haven’t memorised yet. No pages to count, just a tick.') + '</p>' +
-    '<button class="btn wide read' + (on ? ' solid' : '') + '" data-a="readtick" aria-pressed="' + on + '"' + (future ? ' disabled' : '') + '>' + label + '</button>' +
-    '<div class="rdots" role="img" aria-label="Reading this week: ' + weekN + ' of 7 days">' + dots + '</div>' +
+  return '<section class="card s-read" aria-labelledby="h-' + o.id + '"><div class="card-h"><div class="ttl"><h2 id="h-' + o.id + '">' + o.title + '</h2></div></div>' +
+    '<p class="why">' + o.why + '</p>' +
+    '<button class="btn wide read' + (on ? ' solid' : '') + '" data-a="' + o.act + '" aria-pressed="' + on + '"' + (future ? ' disabled' : '') + '>' + label + '</button>' +
+    '<div class="rdots" role="img" aria-label="' + o.title + ' this week: ' + weekN + ' of 7 days">' + dots + '</div>' +
     '<p class="wnote">' + note + '</p></section>';
 }
 function rlogOf(P){ return P.rlog && typeof P.rlog === 'object' ? P.rlog : (P.rlog = {}); }
@@ -1626,7 +1662,7 @@ function ramSpan(R, from, n){
   var a = ramPage(R, from), b = ramPage(R, from + n - 1), nm = function(p){ return NAMES[surahIdxOfPage(p)]; };
   return 'p.' + a + ' (' + nm(a) + ') to p.' + b + ' (' + nm(b) + ')';
 }
-// Progress for the whole of Ramadan, with a bar for each day. Used on the Today card and the Plan page.
+// Progress for the whole of Ramadan, with a bar for each day. Used on the Today card and in Your plan.
 function ramProgressHtml(s, t){
   var R = s.R, readN = Math.min(s.all, s.total), pct = Math.round(readN / s.total * 100);
   var k = Math.floor(s.all / PAGES), elapsed = Math.max(0, Math.min(R.days, diffDays(R.from, t)));
@@ -1695,14 +1731,15 @@ function hardCard(P, d, t, groups){
   var due = d === t ? H.filter(function(h){ return hardDue(h) <= t; }).sort(function(a, b){ return a.pg - b.pg || (a.half || 0) - (b.half || 0); }) : [];
   var rest = H.filter(function(h){ return due.indexOf(h) < 0; }).sort(function(a, b){ return hardDue(a) < hardDue(b) ? -1 : hardDue(a) > hardDue(b) ? 1 : a.pg - b.pg || (a.half || 0) - (b.half || 0); });
   var h = '<section class="card s-hard" aria-labelledby="h-hard"><div class="card-h"><div class="ttl"><h2 id="h-hard">Hard pages</h2></div>' +
-    '<span class="label">' + (H.length ? H.length + (H.length === 1 ? ' page' : ' pages') : '') + '</span></div>';
+    '<span class="label">' + (H.length ? (function(n){ return fmtQ(n) + (n > 1 ? ' pages' : ' page'); })(H.reduce(function(s, x){ return s + (x.half ? 0.5 : 1); }, 0)) : '') + '</span></div>';
   h += '<p class="why">' + (H.length ? 'Each hard page comes back ' + listAnd(HARD_STEPS.map(function(n, i){ return i ? n + ' days later' : 'the next day'; })) + ', on top of your normal revision. Tap Still hard to start it again.'
     : 'Found a page hard? Mark it and it comes back the next day, 3 days later and 7 days later, on top of your normal revision.') + '</p>';
   if (due.length){
-    h += '<div class="where"><div class="where-h"><span class="label">Due today</span><span>' + due.length + (due.length === 1 ? ' page' : ' pages') + '</span></div><ul class="hlist">' +
+    var dueSize = due.reduce(function(s, x){ return s + (x.half ? 0.5 : 1); }, 0);
+    h += '<div class="where"><div class="where-h"><span class="label">Due today</span><span>' + fmtQ(dueSize) + (dueSize > 1 ? ' pages' : ' page') + '</span></div><ul class="hlist">' +
       due.map(function(x){
         var dd = hardDue(x), late = dd < t ? ' · was due ' + fmtDate(dd, short) : '';
-        return '<li><div class="hl"><span>' + esc(rangeLabel(x.pg, x.pg)) + '<small>Extra review ' + (x.st + 1) + ' of ' + HARD_STEPS.length + late + '</small></span><b>' + hardPart(x) + '</b></div>' +
+        return '<li><div class="hl"><span>' + esc(hardName(x)) + '<small>Extra review ' + (x.st + 1) + ' of ' + HARD_STEPS.length + late + '</small></span><b>' + hardPart(x) + '</b></div>' +
           '<div class="hb"><button class="btn sm solid" data-a="hardok" data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '">Revised</button><button class="btn sm" data-a="hardagain" data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '">Still hard</button></div></li>';
       }).join('') + '</ul></div>';
     if (!P.settings.days[parse(d).getDay()]) h += '<p class="wnote">It’s a rest day, so do whatever you can. Anything you can’t do today carries on to tomorrow.</p>';
@@ -1712,7 +1749,7 @@ function hardCard(P, d, t, groups){
   if (rest.length){
     h += '<details class="hall"' + (d !== t ? ' open' : '') + '><summary>' + (due.length ? 'Other hard pages' : 'All hard pages') + ' (' + rest.length + ')</summary><ul class="hlist">' +
       rest.map(function(x){
-        return '<li><div class="hl"><span>' + esc(rangeLabel(x.pg, x.pg)) + '<small>Next extra review ' + fmtDate(hardDue(x), short) + ' · ' + (x.st + 1) + ' of ' + HARD_STEPS.length + '</small></span><b>' + hardPart(x) + '</b>' +
+        return '<li><div class="hl"><span>' + esc(hardName(x)) + '<small>Next extra review ' + fmtDate(hardDue(x), short) + ' · ' + (x.st + 1) + ' of ' + HARD_STEPS.length + '</small></span><b>' + hardPart(x) + '</b>' +
           xBtn('hardrm', 'data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '"', 'hardrm:' + hardKey(x), 'Take ' + hardPart(x) + ' off the hard list') + '</div></li>';
       }).join('') + '</ul></details>';
   }
@@ -1760,7 +1797,7 @@ function upcomingCard(st, logs, t){
     x = iso(addDays(parse(x), 1)); i++;
   }
   return '<section class="card" id="upcoming" aria-label="Coming up"><div class="row-h"><h2 class="h">' + 'New revision, coming up' + '</h2>' +
-    '<span class="uchips" role="group" aria-label="How many days"><button type="button" class="chip xs" data-a="updays" data-n="7" aria-pressed="' + (upDays === 7) + '">7 days</button>' +
+    '<span class="uchips" role="group" aria-label="How many days"><button type="button" class="chip xs" data-a="updays" data-n="3" aria-pressed="' + (upDays === 3) + '">3 days</button><button type="button" class="chip xs" data-a="updays" data-n="7" aria-pressed="' + (upDays === 7) + '">7 days</button>' +
     '<button type="button" class="chip xs" data-a="updays" data-n="14" aria-pressed="' + (upDays === 14) + '">14 days</button></span></div>' +
     '<div class="ulist">' + rows.join('') + '</div>' +
     '<p class="wnote">Only pages already learned are shown. New hifdh you learn joins the every-day block the day after, and reviews you miss move to the next study day, so later days grow as you go.</p></section>';
@@ -1882,6 +1919,30 @@ function card(sd, target, done, why, active, extra, noAdd, lines, also){
     '</div></section>');
 }
 
+// Sick, travelling or on a period, one tap from Today.
+function breakStrip(st){
+  var chips = ['sick', 'travel', 'period'].map(function(m){
+    if (openBreak(st, m)) return '<button type="button" class="chip xs" data-a="brkend" data-m="' + m + '" aria-pressed="true">✓ ' + BREAK_NAMES[m] + '</button>';
+    return canBreak(st, m) ? '<button type="button" class="chip xs" data-a="brk" data-m="' + m + '">' + BREAK_NAMES[m] + '</button>' : '';
+  }).join('');
+  var on = openBreaks(st).length;
+  return '<div class="brkstrip"><span>' + (on ? 'Tap to turn off' : 'Not a normal day?') + '</span><div class="chips">' + chips + '</div>' +
+    '<button class="linkb" data-a="tab" data-tab="settings" data-focus="breakCard">' + (openBreak(st, 'period') ? 'Period choices' : 'More') + '</button></div>';
+}
+// Sections on Today, in the order each person chose. The Ramadan card takes the place of Daily reading in Ramadan.
+var SECTIONS = [['n', 'New hifdh'], ['listen', 'Listening'], ['r', 'New revision'], ['o', 'Revision'], ['read', 'Daily reading'], ['hard', 'Hard pages']];
+function sectionOrder(st){
+  var o = (Array.isArray(st.order) ? st.order : []).filter(function(k, i, a){ return a.indexOf(k) === i && SECTIONS.some(function(s){ return s[0] === k; }); });
+  SECTIONS.forEach(function(s){ if (o.indexOf(s[0]) < 0) o.push(s[0]); });
+  return o;
+}
+// A section that is done for the day folds down to one line; tap it to open it again.
+var openDone = {};
+function fold(key, name, done, html){
+  if (!done || !html) return html;
+  var open = !!openDone[viewDate + ':' + key];
+  return '<div class="foldc' + (open ? ' open' : '') + '"><button type="button" class="foldbar" data-a="fold" data-k="' + key + '" aria-expanded="' + open + '"><span>✓ ' + name + '</span><small>' + (open ? 'Hide' : 'Done · show') + '</small></button>' + (open ? html : '') + '</div>';
+}
 // What an inactive day is called on the cards: a rest day, or a day before the plan starts.
 var restWord = 'Rest day';
 function viewToday(){
@@ -1995,16 +2056,22 @@ function viewToday(){
   restWord = p.newPaused ? 'Paused' : p.notStarted ? 'Not started' : 'Rest day';
   var cardN = card(STREAMS[0], p.tn, lg.n || 0, whyN, p.active && !p.newPaused, exN, !ns, nLines);
   restWord = p.revOff ? 'Paused' : p.notStarted ? 'Not started' : 'Rest day';
-  var cardsRev = card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active && !p.revOff, exR) +
-                 card(STREAMS[2], p.to, lg.o || 0, whyO, p.active && !p.revOff, exO, false, false, oxD);
-  restWord = p.notStarted ? 'Not started' : 'Rest day';
-  var cards = ayah + (hideN ? '' : cardN) + (hideRev ? '' : cardsRev);
   // Pages being worked on today, so a hard one can be marked with a tap.
   var expand = function(rs){ var a = []; rs.forEach(function(r){ for (var n = r[0]; n <= r[1]; n++) a.push(n); }); return a; };
   var revPages = expand(pageRanges(normIv([].concat.apply([], sr.due.map(function(it){ return it.b.iv; })))));
-  if (ramD) cards += ramCard(P, d, t);
-  else if (!hideRead) cards += readCard(P, d, t, fx);
-  cards += hardCard(P, d, t, [{ name: 'New hifdh', pages: expand(sl.n) }, { name: 'New revision', pages: revPages }, { name: 'Revision', pages: expand(sl.o) }]);
+  var past = d <= t, met = function(dn, tg){ return past && tg > 0 && dn >= tg - 0.001; };
+  var hDueNow = d === t && !sick ? hardOf(P).filter(function(x){ return hardDue(x) <= t; }).length : 0;
+  var tadabbur = '<figure class="ayah"><p lang="ar" dir="rtl">أَفَلَا يَتَدَبَّرُونَ ٱلْقُرْءَانَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَآ</p><figcaption>Muhammad 47:24</figcaption></figure>';
+  var sec = {
+    n: hideN ? '' : fold('n', 'New hifdh', met(lg.n || 0, p.tn), cardN),
+    listen: hideN ? '' : fold('listen', 'Listening', past && !!listensOf(P)[d], listenCard(P, d, t)),
+    r: hideRev ? '' : fold('r', 'New revision', met(lg.r || 0, p.tr), card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active && !p.revOff, exR)),
+    o: hideRev ? '' : fold('o', 'Revision', met(revD, p.to), card(STREAMS[2], p.to, lg.o || 0, whyO, p.active && !p.revOff, exO, false, false, oxD)) + tadabbur,
+    read: ramD ? fold('read', 'Ramadan reading', ramS && met(ramS.today, ramS.target), ramCard(P, d, t)) : hideRead ? '' : fold('read', 'Daily reading', past && !!readsOf(P)[d], readCard(P, d, t, fx)),
+    hard: fold('hard', 'Hard pages', d === t && !hDueNow && (hardLogOf(P)[d] || 0) > 0, hardCard(P, d, t, [{ name: 'New hifdh', pages: expand(sl.n) }, { name: 'New revision', pages: revPages }, { name: 'Revision', pages: expand(sl.o) }]))
+  };
+  var cards = ayah + sectionOrder(st).map(function(k){ return sec[k]; }).join('');
+  restWord = p.notStarted ? 'Not started' : 'Rest day';
 
   var w = weekStats(st, P.logs, d, t, p), fmtQ0 = fmtQ;
   var pT = d === t ? p : w.wd.indexOf(t) >= 0 ? dayTargets(st, P.logs, t) : null, lgT = P.logs[t] || {};
@@ -2026,7 +2093,7 @@ function viewToday(){
   var weekCard = '<section class="card" aria-label="This week"><div class="row-h"><h2 class="h">This week</h2><span class="label">' +
     fmtDate(wd[0], { day: 'numeric', month: 'short' }) + ' – ' + fmtDate(wd[6], { day: 'numeric', month: 'short' }) + '</span></div>' + rows + '</section>';
 
-  return banner + head + '<div class="wk">' + strip + '</div>' + hero + cards + weekCard;
+  return banner + head + '<div class="wk">' + strip + '</div>' + hero + (d === t ? breakStrip(st) : '') + cards + weekCard;
 }
 
 // Each revision cycle so far: when it started and finished, and the pages revised in it.
@@ -2129,7 +2196,8 @@ function viewPlan(){
       '<p class="wnote">Daily revision is new revision plus older revision.</p></section>';
   }
   var ramNow = !!ramadanOn(st, t);
-  return (ramNow ? ramPlanCard(P, t) : '') + upcomingCard(st, P.logs, t) + (ramNow ? '' : ramPlanCard(P, t)) + memCard + knownCard + paceCard + revCard + cycleStatsCard(st, P.logs, t) + msCard;
+  // Ramadan first while it is on; otherwise its card sits just above "If you stay on plan".
+  return (ramNow ? ramPlanCard(P, t) : '') + upcomingCard(st, P.logs, t) + cycleStatsCard(st, P.logs, t) + memCard + knownCard + paceCard + revCard + (ramNow ? '' : ramPlanCard(P, t)) + msCard;
 }
 
 function srParse(txt){
@@ -2293,7 +2361,7 @@ function viewSettings(){
   return parts.join('') + finish +
     '<button class="btn solid wide" id="saveBtn" data-a="save">Save changes</button>' +
     '<h2 class="sect">Changes straight away</h2><p class="muted sectp">Everything below takes effect as soon as you tap it, without Save.</p>' +
-    breakCard(cur().settings) + ramadanSetCard(cur().settings) +
+    breakCard(cur().settings) + orderCard(cur().settings) + ramadanSetCard(cur().settings) +
     '<section class="card"><h2 class="h">Logs</h2><p class="muted">Clearing removes every day logged for ' + esc(cur().name) + ', including the pages those days added. What you have already memorised and where your new hifdh starts from stay as set.</p>' +
     '<button class="btn wide" data-a="reset">' + (resetArmed ? 'Tap again to erase all logs' : 'Clear all logs') + '</button></section>' +
     removeCard() + pauseCard(cur().settings);
@@ -2303,20 +2371,35 @@ function removeCard(){
     '<button class="btn wide" data-a="remove"' + (S.people.length < 2 ? ' disabled' : '') + '>' + (removeArmed ? 'Tap again to remove ' : 'Remove ') + esc(cur().name) + '</button></section>';
 }
 // Sick, travelling or on a period. Like pausing, this takes effect straight away, without Save.
+// A period can overlap being sick or travelling; sick and travelling don't overlap each other. The period option can be hidden.
+function canBreak(st, m){
+  if (!BREAK_NAMES[m] || openBreak(st, m)) return false;
+  return m === 'period' ? !st.hidePeriod : !(openBreak(st, 'sick') || openBreak(st, 'travel'));
+}
+function breakTitle(st){ return st.hidePeriod && !openBreak(st, 'period') ? 'Sick or travelling' : 'Sick, travelling or on your period'; }
 function breakCard(st){
-  var ob = openBreaks(st), h = '<section class="card" id="breakCard"><h2 class="h">Sick, travelling or on your period</h2>';
-  var can = ['sick', 'travel', 'period'].filter(function(m){ return !openBreak(st, m) && (m === 'period' || !(openBreak(st, 'sick') || openBreak(st, 'travel'))); });
+  var ob = openBreaks(st), h = '<section class="card" id="breakCard"><h2 class="h">' + breakTitle(st) + '</h2>';
+  var can = ['sick', 'travel', 'period'].filter(function(m){ return canBreak(st, m); });
   if (!ob.length) h += '<p class="muted">Changes your targets from today until you turn it off.</p>';
   ob.forEach(function(b){ h += breakPart(st, b, ob.length > 1); });
   if (can.length) h += (ob.length ? '<p class="muted">You can also add:</p>' : '') + '<div class="chips">' +
     can.map(function(m){ return '<button type="button" class="chip" data-a="brk" data-m="' + m + '">' + BREAK_NAMES[m] + '</button>'; }).join('') + '</div>';
-  return h + '</section>';
+  return h + '<p class="wnote"><button class="linkb" data-a="hideperiod">' + (st.hidePeriod ? 'Show “On my period” again' : 'I don’t need “On my period”') + '</button></p></section>';
+}
+function orderCard(st){
+  var ord = sectionOrder(st), name = function(k){ return SECTIONS.filter(function(s){ return s[0] === k; })[0][1]; };
+  return '<section class="card" id="orderCard"><h2 class="h">Order of the Today page</h2><p class="muted">Move sections up or down.</p><ul class="olist">' +
+    ord.map(function(k, i){
+      return '<li><span>' + name(k) + (k === 'read' ? ' <small>(Ramadan reading in Ramadan)</small>' : '') + '</span>' +
+        '<button type="button" class="btn sm" data-a="secmove" data-k="' + k + '" data-d="-1"' + (i ? '' : ' disabled') + ' aria-label="Move ' + name(k) + ' up">↑</button>' +
+        '<button type="button" class="btn sm" data-a="secmove" data-k="' + k + '" data-d="1"' + (i < ord.length - 1 ? '' : ' disabled') + ' aria-label="Move ' + name(k) + ' down">↓</button></li>';
+    }).join('') + '</ul></section>';
 }
 function breakPart(st, b, both){
   var h = '';
   var since = fmtDate(b.from, { weekday: 'long', day: 'numeric', month: 'long' });
   var desc = b.mode === 'sick' ? 'Everything is paused: no targets for new hifdh, revision, reading or hard pages. You can still add anything you do.'
-    : b.mode === 'travel' ? 'New hifdh is paused.' + (both ? ' Your period choices still apply to revision and reading.' : ' Revision, reading and hard pages carry on as normal.')
+    : b.mode === 'travel' ? 'New hifdh is paused.' + (both ? ' Revision and reading follow your period choices, but never more than normal while you travel.' : ' Revision, reading and hard pages carry on as normal.')
     : 'Choose what changes each day while it lasts.' + (both ? ' Being sick or travelling goes on top of this.' : '');
   h += '<p><b>' + BREAK_NAMES[b.mode] + '</b> since ' + since + '.</p><p class="muted">' + desc + '</p>';
   if (b.mode === 'period'){
@@ -2582,9 +2665,13 @@ document.addEventListener('click', function(e){
     oxr.msg = ''; oxr.f = ''; oxr.t = ''; touch(); render();
   }
   else if (a === 'brk'){
-    var stB = cur().settings, m = t.dataset.m; if (!BREAK_NAMES[m] || openBreak(stB, m) || (m !== 'period' && (openBreak(stB, 'sick') || openBreak(stB, 'travel')))) return;
+    var stB = cur().settings, m = t.dataset.m; if (!canBreak(stB, m)) return;
     var nb = { mode: m, from: todayIso(), to: null }; if (m === 'period') nb.opts = periodDefaults();
     stB.breaks = breaksOf(stB).concat([nb]); if (draft) draft.breaks = clone(stB.breaks);
+    touch(); render();
+  }
+  else if (a === 'hideperiod'){
+    var stH = cur().settings; stH.hidePeriod = !stH.hidePeriod; if (draft) draft.hidePeriod = stH.hidePeriod;
     touch(); render();
   }
   else if (a === 'brkend'){
@@ -2668,6 +2755,18 @@ document.addEventListener('click', function(e){
     }
     render();
   }
+  else if (a === 'listentick'){
+    if (viewDate > todayIso()) return;
+    var Ls = listensOf(cur()); if (Ls[viewDate]) delete Ls[viewDate]; else Ls[viewDate] = true;
+    touch(); render();
+  }
+  else if (a === 'fold'){ var fk = viewDate + ':' + t.dataset.k; openDone[fk] = !openDone[fk]; render(); }
+  else if (a === 'secmove'){
+    var stO = cur().settings, ord = sectionOrder(stO), i0 = ord.indexOf(t.dataset.k), i1 = i0 + Number(t.dataset.d);
+    if (i0 < 0 || i1 < 0 || i1 >= ord.length) return;
+    ord[i0] = ord[i1]; ord[i1] = t.dataset.k; stO.order = ord; if (draft) draft.order = ord.slice();
+    touch(); render();
+  }
   else if (a === 'readtick'){
     if (viewDate > todayIso()) return;
     var R = readsOf(cur()); if (R[viewDate]) delete R[viewDate]; else R[viewDate] = true;
@@ -2694,7 +2793,7 @@ document.addEventListener('click', function(e){
     else if (a === 'hardok'){ hx.st++; hx.last = todayIso(); if (hx.st >= HARD_STEPS.length) H2.splice(H2.indexOf(hx), 1); }
     touch(); render();
   }
-  else if (a === 'updays'){ upDays = t.dataset.n === '7' ? 7 : 14; render(); }
+  else if (a === 'updays'){ upDays = [3, 7, 14].indexOf(Number(t.dataset.n)) >= 0 ? Number(t.dataset.n) : 3; render(); }
   else if (a === 'unit'){
     var u = t.dataset.u;
     if (u !== draft.weeklyUnit){
@@ -2745,7 +2844,7 @@ document.addEventListener('click', function(e){
   }
   else if (a === 'reset'){
     if (!resetArmed){ resetArmed = true; render(); }
-    else { cur().logs = {}; cur().hard = []; cur().reads = {}; cur().hardLog = {}; cur().rlog = {}; resetArmed = false; touch(); render(); }
+    else { cur().logs = {}; cur().hard = []; cur().reads = {}; cur().listens = {}; cur().hardLog = {}; cur().rlog = {}; resetArmed = false; touch(); render(); }
   }
 });
 
