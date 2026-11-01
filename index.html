@@ -97,7 +97,7 @@
         {
           "@type": "Question",
           "name": "What is Hifdh Helper?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Hifdh Helper is a free web app for memorising the Qur’an. You enter what you have already memorised and your goal, and it works out how much new hifdh, new revision and older revision to do on each study day, with the exact surahs, pages and lines." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Hifdh Helper is a free web app to help you memorise the Qur’an. You enter what you have already memorised and your goal, and it works out how much new hifdh, new revision and older revision to do on each study day, with the exact surahs, pages and lines." }
         },
         {
           "@type": "Question",
@@ -278,6 +278,9 @@ h1,h2,p,ul,dl{margin:0}
 .brand img{width:32px; height:32px; border-radius:8px; flex:none}
 .tagline{font-size:14px; color:var(--muted); margin-top:-6px}
 .ayah{margin:6px 0 -4px; text-align:center}
+.hamd{font:400 30px/1.6 var(--f-arabic); color:var(--accent); text-align:center; margin:28px 0 -18px}
+.ponder{font-style:italic; font-size:13px; color:var(--muted); opacity:.85; max-width:30em; margin:6px auto 0}
+.ponder span{font-style:normal; font-family:var(--f-arabic)}
 .dua{margin:28px 0 8px; text-align:center; display:flex; flex-direction:column; gap:6px; align-items:center}
 .dua .ar{font:400 23px/1.9 var(--f-arabic); color:var(--accent); margin:0}
 .dua .tr{font-style:italic; font-size:14px; margin:0; max-width:34em}
@@ -317,9 +320,6 @@ h1,h2,p,ul,dl{margin:0}
 .brkpart > .btn{margin-top:10px}
 .rng3{display:grid; grid-template-columns:minmax(0,1fr) 76px 64px; gap:8px}
 .jzb{appearance:none; padding:0; cursor:pointer; font-family:inherit}
-.jrow{display:flex; gap:6px; overflow-x:auto; padding:2px 2px 6px; scrollbar-width:thin}
-.jrow .chip{flex:none; min-width:40px; justify-content:center}
-.schips{max-height:8.6em; overflow-y:auto; padding:2px; align-content:flex-start}
 .rvs{display:flex; flex-wrap:wrap; gap:5px; padding:4px 0 10px}
 .rv{display:inline-flex; align-items:baseline; gap:3px; padding:4px 9px; border-radius:999px; font:600 12.5px var(--f-body); border:1px solid var(--line); background:var(--surface); color:var(--muted)}
 button.rv{appearance:none; cursor:pointer; min-height:32px}
@@ -451,6 +451,9 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .btn.solid{background:var(--ink); color:var(--bg); border-color:var(--ink)}
 .btn.sm{min-height:36px; padding:6px 12px}
 .btn.wide{width:100%}
+.crun{display:grid; grid-template-columns:auto 1fr auto 1fr; gap:6px 8px; align-items:center; margin:8px 0 4px}
+.crun .btn{grid-column:1 / -1}
+.cj .linkb{display:block; margin:2px 0 8px}
 .brkstrip{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin:-4px 2px 2px; font-size:13px; color:var(--muted)}
 .brkstrip .chips{gap:6px}
 .foldbar{appearance:none; width:100%; display:flex; justify-content:space-between; align-items:center; gap:10px; border:1px solid var(--line); background:var(--surface); color:var(--ink); font:600 15px var(--f-body); padding:12px 16px; border-radius:16px; cursor:pointer; text-align:left}
@@ -578,6 +581,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
     <button class="tab" role="tab" id="tab-about" data-a="tab" data-tab="about">About</button>
   </nav>
   <main id="app"></main>
+  <p class="hamd" id="hamd" lang="ar" dir="rtl">ٱلْحَمْدُ لِلَّهِ</p>
   <figure class="dua" id="dua" aria-label="Dua of the day"></figure>
   <p class="foot" id="sync"></p>
   <!-- About and FAQs: shown in the About tab (and to search engines and without JavaScript). -->
@@ -608,7 +612,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
   <section class="card about" id="faq" aria-labelledby="faq-h">
     <h2 id="faq-h">FAQs</h2>
     <div class="faq">
-      <div><h3>What is Hifdh Helper?</h3><p>Hifdh Helper is a free web app for memorising the Qur’an. You enter what you have already memorised and your goal, and it works out how much new hifdh, new revision and older revision to do on each study day, with the exact surahs, pages and lines.</p></div>
+      <div><h3>What is Hifdh Helper?</h3><p>Hifdh Helper is a free web app to help you memorise the Qur’an. You enter what you have already memorised and your goal, and it works out how much new hifdh, new revision and older revision to do on each study day, with the exact surahs, pages and lines.</p></div>
       <div><h3>What is the difference between new revision and revision?</h3><p>New revision covers what you memorised recently, on a spaced repetition schedule so it sticks: each week’s new hifdh is revised every day that week and for 21 days after by default, then 3, 7, 14 and 30 days later. Revision covers everything older, revised in a full cycle, every 30 days by default.</p></div>
       <div><h3>How are the daily amounts worked out?</h3><p>Choose a finish date or an amount to memorise each week, in pages or lines, and the date you start. New hifdh is spread over the days of the week you study. Older revision is your older pages divided across your revision cycle.</p></div>
       <div><h3>What happens if I do more or less than my target?</h3><p>For new hifdh the week has a set amount, so doing extra one day makes the following days lighter. For revision the daily target stays the same, and each day’s list starts from the first pages you have not revised yet in this cycle, so nothing is repeated or missed.</p></div>
@@ -1234,13 +1238,6 @@ function pace(st, logs, todayIso){
   for (var k in logs){ if (k >= from && k <= todayIso){ n += num(logs[k].n); o += revAmount(st, logs, k); } }
   return { perActive: n / act, oldPerCal: o / cal, from: from, spanDays: cal };
 }
-function projectFinish(st, remaining, perActive, todayIso){
-  if (remaining <= 0) return { date: todayIso, days: 0 };
-  if (perActive <= 0) return null;
-  var cal = Math.ceil((remaining / perActive) * 7 / Math.max(1, activeCount(st.days)));
-  if (cal > 36500) return null;
-  return { date: iso(addDays(parse(todayIso), cal)), days: cal };
-}
 function milestones(st, mem, req, todayIso){
   var rem = st.goalPages - mem;
   if (rem <= 0 || !(req > 0)) return [];
@@ -1435,7 +1432,7 @@ var cyc = { open: false, j: null };
 // Whether finished juz are hidden in the revision cycle list, remembered per device.
 var HIDE_KEY = 'hifz-tracker-hidedone', cycHide = false;
 try { cycHide = !!localStorage.getItem(HIDE_KEY); } catch (e) {}
-var hpJ = null, hpOpen = false, hpHalf = 0;
+var hpOpen = false, hpHalf = 0;
 var pauseAsk = false;
 var oxr = { s: 0, f: '', t: '', open: false, pages: false, j: null, msg: '' };
 // Keep the "Revised other pages?" form open across redraws once it has been opened.
@@ -1760,20 +1757,12 @@ function hardCard(P, d, t, groups){
         return '<button type="button" class="chip xs" data-a="hardadd" data-pg="' + n + '" aria-pressed="' + !!isHard[n] + '">' + n + '</button>';
       }).join('') + (g.pages.length > 40 ? '<span class="wnote">+' + (g.pages.length - 40) + ' more</span>' : '') + '</div></div>';
     }).join('');
-    var known = allKnown(P.settings, P.logs), kj = [];
-    for (var j = 0; j < 30; j++){ var jv = juzIv(j); if (overlapIv(known, jv[0], jv[1]) > EPS) kj.push(j); }
-    if (kj.indexOf(hpJ) < 0) hpJ = kj.length ? kj[0] : 0;
-    var jvv = juzIv(hpJ), kPages = [];
-    for (var pg = jvv[0] + 1; pg <= jvv[1]; pg++) if (overlapIv(known, pg - 1, pg) > EPS) kPages.push(pg);
-    var anyPick = kj.length ? '<div class="pgrp"><span class="label">Anything you’ve memorised</span><div class="jrow" role="group" aria-label="Juz">' +
-      kj.map(function(j){ return '<button type="button" class="chip xs" data-a="hardjuz" data-j="' + j + '" aria-pressed="' + (j === hpJ) + '" aria-label="Juz ' + (j + 1) + '">' + (j + 1) + '</button>'; }).join('') +
-      '</div><div class="pchips schips">' + kPages.map(function(n){ return '<button type="button" class="chip xs" data-a="hardadd" data-pg="' + n + '" aria-pressed="' + !!isHard[n] + '">' + n + '</button>'; }).join('') + '</div></div>' : '';
     var halfChips = '<div class="chips" role="group" aria-label="Which part of the page">' + [['0', 'Whole page'], ['1', 'First half'], ['2', 'Second half']].map(function(c){
       return '<button type="button" class="chip xs" data-a="hardhalf" data-half="' + c[0] + '" aria-pressed="' + (hpHalf === Number(c[0])) + '">' + c[1] + '</button>';
     }).join('') + '</div>';
     h += '<div class="hadd"><label for="hardPg">Mark a page as hard</label>' + halfChips + '<div class="hrow"><input class="inp" id="hardPg" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="Page number">' +
       '<button class="btn sm hardb" data-a="hardadd">Mark as hard</button></div>' +
-      (pick || anyPick ? '<details class="hall"' + (hpOpen ? ' open' : '') + ' data-hp><summary>Or pick a page</summary>' + pick + anyPick + '</details>' : '') + '</div>';
+      (pick ? '<details class="hall"' + (hpOpen ? ' open' : '') + ' data-hp><summary>Or pick one of today’s pages</summary>' + pick + '</details>' : '') + '</div>';
   }
   return h + '</section>';
 }
@@ -1858,7 +1847,16 @@ function cycleHtml(st, logs, d){
       return '<button type="button" class="rv ' + x.k + '" data-a="cycsurah" data-j="' + j + '" data-s="' + x.s.i + '">' + inner + '</button>';
     }).join('');
     var openJ = cyc.j === j || (cyc.j == null && nOk < stat.length && !rows.some(function(r){ return r.open; }));
-    rows.push({ open: openJ, h: '<details class="cj"' + (openJ ? ' open' : '') + ' data-cj="' + j + '"><summary><b>Juz ' + (j + 1) + '</b><span>' + (nOk === stat.length ? 'All done' : nOk + ' of ' + stat.length + ' done') + '</span></summary><div class="rvs">' + pills + '</div></details>' });
+    // Many short surahs: pick a run of them, or the rest of the juz, instead of tapping each one.
+    var todo = stat.filter(function(x){ return x.k !== 'ok'; }), run = '';
+    if (canTap && todo.length >= 5){
+      var opts = function(sel){ return todo.map(function(x, i){ return '<option value="' + x.s.i + '"' + (i === sel ? ' selected' : '') + '>' + esc(x.s.name) + '</option>'; }).join(''); };
+      run = '<div class="crun"><span>From</span><select class="inp" id="cr-f-' + j + '" aria-label="From surah">' + opts(0) + '</select>' +
+        '<span>to</span><select class="inp" id="cr-t-' + j + '" aria-label="To surah">' + opts(todo.length - 1) + '</select>' +
+        '<button type="button" class="btn sm solid" data-a="cycrun" data-j="' + j + '">Mark revised</button></div>' +
+        '<button type="button" class="linkb" data-a="cycrun" data-j="' + j + '" data-all="1">Mark the rest of Juz ' + (j + 1) + ' revised</button>';
+    }
+    rows.push({ open: openJ, h: '<details class="cj"' + (openJ ? ' open' : '') + ' data-cj="' + j + '"><summary><b>Juz ' + (j + 1) + '</b><span>' + (nOk === stat.length ? 'All done' : nOk + ' of ' + stat.length + ' done') + '</span></summary>' + run + '<div class="rvs">' + pills + '</div></details>' });
   }
   var form = canTap ? '<details class="hall"' + (oxr.pages ? ' open' : '') + ' data-oxpages><summary>Enter page numbers you revised</summary><div class="hadd">' +
     '<select class="inp" id="ox-s" aria-label="Surah revised">' + surahOptions(oxr.s) + '</select>' +
@@ -2061,7 +2059,7 @@ function viewToday(){
   var revPages = expand(pageRanges(normIv([].concat.apply([], sr.due.map(function(it){ return it.b.iv; })))));
   var past = d <= t, met = function(dn, tg){ return past && tg > 0 && dn >= tg - 0.001; };
   var hDueNow = d === t && !sick ? hardOf(P).filter(function(x){ return hardDue(x) <= t; }).length : 0;
-  var tadabbur = '<figure class="ayah"><p lang="ar" dir="rtl">أَفَلَا يَتَدَبَّرُونَ ٱلْقُرْءَانَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَآ</p><figcaption>Muhammad 47:24</figcaption></figure>';
+  var tadabbur = '<figure class="ayah"><p lang="ar" dir="rtl">أَفَلَا يَتَدَبَّرُونَ ٱلْقُرْءَانَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَآ</p><figcaption>Muhammad 47:24</figcaption><p class="ponder">Don’t forget to pause on some ayaat and ponder over what Allah <span lang="ar" dir="rtl">سُبْحَانَهُ وَتَعَالَىٰ</span> wants you to learn from them.</p></figure>';
   var sec = {
     n: hideN ? '' : fold('n', 'New hifdh', met(lg.n || 0, p.tn), cardN),
     listen: hideN ? '' : fold('listen', 'Listening', past && !!listensOf(P)[d], listenCard(P, d, t)),
@@ -2070,7 +2068,7 @@ function viewToday(){
     read: ramD ? fold('read', 'Ramadan reading', ramS && met(ramS.today, ramS.target), ramCard(P, d, t)) : hideRead ? '' : fold('read', 'Daily reading', past && !!readsOf(P)[d], readCard(P, d, t, fx)),
     hard: fold('hard', 'Hard pages', d === t && !hDueNow && (hardLogOf(P)[d] || 0) > 0, hardCard(P, d, t, [{ name: 'New hifdh', pages: expand(sl.n) }, { name: 'New revision', pages: revPages }, { name: 'Revision', pages: expand(sl.o) }]))
   };
-  var cards = ayah + sectionOrder(st).map(function(k){ return sec[k]; }).join('');
+  var cards = sectionOrder(st).map(function(k){ return sec[k]; }).join('');
   restWord = p.notStarted ? 'Not started' : 'Rest day';
 
   var w = weekStats(st, P.logs, d, t, p), fmtQ0 = fmtQ;
@@ -2093,7 +2091,7 @@ function viewToday(){
   var weekCard = '<section class="card" aria-label="This week"><div class="row-h"><h2 class="h">This week</h2><span class="label">' +
     fmtDate(wd[0], { day: 'numeric', month: 'short' }) + ' – ' + fmtDate(wd[6], { day: 'numeric', month: 'short' }) + '</span></div>' + rows + '</section>';
 
-  return banner + head + '<div class="wk">' + strip + '</div>' + hero + (d === t ? breakStrip(st) : '') + cards + weekCard;
+  return banner + head + '<div class="wk">' + strip + '</div>' + ayah + hero + (d === t ? breakStrip(st) : '') + cards + weekCard;
 }
 
 // Each revision cycle so far: when it started and finished, and the pages revised in it.
@@ -2132,26 +2130,10 @@ function viewPlan(){
   var P = cur(), st = P.settings, t = todayIso();
   var mem = st.startPages + sumN(P.logs, function(){ return true; });
   var rem = Math.max(0, st.goalPages - mem);
-  var info = targetInfo(st, rem, t), left = info.left, req = info.req;
-  var weeklyLabel = fmt1(st.weeklyAmount) + (st.weeklyUnit === 'lines' ? ' lines' : ' pages');
+  var req = targetInfo(st, rem, t).req;
   var pc = pace(st, P.logs, t);
-  var proj = pc ? projectFinish(st, rem, pc.perActive, t) : null;
   var p = perDay(st, P.logs, t);
-  var dFmt = { day: 'numeric', month: 'short', year: 'numeric' };
   var known = allKnown(st, P.logs);
-
-  var status;
-  if (rem <= 0) status = { c: 'good', t: 'Goal reached' };
-  else if (isPaused(st)) status = { c: 'warn', t: 'New hifdh paused' };
-  else if (info.overdue) status = { c: 'bad', t: 'Past the finish date' };
-  else if (info.weekly) status = (pc && req > 0) ? (function(r){
-    return r >= 1.1 ? { c: 'good', t: 'Ahead of plan' } : r >= 0.9 ? { c: 'good', t: 'On track' } : r >= 0.7 ? { c: 'warn', t: 'Slightly behind' } : { c: 'bad', t: 'Behind plan' };
-  })(pc.perActive / req) : { c: '', t: 'Log some new hifdh to see your pace' };
-  else if (proj){
-    var diff = diffDays(st.goalDate, proj.date);
-    status = diff <= -14 ? { c: 'good', t: 'Ahead of plan' } : diff <= 7 ? { c: 'good', t: 'On track' }
-      : diff <= 30 ? { c: 'warn', t: 'Slightly behind' } : { c: 'bad', t: 'Behind plan' };
-  } else status = { c: '', t: 'Log some new hifdh to see your pace' };
 
   var pct = Math.round(Math.min(1, mem / Math.max(1, st.goalPages)) * 100);
   var memCard = '<section class="card" aria-label="Memorised so far"><span class="label">Memorised so far</span>' +
@@ -2166,16 +2148,6 @@ function viewPlan(){
       return '<li><div><b>' + esc(rangeLabel(r[0], r[1])) + '</b><small>' + fmtR(r) + ' · ' + juzText([r]) + '</small></div></li>';
     }).join('') + '</ul></details>' : '<p class="muted">Nothing marked yet. Add what you have already memorised in Settings.</p>') + '</section>';
 
-  var paceNote = pc ? '<p class="wnote">Pace is measured over the last ' + pc.spanDays + (pc.spanDays === 1 ? ' day' : ' days') + (pc.spanDays < 7 ? ', so treat it as an early estimate.' : '.') + '</p>' : '';
-  var paceCard = '<section class="card" aria-label="New hifdh pace"><div class="row-h"><h2 class="h">New hifdh pace</h2><span class="pill ' + status.c + '">' + status.t + '</span></div>' +
-    '<dl class="kv">' +
-    (st.startDate && st.startDate > t ? '<dt>Starts</dt><dd>' + fmtDate(st.startDate, dFmt) + '</dd>' : '') +
-    '<dt>Pace</dt><dd>' + (pc ? fmt1(pc.perActive) + ' pages per study day' : '—') + '</dd>' +
-    (info.weekly ? '<dt>Weekly target</dt><dd>' + weeklyLabel + '</dd>' : '') +
-    '<dt>' + (info.weekly ? 'Planned per study day' : 'Needed to finish on time') + '</dt><dd>' + (req > 0 ? fmt1(req) + ' pages per study day' : '—') + '</dd>' +
-    '<dt>Finish at your pace</dt><dd>' + (rem <= 0 ? 'Done' : proj ? fmtDate(proj.date, dFmt) : '—') + '</dd>' +
-    '<dt>' + (info.weekly ? 'Planned finish' : 'Target date') + '</dt><dd>' + (info.finish ? fmtDate(info.finish, dFmt) : '—') + '</dd></dl>' + paceNote + '</section>';
-
   var cycleNow = pc && pc.oldPerCal > 0 && p.old > 0 ? 'about ' + Math.max(1, Math.round(p.old / pc.oldPerCal)) + ' days' : '—';
   var revCard = '<section class="card" aria-label="Revision"><h2 class="h">Revision</h2><dl class="kv">' +
     '<dt>New revision due today</dt><dd>' + fmt1(p.r) + ' pages</dd><dt>Recent pages still in review</dt><dd>' + fmt1(p.recent) + ' pages</dd>' +
@@ -2187,7 +2159,7 @@ function viewPlan(){
   var ms = milestones(st, mem, req, t);
   var msCard = '';
   if (ms.length){
-    msCard = '<section class="card" aria-label="Looking ahead"><h2 class="h">If you stay on plan</h2>' +
+    msCard = '<section class="card" aria-label="Looking ahead"><h2 class="h">If you stay on plan, insha’Allah</h2>' +
       '<div class="tblw"><table class="tbl"><thead><tr><th>Memorised</th><th>Around</th><th>Revision a day</th></tr></thead><tbody>' +
       ms.map(function(m){
         return '<tr><td><b>' + fmt1(m.pages / JUZ) + ' juz</b><small>' + m.pages + ' pages</small></td><td>' + fmtDate(m.date, { month: 'short', year: 'numeric' }) +
@@ -2197,7 +2169,7 @@ function viewPlan(){
   }
   var ramNow = !!ramadanOn(st, t);
   // Ramadan first while it is on; otherwise its card sits just above "If you stay on plan".
-  return (ramNow ? ramPlanCard(P, t) : '') + upcomingCard(st, P.logs, t) + cycleStatsCard(st, P.logs, t) + memCard + knownCard + paceCard + revCard + (ramNow ? '' : ramPlanCard(P, t)) + msCard;
+  return (ramNow ? ramPlanCard(P, t) : '') + upcomingCard(st, P.logs, t) + cycleStatsCard(st, P.logs, t) + memCard + knownCard + revCard + (ramNow ? '' : ramPlanCard(P, t)) + msCard;
 }
 
 function srParse(txt){
@@ -2538,7 +2510,7 @@ function render(){
   document.body.setAttribute('data-tint', String(cur().tint));
   var app = $('#app');
   app.innerHTML = tab === 'today' ? viewToday() : tab === 'plan' ? viewPlan() : tab === 'about' ? '' : viewSettings();
-  $('#info').hidden = tab !== 'about'; $('#dua').hidden = $('#sync').hidden = tab === 'about';
+  $('#info').hidden = tab !== 'about'; $('#hamd').hidden = $('#dua').hidden = $('#sync').hidden = tab === 'about';
   ['today', 'plan', 'settings', 'about'].forEach(function(k){ $('#tab-' + k).setAttribute('aria-selected', String(k === tab)); });
   // A dot on Settings until the plan is set up.
   $('#tab-settings').classList.toggle('nudge', !cur().settings.setupDone && tab !== 'settings');
@@ -2712,6 +2684,19 @@ document.addEventListener('click', function(e){
     Lc.ox = unionIv(haveC, restC);
     cyc.open = true; cyc.j = Number(t.dataset.j); touch(); render();
   }
+  else if (a === 'cycrun'){
+    if (viewDate > todayIso()) return;
+    var cs1 = cycleState(cur().settings, cur().logs, viewDate); if (!cs1) return;
+    var jr = Number(t.dataset.j), fsel = $('#cr-f-' + jr), tsel = $('#cr-t-' + jr);
+    var lo = t.dataset.all ? 0 : Number(fsel && fsel.value), hi = t.dataset.all ? 999 : Number(tsel && tsel.value);
+    if (lo > hi){ var sw = lo; lo = hi; hi = sw; }
+    var pick = juzSurahParts(jr, cs1.pool).filter(function(s){ return s.i >= lo && s.i <= hi; });
+    var restR = subtractIv(normIv([].concat.apply([], pick.map(function(s){ return s.iv; }))), cs1.done);
+    if (measure(restR) < EPS) return;
+    var Lj = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
+    Lj.ox = unionIv(Array.isArray(Lj.ox) ? Lj.ox : [], restR);
+    cyc.open = true; cyc.j = jr; touch(); render();
+  }
   else if (a === 'oxrm'){
     if (!armed(t.dataset.key)) return;
     var Lr = cur().logs[viewDate]; if (!Lr || !Array.isArray(Lr.ox)) return;
@@ -2782,7 +2767,6 @@ document.addEventListener('click', function(e){
     touch(); render();
   }
   else if (a === 'hardhalf'){ hpHalf = Number(t.dataset.half) || 0; render(); }
-  else if (a === 'hardjuz'){ hpJ = Number(t.dataset.j); hpOpen = true; render(); }
   else if (a === 'hardok' || a === 'hardagain' || a === 'hardrm'){
     var H2 = hardOf(cur()), pg2 = Number(t.dataset.pg), hf2 = Number(t.dataset.half) || 0, hx = H2.filter(function(x){ return x.pg === pg2 && (x.half || 0) === hf2; })[0];
     if (!hx) return;
