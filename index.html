@@ -1930,7 +1930,7 @@ function breakStrip(st){
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="breakCard">' + (openBreak(st, 'period') ? 'Period choices' : 'More') + '</button></div>';
 }
 // Sections on Today, in the order each person chose. The Ramadan card takes the place of Daily reading in Ramadan.
-var SECTIONS = [['n', 'New hifdh'], ['listen', 'Listening'], ['r', 'New revision'], ['o', 'Revision'], ['read', 'Daily reading'], ['hard', 'Hard pages']];
+var SECTIONS = [['n', 'New hifdh'], ['r', 'New revision'], ['hard', 'Hard pages'], ['o', 'Revision'], ['read', 'Daily reading'], ['listen', 'Listening']];
 function sectionOrder(st){
   var o = (Array.isArray(st.order) ? st.order : []).filter(function(k, i, a){ return a.indexOf(k) === i && SECTIONS.some(function(s){ return s[0] === k; }); });
   SECTIONS.forEach(function(s){ if (o.indexOf(s[0]) < 0) o.push(s[0]); });
