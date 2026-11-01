@@ -1750,7 +1750,9 @@ function hardCard(P, d, t, groups){
           xBtn('hardrm', 'data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '"', 'hardrm:' + hardKey(x), 'Take ' + hardPart(x) + ' off the hard list') + '</div></li>';
       }).join('') + '</ul></details>';
   }
-  if (d === t){
+  if (d > t) h += '<p class="wnote"><button class="linkb" data-a="today">Go to today</button> to mark a page as hard.</p>';
+  // Any day up to today: a page marked as hard counts from today.
+  if (d <= t){
     var isHard = {}; H.forEach(function(x){ if ((x.half || 0) === hpHalf) isHard[x.pg] = true; });
     var pick = groups.filter(function(g){ return g.pages.length; }).map(function(g){
       return '<div class="pgrp"><span class="label">' + g.name + '</span><div class="pchips">' + g.pages.slice(0, 40).map(function(n){
