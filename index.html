@@ -291,6 +291,7 @@ h1,h2,p,ul,dl{margin:0}
 .dua figcaption{font-size:12px; color:var(--muted)}
 @media (max-width:380px){ .dua .ar{font-size:20px} }
 .ayah p{font:400 24px/1.9 var(--f-arabic); color:var(--accent); margin:0}
+.ayah .mean{font:400 14px/1.5 var(--f-body); color:var(--ink); max-width:30em; margin:2px auto 0}
 .ayah figcaption{font-size:12px; color:var(--muted); margin-top:2px}
 @media (max-width:380px){ .ayah p{font-size:21px} }
 .bsm{font:400 26px/1.6 var(--f-arabic); color:var(--accent); text-align:center; margin:0 0 4px}
@@ -1775,7 +1776,9 @@ function ramProgressHtml(s, t){
   }).join('');
   var note = s.all >= s.total ? (R.khatms > 1 ? tr('All {n} readings finished, alhamdulillah. May Allah accept it from you.', { n: R.khatms }) : tr('Your khatm finished, alhamdulillah. May Allah accept it from you.'))
     : t < R.from ? tr('Ramadan starts on {d}, insha’Allah.', { d: fmtDate(R.from, { weekday: 'long', day: 'numeric', month: 'long' }) })
-    : diff >= 1 ? tr('{n} {u} ahead of an even pace.', { n: fmt1(diff), u: plu(fmt1(diff), 'pages') }) : diff <= -1 ? tr('{n} {u} behind an even pace. It is spread over the days left.', { n: fmt1(-diff), u: plu(fmt1(-diff), 'pages') }) : tr('Right on an even pace.');
+    : diff >= 1 ? tr('{n} {u} ahead. Reading the same amount every day, you’d have read about {e} pages by now.', { n: fmt1(diff), u: plu(fmt1(diff), 'pages'), e: fmt1(expect) })
+    : diff <= -1 ? tr('{n} {u} behind. Reading the same amount every day, you’d have read about {e} pages by now. What is left is spread over the days remaining.', { n: fmt1(-diff), u: plu(fmt1(-diff), 'pages'), e: fmt1(expect) })
+    : tr('Right on track to finish on time.');
   return '<div class="wtop"><b>' + (R.khatms > 1 ? tr('Khatm {k} of {n}', { k: Math.min(R.khatms, k + 1), n: R.khatms }) : tr('Khatm')) + '</b><span>' + tr('{a} of {b} pages', { a: fmt1(readN), b: s.total }) + ' · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
     '<div class="rchart" role="img" aria-label="' + tr('Pages read each day of Ramadan') + '">' + bars + '</div>' +
@@ -2157,7 +2160,7 @@ function viewToday(){
   var exO = (sl.o.length ? whereLinesHtml(sl.oIv, revD > 0 ? tr('Still to revise') : tr('Revise today')) + markList : p.to > 0 && revD > 0 ? '<p class="wnote">' + tr('Today’s list is done, alhamdulillah.') + '</p>' : '') + cycleHtml(st, P.logs, d);
 
   var nLines = st.newUnit === 'lines';
-  var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>' + tr('Hud 11:88') + '</figcaption></figure>';
+  var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p>' + (IS_AR ? '' : '<p class="mean">“And my success is not but through Allah. Upon Him I have relied, and to Him I return.”</p>') + '<figcaption>' + tr('Hud 11:88 · Sahih International') + '</figcaption></figure>';
   restWord = p.newPaused ? tr('Paused') : p.notStarted ? tr('Not started') : tr('Rest day');
   var cardN = card(STREAMS[0], p.tn, lg.n || 0, whyN, p.active && !p.newPaused, exN, !ns, nLines);
   restWord = p.revOff ? tr('Paused') : p.notStarted ? tr('Not started') : tr('Rest day');
@@ -2166,7 +2169,7 @@ function viewToday(){
   var revPages = expand(pageRanges(normIv([].concat.apply([], sr.due.map(function(it){ return it.b.iv; })))));
   var past = d <= t, met = function(dn, tg){ return past && tg > 0 && dn >= tg - 0.001; };
   var hDueNow = d === t && !sick ? hardOf(P).filter(function(x){ return hardDue(x) <= t; }).length : 0;
-  var tadabbur = '<figure class="ayah"><p lang="ar" dir="rtl">أَفَلَا يَتَدَبَّرُونَ ٱلْقُرْءَانَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَآ</p><figcaption>' + tr('Muhammad 47:24') + '</figcaption><p class="ponder">' + tr('Don’t forget to pause on some ayaat and ponder over what Allah {swt} wants you to learn from them.', { swt: '<span lang="ar" dir="rtl">سُبْحَانَهُ وَتَعَالَىٰ</span>' }) + '</p></figure>';
+  var tadabbur = '<figure class="ayah"><p lang="ar" dir="rtl">أَفَلَا يَتَدَبَّرُونَ ٱلْقُرْءَانَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَآ</p>' + (IS_AR ? '' : '<p class="mean">“Then do they not reflect upon the Qur’an, or are there locks upon [their] hearts?”</p>') + '<figcaption>' + tr('Muhammad 47:24 · Sahih International') + '</figcaption><p class="ponder">' + tr('Don’t forget to pause on some ayaat and ponder over what Allah {swt} wants you to learn from them.', { swt: '<span lang="ar" dir="rtl">سُبْحَانَهُ وَتَعَالَىٰ</span>' }) + '</p></figure>';
   var sec = {
     n: hideN ? '' : fold('n', tr('New hifdh'), met(lg.n || 0, p.tn), cardN),
     listen: hideN ? '' : fold('listen', tr('Listening'), past && !!listensOf(P)[d], listenCard(P, d, t)),
@@ -2230,7 +2233,7 @@ function cycleStatsCard(st, logs, t){
     tr('{n} finished', { n: done.length }) + '</span></div>' +
     (avg ? '<p class="muted">' + tr('On average a cycle took {a} {au}. Your plan is every {d} {du}.', { a: avg, au: plu(avg, 'days'), d: st.cycleDays, du: plu(st.cycleDays, 'days') }) + '</p>' : '<p class="muted">' + tr('Your first cycle is still going. Finished cycles show up here.') + '</p>') +
     '<div class="crows" role="img" aria-label="' + tr('Days each revision cycle took') + '">' + rows + '</div>' +
-    '<p class="wnote">' + tr('Bar length is the days a cycle took. The line marks your planned {d} {du}.', { d: st.cycleDays, du: plu(st.cycleDays, 'days') }) + (hist.length > shown.length ? ' ' + tr('Showing the last {n}.', { n: shown.length }) : '') + '</p></section>';
+    '<p class="wnote">' + tr('Each bar is one revision cycle: the longer the bar, the more days it took to revise everything once. The line marks your plan of {d} {du}, so a bar past the line took longer than planned.', { d: st.cycleDays, du: plu(st.cycleDays, 'days') }) + (hist.length > shown.length ? ' ' + tr('Showing the last {n}.', { n: shown.length }) : '') + '</p></section>';
 }
 
 function viewPlan(){

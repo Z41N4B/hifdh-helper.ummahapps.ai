@@ -54,6 +54,8 @@ window.HH_AR = {
 "+{n} more": "و{n} أخرى",
 "Hud 11:88": "هود 11:88",
 "Muhammad 47:24": "محمد 47:24",
+"Hud 11:88 · Sahih International": "هود 11:88",
+"Muhammad 47:24 · Sahih International": "محمد 47:24",
 "Don’t forget to pause on some ayaat and ponder over what Allah {swt} wants you to learn from them.": "لا تنسَ أن تقف عند بعض الآيات وتتدبر ما يريد الله {swt} أن تتعلمه منها.",
 
 // Saving
@@ -266,6 +268,9 @@ window.HH_AR = {
 "{n} {u} ahead of an even pace.": "متقدم {n} {u} عن الوتيرة المنتظمة.",
 "{n} {u} behind an even pace. It is spread over the days left.": "متأخر {n} {u} عن الوتيرة المنتظمة. تتوزع على الأيام الباقية.",
 "Right on an even pace.": "على الوتيرة المنتظمة تمامًا.",
+"{n} {u} ahead. Reading the same amount every day, you’d have read about {e} pages by now.": "متقدم {n} {u}. لو قرأت المقدار نفسه كل يوم لكنت قرأت نحو {e} صفحة حتى الآن.",
+"{n} {u} behind. Reading the same amount every day, you’d have read about {e} pages by now. What is left is spread over the days remaining.": "متأخر {n} {u}. لو قرأت المقدار نفسه كل يوم لكنت قرأت نحو {e} صفحة حتى الآن. ويتوزع الباقي على الأيام المتبقية.",
+"Right on track to finish on time.": "على المسار الصحيح للإنهاء في الوقت.",
 "Khatm {k} of {n}": "الختمة {k} من {n}",
 "Khatm": "الختمة",
 "Pages read each day of Ramadan": "الصفحات المقروءة في كل يوم من رمضان",
@@ -346,7 +351,7 @@ window.HH_AR = {
 "On average a cycle took {a} {au}. Your plan is every {d} {du}.": "استغرقت الدورة في المتوسط {a} {au}. وخطتك كل {d} {du}.",
 "Your first cycle is still going. Finished cycles show up here.": "دورتك الأولى ما زالت جارية. تظهر الدورات المكتملة هنا.",
 "Days each revision cycle took": "عدد الأيام التي استغرقتها كل دورة مراجعة",
-"Bar length is the days a cycle took. The line marks your planned {d} {du}.": "طول الشريط هو عدد أيام الدورة. والخط يحدد {d} {du} في خطتك.",
+"Each bar is one revision cycle: the longer the bar, the more days it took to revise everything once. The line marks your plan of {d} {du}, so a bar past the line took longer than planned.": "كل شريط دورة مراجعة واحدة: كلما طال الشريط زادت الأيام التي استغرقتها مراجعة كل شيء مرة واحدة. والخط يحدد خطتك البالغة {d} {du}، فالشريط الذي يتجاوز الخط استغرق أطول مما خُطط له.",
 "Showing the last {n}.": "يُعرض آخر {n}.",
 "{n} {u} so far": "{n} {u} حتى الآن",
 "{n} {u}": "{n} {u}",
