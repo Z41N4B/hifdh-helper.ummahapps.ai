@@ -756,13 +756,15 @@ function countActive(days, fromIso, toIso){
 }
 function sumN(logs, pred){ var t = 0; for (var k in logs){ if (pred(k)) t += num(logs[k].n); } return t; }
 
+// In Arabic, keeps 2¾ and <¼ reading left to right inside the right-to-left text (else they show as ¾2 and ¼>).
+function ltrN(s){ return IS_AR && /\D/.test(s) ? '\u2066' + s + '\u2069' : s; }
 function fmtQ(v){
   if (!(v > 0)) return '0';
-  if (v < 0.125) return '<¼';
+  if (v < 0.125) return ltrN('<¼');
   var q = Math.round(v * 4), w = Math.floor(q / 4), f = q % 4;
-  return (w ? String(w) : '') + ['', '¼', '½', '¾'][f];
+  return ltrN((w ? String(w) : '') + ['', '¼', '½', '¾'][f]);
 }
-function fmtL(v){ v = num(v); if (!(v > 0)) return '0'; var n = Math.round(v * LINES); return n < 1 ? '<1' : String(n); }
+function fmtL(v){ v = num(v); if (!(v > 0)) return '0'; var n = Math.round(v * LINES); return n < 1 ? ltrN('<1') : String(n); }
 function fmt1(v){ v = Math.round(num(v) * 10) / 10; return String(v).replace(/\.0$/, ''); }
 
 // ----- Qur’an map. Page p covers x in [p-1, p). These start as the Madinah mushaf (604 pages, 15 lines) and are
