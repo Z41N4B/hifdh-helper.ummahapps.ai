@@ -1,7 +1,7 @@
 // Hifdh Helper service worker: lets the app be installed and open without a connection.
 // Network first, so the newest version is used whenever online; the last copy is kept for when offline.
 const CACHE = 'hifdh-helper-v1';
-const CORE = ['/', '/site.webmanifest', '/favicon.svg', '/icon-192.png', '/icon-512.png'];
+const CORE = ['/', '/ar.js', '/site.webmanifest', '/favicon.svg', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
