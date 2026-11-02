@@ -288,6 +288,7 @@ h1,h2,p,ul,dl{margin:0}
 .dua figcaption{font-size:12px; color:var(--muted)}
 @media (max-width:380px){ .dua .ar{font-size:20px} }
 .ayah p{font:400 24px/1.9 var(--f-arabic); color:var(--accent); margin:0}
+.ayah .mean{font:400 14px/1.5 var(--f-body); color:var(--ink); max-width:30em; margin:2px auto 0}
 .ayah figcaption{font-size:12px; color:var(--muted); margin-top:2px}
 @media (max-width:380px){ .ayah p{font-size:21px} }
 .bsm{font:400 26px/1.6 var(--f-arabic); color:var(--accent); text-align:center; margin:0 0 4px}
@@ -1672,7 +1673,9 @@ function ramProgressHtml(s, t){
   }).join('');
   var note = s.all >= s.total ? (R.khatms > 1 ? 'All ' + R.khatms + ' readings' : 'Your khatm') + ' finished, alhamdulillah. May Allah accept it from you.'
     : t < R.from ? 'Ramadan starts on ' + fmtDate(R.from, { weekday: 'long', day: 'numeric', month: 'long' }) + ', insha’Allah.'
-    : diff >= 1 ? fmt1(diff) + ' pages ahead of an even pace.' : diff <= -1 ? fmt1(-diff) + ' pages behind an even pace. It is spread over the days left.' : 'Right on an even pace.';
+    : diff >= 1 ? fmt1(diff) + ' pages ahead. Reading the same amount every day, you’d have read about ' + fmt1(expect) + ' pages by now.'
+    : diff <= -1 ? fmt1(-diff) + ' pages behind. Reading the same amount every day, you’d have read about ' + fmt1(expect) + ' pages by now. What is left is spread over the days remaining.'
+    : 'Right on track to finish on time.';
   return '<div class="wtop"><b>' + (R.khatms > 1 ? 'Khatm ' + Math.min(R.khatms, k + 1) + ' of ' + R.khatms : 'Khatm') + '</b><span>' + fmt1(readN) + ' of ' + s.total + ' pages · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
     '<div class="rchart" role="img" aria-label="Pages read each day of Ramadan">' + bars + '</div>' +
@@ -2052,7 +2055,7 @@ function viewToday(){
   var exO = (sl.o.length ? whereLinesHtml(sl.oIv, revD > 0 ? 'Still to revise' : 'Revise today') + markList : p.to > 0 && revD > 0 ? '<p class="wnote">Today’s list is done, alhamdulillah.</p>' : '') + cycleHtml(st, P.logs, d);
 
   var nLines = st.newUnit === 'lines';
-  var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><figcaption>Hud 11:88</figcaption></figure>';
+  var ayah = '<figure class="ayah"><p lang="ar" dir="rtl">وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ</p><p class="mean">“And my success is not but through Allah. Upon Him I have relied, and to Him I return.”</p><figcaption>Hud 11:88 · Sahih International</figcaption></figure>';
   restWord = p.newPaused ? 'Paused' : p.notStarted ? 'Not started' : 'Rest day';
   var cardN = card(STREAMS[0], p.tn, lg.n || 0, whyN, p.active && !p.newPaused, exN, !ns, nLines);
   restWord = p.revOff ? 'Paused' : p.notStarted ? 'Not started' : 'Rest day';
@@ -2061,7 +2064,7 @@ function viewToday(){
   var revPages = expand(pageRanges(normIv([].concat.apply([], sr.due.map(function(it){ return it.b.iv; })))));
   var past = d <= t, met = function(dn, tg){ return past && tg > 0 && dn >= tg - 0.001; };
   var hDueNow = d === t && !sick ? hardOf(P).filter(function(x){ return hardDue(x) <= t; }).length : 0;
-  var tadabbur = '<figure class="ayah"><p lang="ar" dir="rtl">أَفَلَا يَتَدَبَّرُونَ ٱلْقُرْءَانَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَآ</p><figcaption>Muhammad 47:24</figcaption><p class="ponder">Don’t forget to pause on some ayaat and ponder over what Allah <span lang="ar" dir="rtl">سُبْحَانَهُ وَتَعَالَىٰ</span> wants you to learn from them.</p></figure>';
+  var tadabbur = '<figure class="ayah"><p lang="ar" dir="rtl">أَفَلَا يَتَدَبَّرُونَ ٱلْقُرْءَانَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَآ</p><p class="mean">“Then do they not reflect upon the Qur’an, or are there locks upon [their] hearts?”</p><figcaption>Muhammad 47:24 · Sahih International</figcaption><p class="ponder">Don’t forget to pause on some ayaat and ponder over what Allah <span lang="ar" dir="rtl">سُبْحَانَهُ وَتَعَالَىٰ</span> wants you to learn from them.</p></figure>';
   var sec = {
     n: hideN ? '' : fold('n', 'New hifdh', met(lg.n || 0, p.tn), cardN),
     listen: hideN ? '' : fold('listen', 'Listening', past && !!listensOf(P)[d], listenCard(P, d, t)),
@@ -2125,7 +2128,7 @@ function cycleStatsCard(st, logs, t){
     done.length + ' finished</span></div>' +
     (avg ? '<p class="muted">On average a cycle took ' + avg + ' days. Your plan is every ' + st.cycleDays + ' days.</p>' : '<p class="muted">Your first cycle is still going. Finished cycles show up here.</p>') +
     '<div class="crows" role="img" aria-label="Days each revision cycle took">' + rows + '</div>' +
-    '<p class="wnote">Bar length is the days a cycle took. The line marks your planned ' + st.cycleDays + ' days.' + (hist.length > shown.length ? ' Showing the last ' + shown.length + '.' : '') + '</p></section>';
+    '<p class="wnote">Each bar is one revision cycle: the longer the bar, the more days it took to revise everything once. The line marks your plan of ' + st.cycleDays + ' days, so a bar past the line took longer than planned.' + (hist.length > shown.length ? ' Showing the last ' + shown.length + '.' : '') + '</p></section>';
 }
 
 function viewPlan(){
