@@ -320,6 +320,8 @@ window.HH_AR = {
 "Page number": "رقم الصفحة",
 "Mark as hard": "علّمها صعبة",
 "Or pick one of today’s pages": "أو اختر إحدى صفحات اليوم",
+"{go} to mark a page as hard.": "{go} لتعلّم صفحة بأنها صعبة.",
+"Go to today": "انتقل إلى اليوم",
 
 // This week
 "This week": "هذا الأسبوع",

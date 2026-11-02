@@ -1853,7 +1853,7 @@ function hardCard(P, d, t, groups){
           xBtn('hardrm', 'data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '"', 'hardrm:' + hardKey(x), tr('Take {x} off the hard list', { x: hardPart(x) })) + '</div></li>';
       }).join('') + '</ul></details>';
   }
-  if (d > t) h += '<p class="wnote"><button class="linkb" data-a="today">Go to today</button> to mark a page as hard.</p>';
+  if (d > t) h += '<p class="wnote">' + tr('{go} to mark a page as hard.', { go: '<button class="linkb" data-a="today">' + tr('Go to today') + '</button>' }) + '</p>';
   // Any day up to today: a page marked as hard counts from today.
   if (d <= t){
     var isHard = {}; H.forEach(function(x){ if ((x.half || 0) === hpHalf) isHard[x.pg] = true; });
