@@ -358,6 +358,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .daybar{display:flex; align-items:center; justify-content:space-between; gap:8px}
 .daylabel{font:700 20px/1.15 var(--f-display); letter-spacing:-.01em}
 .daylabel small{display:block; font:500 13px var(--f-body); color:var(--muted); letter-spacing:0; margin-top:2px}
+.daylabel .hijri{color:var(--accent); font-weight:600}
 .stepper{display:flex; gap:6px; align-items:center}
 .icon{appearance:none; border:1px solid var(--line); background:var(--surface); color:var(--ink); width:40px; height:40px; border-radius:10px; font:600 20px/1 var(--f-body); cursor:pointer}
 .icon.txt{width:auto; padding:0 12px; font-size:13px}
@@ -1568,6 +1569,16 @@ document.addEventListener('toggle', function(e){ if (!e.target || !e.target.hasA
 
 var $ = function(s){ return document.querySelector(s); };
 function fmtDate(s, o){ return new Intl.DateTimeFormat(LOCALE, o).format(parse(s)); }
+// Hijri date from the Umm al-Qura calendar, e.g. 12 Jumada al-Ula 1448 AH. Moon sighting can make it a day different locally.
+var HIJRI_MONTHS = ['Muharram', 'Safar', 'Rabi’ al-Awwal', 'Rabi’ al-Thani', 'Jumada al-Ula', 'Jumada al-Akhirah', 'Rajab', 'Sha’ban', 'Ramadan', 'Shawwal', 'Dhul-Qa’dah', 'Dhul-Hijjah'];
+function fmtHijri(s){
+  try {
+    if (IS_AR) return new Intl.DateTimeFormat('ar-u-nu-latn-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).format(parse(s));
+    var x = {};
+    new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { day: 'numeric', month: 'numeric', year: 'numeric' }).formatToParts(parse(s)).forEach(function(p){ x[p.type] = parseInt(p.value, 10); });
+    return x.day && x.month ? x.day + ' ' + HIJRI_MONTHS[x.month - 1] + ' ' + x.year + ' AH' : '';
+  } catch (e) { return ''; }
+}
 function val(x){ return Number.isFinite(x) ? x : ''; }
 
 // ---------- storage ----------
@@ -2087,8 +2098,9 @@ function viewToday(){
       '<span class="dow">' + dowShort(x) + '</span><span class="dn">' + parse(x).getDate() + '</span><span class="dot"></span></button>';
   }).join('');
 
+  var hj = fmtHijri(d);
   var head = '<div class="daybar"><div class="daylabel">' + fmtDate(d, { weekday: 'long', day: 'numeric', month: 'long' }) +
-    '<small>' + (d === t ? tr('Today') : (d < t ? tr('Earlier') : tr('Coming up'))) + ' · ' + (p.notStarted ? tr('Before your start date') : p.active ? tr('Study day') : tr('Rest day')) + '</small></div>' +
+    (hj ? '<small class="hijri">' + hj + '</small>' : '') + '<small>' + (d === t ? tr('Today') : (d < t ? tr('Earlier') : tr('Coming up'))) + ' · ' + (p.notStarted ? tr('Before your start date') : p.active ? tr('Study day') : tr('Rest day')) + '</small></div>' +
     '<div class="stepper"><button class="icon" data-a="wk" data-step="-7" aria-label="' + tr('Previous week') + '">‹</button>' +
     (d !== t ? '<button class="icon txt" data-a="today">' + tr('Today') + '</button>' : '') +
     '<button class="icon" data-a="wk" data-step="7" aria-label="' + tr('Next week') + '">›</button></div></div>';
