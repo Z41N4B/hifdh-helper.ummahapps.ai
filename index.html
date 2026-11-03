@@ -418,6 +418,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .hl b{font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; color:var(--ci)}
 .hb{display:flex; gap:8px; margin-top:6px}
 .hb .btn{flex:1}
+.oadd{display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:6px; margin-top:8px}
 .xbtn.armed{width:auto; padding:0 10px; font:600 13px var(--f-body); color:#fff; background:#b3261e}
 .btn.armed{background:#b3261e; border-color:#b3261e; color:#fff}
 .xbtn{appearance:none; border:0; background:none; color:var(--muted); font:400 20px/1 var(--f-body); width:32px; height:32px; border-radius:8px; cursor:pointer; align-self:center}
@@ -2158,7 +2159,11 @@ function viewToday(){
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">' + tr('Change') + '</button></p>';
   var exN = whereLinesHtml(sl.nIv, d === t ? tr('New today') : tr('New')) + nextLine;
   var exR = srHtml(st, P.logs, sr, d, t, lg.r || 0);
-  var markList = d <= t && p.to > 0 ? '<div class="hb"><button class="btn sm solid" data-a="fill" data-k="o">' + (d === t ? tr('Mark today’s list done') : tr('Mark this day’s list done')) + '</button></div>' : '';
+  // Quick amounts revised, beside Mark done.
+  var oAdd = '<div class="oadd">' + [[0.5, '+½'], [1, '+1'], [2, '+2'], [5, '+5'], [10, '+10']].map(function(b){
+    return '<button class="btn sm" data-a="add" data-k="o" data-v="' + b[0] + '">' + b[1] + '</button>';
+  }).join('') + '</div>';
+  var markList = d <= t && p.to > 0 ? oAdd + '<div class="hb"><button class="btn sm solid" data-a="fill" data-k="o">' + (d === t ? tr('Mark today’s list done') : tr('Mark this day’s list done')) + '</button></div>' : '';
   var exO = (sl.o.length ? whereLinesHtml(sl.oIv, revD > 0 ? tr('Still to revise') : tr('Revise today')) + markList : p.to > 0 && revD > 0 ? '<p class="wnote">' + tr('Today’s list is done, alhamdulillah.') + '</p>' : '') + cycleHtml(st, P.logs, d);
 
   var nLines = st.newUnit === 'lines';
