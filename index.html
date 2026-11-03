@@ -86,7 +86,7 @@
         "Extra reviews for hard pages the next day, 3 days and 7 days later, chosen from any memorised page",
         "Modes for being sick, travelling or on your period, and an option to pause new hifdh",
         "Ramadan mode: choose how revision and new hifdh change, set how many full readings (khatm) to finish from any starting page, and track pages read each day",
-        "Bar chart of past revision cycles in Your plan",
+        "See how much of your revision cycle is done, and how many cycles a month you are on pace for",
         "Memorise forward, or backwards surah by surah from Juz Amma, each surah from its first page",
         "Juz-by-juz progress, current pace and projected finish date",
         "Daily reading tick with a streak",
@@ -488,11 +488,6 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .wtop b{display:inline-flex; align-items:center; gap:8px; font-weight:600}
 .wtop span{font-variant-numeric:tabular-nums; font-weight:600}
 .wnote{font-size:13px; color:var(--muted)}
-.crows{display:grid; gap:12px; margin:10px 0 6px}
-.cbar{position:relative; height:14px; margin:4px 0; background:var(--track); border-radius:999px}
-.cbar i{position:absolute; left:0; top:0; bottom:0; background:var(--pc); border-radius:999px}
-.cbar i.now{background:repeating-linear-gradient(45deg, var(--pc) 0 6px, var(--track) 6px 12px)}
-.cbar u{position:absolute; top:-4px; bottom:-4px; width:2px; margin-left:-1px; background:var(--ink); opacity:.5}
 
 /* plan */
 .big{font:700 40px/1 var(--f-display); letter-spacing:-.02em; font-variant-numeric:tabular-nums}
@@ -566,7 +561,6 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 [dir=rtl] *{letter-spacing:0!important}
 [dir=rtl] .cj summary b::before,[dir=rtl] .uday summary b::before{content:'◂ '}
 [dir=rtl] .cj[open] summary b::before,[dir=rtl] .uday[open] summary b::before{content:'▾ '}
-[dir=rtl] .cbar{transform:scaleX(-1)}
 /* +1, +½ and −½ read left to right, as numbers do. */
 [dir=rtl] .btns .btn,[dir=rtl] .oadd .btn{unicode-bidi:plaintext}
 [dir=rtl] .label,[dir=rtl] .tl,[dir=rtl] .term,[dir=rtl] .tbl th{font-size:12.5px}
@@ -621,7 +615,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <li>Hard pages come back the next day, 3 days later and 7 days later, on top of normal revision.</li>
       <li>Modes for being sick, travelling or on your period, so your plan fits your day.</li>
       <li>A Ramadan mode: set how many times you want to read the whole Qur’an (khatm), start anywhere, and track the pages you read each day.</li>
-      <li>A bar chart of your past revision cycles in Your plan.</li>
+      <li>See how much of your revision cycle is done in Your plan, and how many cycles a month you are on pace for.</li>
       <li>Memorise forward, or backwards surah by surah from Juz Amma.</li>
       <li>A daily reading tick with a streak, for reading pages not yet memorised.</li>
       <li>Juz-by-juz progress, your current pace and a projected finish date.</li>
@@ -656,41 +650,41 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 <template id="info-ar">
   <section class="card about" id="about" aria-labelledby="about-h">
     <h2 id="about-h">عن مساعد الحفظ</h2>
-    <p><strong>مساعد الحفظ</strong> أداة مجانية لتخطيط حفظ القرآن ومتابعته. أدخل ما حفظته من قبل وهدفك، فيحسب لك ما تفعله في كل يوم دراسة، بالسور وأرقام الصفحات بدقة في مصحف المدينة (604 صفحات)، أو المصحف الهندي الباكستاني ذي الخمسة عشر سطرًا (610 صفحات)، أو ذي الثلاثة عشر سطرًا (847 صفحة).</p>
+    <p><strong>مساعد الحفظ</strong> أداة مجانية تساعدك على تنظيم حفظ القرآن ومتابعته. أدخل ما حفظته وهدفك، فيخبرك بما تفعله كل يوم، بالسور وأرقام الصفحات. يعمل مع مصحف المدينة (604 صفحات)، والمصحف الهندي الباكستاني (15 سطرًا، 610 صفحات)، والمصحف الهندي الباكستاني (13 سطرًا، 847 صفحة).</p>
     <h3>ثلاثة أقسام لكل يوم</h3>
     <ul>
-      <li><strong>الحفظ الجديد:</strong> الصفحات أو الأسطر الجديدة التي تحفظها اليوم، بدقة حتى السطر، موزعة على أيام دراستك حتى تصل إلى تاريخ الإنهاء أو المقدار الأسبوعي.</li>
-      <li><strong>مراجعة الجديد:</strong> ما حفظته حديثًا، على جدول تكرار متباعد. افتراضيًا يُراجَع حفظ كل أسبوع كل يوم في ذلك الأسبوع ولمدة 21 يومًا بعده، ثم بعد 3 و7 و14 و30 يومًا من ذلك.</li>
-      <li><strong>المراجعة:</strong> كل ما هو أقدم، يُراجَع في دورة كاملة، كل 30 يومًا افتراضيًا. وتبدأ قائمة كل يوم من أول الصفحات التي لم تُراجَع بعد في الدورة.</li>
+      <li><strong>الحفظ الجديد:</strong> ما تحفظه اليوم من صفحات أو أسطر، موزعًا على أيام دراستك حتى تصل إلى هدفك.</li>
+      <li><strong>مراجعة الجديد:</strong> ما حفظته مؤخرًا، تراجعه كثيرًا في البداية ثم تتباعد المراجعة. حفظ كل أسبوع تراجعه كل يوم في ذلك الأسبوع و21 يومًا بعده، ثم بعد 3 و7 و14 و30 يومًا.</li>
+      <li><strong>المراجعة:</strong> كل حفظك القديم، تراجعه كله مرة كل 30 يومًا (أو المدة التي تختارها). وتبدأ قائمة كل يوم من أول صفحة لم تراجعها في هذه الدورة.</li>
     </ul>
     <h3>وفيه أيضًا</h3>
     <ul>
-      <li>اعرف أي السور رُوجعت في هذه الدورة، جزءًا جزءًا، واضغط على أي سورة راجعتها لتسجيلها.</li>
-      <li>تعود الصفحات الصعبة في اليوم التالي، ثم بعد 3 أيام، ثم بعد 7 أيام، إضافةً إلى المراجعة المعتادة.</li>
-      <li>أوضاع للمرض والسفر والحيض، حتى تناسب خطتك يومك.</li>
-      <li>وضع رمضان: حدّد كم مرة تريد أن تختم القرآن، وابدأ من أي موضع، وتابع الصفحات التي تقرؤها كل يوم.</li>
-      <li>رسم بياني لدورات المراجعة السابقة في «خطتك».</li>
-      <li>احفظ من أول المصحف، أو بالعكس سورةً سورةً بدءًا من جزء عمّ.</li>
-      <li>علامة قراءة يومية مع عدد الأيام المتتالية، لقراءة الصفحات التي لم تحفظها بعد.</li>
-      <li>التقدم جزءًا جزءًا، ووتيرتك الحالية، وتاريخ الإنهاء المتوقع.</li>
-      <li>عدة أشخاص على جهاز واحد، لعائلة أو حلقة، ولكل منهم لونه الخاص.</li>
+      <li>اعرف أي السور راجعتها في هذه الدورة، واضغط على أي سورة راجعتها لتسجيلها.</li>
+      <li>الصفحات الصعبة تعود في اليوم التالي، ثم بعد 3 أيام، ثم بعد 7 أيام.</li>
+      <li>أوضاع للمرض والسفر والحيض، لتناسب خطتك يومك.</li>
+      <li>وضع رمضان: اختر كم ختمة تريد، وابدأ من أي موضع، وتابع ما تقرؤه كل يوم.</li>
+      <li>في «خطتك» ترى كم أنجزت من دورة المراجعة، وكم دورة تُتم في الشهر بمعدلك الحالي.</li>
+      <li>احفظ من أول المصحف، أو بالعكس سورةً سورةً من جزء عمّ.</li>
+      <li>علامة قراءة يومية للصفحات التي لم تحفظها بعد، مع عدد الأيام المتتالية.</li>
+      <li>تقدمك جزءًا جزءًا، ومعدلك الحالي، وموعد الإنهاء المتوقع.</li>
+      <li>عدة أشخاص على جهاز واحد، لعائلة أو حلقة، لكل منهم لونه.</li>
     </ul>
   </section>
 
   <section class="card about" id="faq" aria-labelledby="faq-h">
     <h2 id="faq-h">الأسئلة الشائعة</h2>
     <div class="faq">
-      <div><h3>ما مساعد الحفظ؟</h3><p>مساعد الحفظ تطبيق ويب مجاني يساعدك على حفظ القرآن. تُدخل ما حفظته من قبل وهدفك، فيحسب كم تحفظ من جديد، وكم تراجع من الجديد، وكم تراجع من القديم في كل يوم دراسة، بالسور والصفحات والأسطر بدقة.</p></div>
-      <div><h3>ما الفرق بين مراجعة الجديد والمراجعة؟</h3><p>مراجعة الجديد تشمل ما حفظته حديثًا، على جدول تكرار متباعد حتى يثبت: يُراجَع حفظ كل أسبوع كل يوم في ذلك الأسبوع ولمدة 21 يومًا بعده افتراضيًا، ثم بعد 3 و7 و14 و30 يومًا. أما المراجعة فتشمل كل ما هو أقدم، وتُراجَع في دورة كاملة، كل 30 يومًا افتراضيًا.</p></div>
-      <div><h3>كيف تُحسب المقادير اليومية؟</h3><p>اختر تاريخًا للإنهاء أو مقدارًا تحفظه كل أسبوع، بالصفحات أو الأسطر، واليوم الذي تبدأ فيه. يتوزع الحفظ الجديد على أيام الأسبوع التي تدرس فيها، والمراجعة القديمة هي صفحاتك الأقدم مقسومة على دورة المراجعة.</p></div>
-      <div><h3>ماذا يحدث إذا فعلت أكثر من هدفي أو أقل منه؟</h3><p>للحفظ الجديد مقدار محدد لكل أسبوع، فإذا زدت في يوم خفّت الأيام التالية. أما المراجعة فيبقى هدفها اليومي كما هو، وتبدأ قائمة كل يوم من أول الصفحات التي لم تراجعها بعد في هذه الدورة، فلا يتكرر شيء ولا يفوتك شيء.</p></div>
-      <div><h3>هل يمكنني تسجيل مراجعة سور لم تكن في قائمة اليوم؟</h3><p>نعم. في بطاقة المراجعة، اضغط على أي سورة راجعتها ولم تكتمل بعد، أو أدخل أرقام الصفحات. تُحسب لذلك اليوم، وتُحسب كل صفحة مرة واحدة، ويمكنك أن ترى أي السور اكتملت في الدورة الحالية، جزءًا جزءًا.</p></div>
-      <div><h3>هل يوجد وضع لرمضان؟</h3><p>نعم. اضبطه من الإعدادات. اختر أول يوم من رمضان (محسوبًا من تقويم أم القرى، ويسهل تغييره)، وعدد الختمات التي تريد إتمامها، والصفحة التي تبدأ منها. يعرض كل يوم عدد الصفحات التي تقرؤها ومن أين، ويُظهر متتبع رمضان الصفحات المقروءة كل يوم. ويمكنك أيضًا إبقاء المراجعة والحفظ الجديد كالمعتاد، أو إيقافهما، أو الزيادة فيهما كل يوم.</p></div>
-      <div><h3>ماذا لو كنت مريضًا أو مسافرًا أو في فترة الحيض؟</h3><p>اختر ذلك من الإعدادات. المرض يوقف كل شيء لترتاح، ومع ذلك لا يزال بإمكانك إضافة أي شيء تقوم به. والسفر يوقف الحفظ الجديد ويُبقي كل ما سواه. وفي فترة الحيض تختارين للمراجعة والقراءة والحفظ الجديد: إبقاءها كالمعتاد، أو إيقافها، أو الزيادة فيها كل يوم. ويمكن أيضًا تسجيل المرض أو السفر أثناء الحيض.</p></div>
-      <div><h3>هل يمكنني الحفظ من آخر القرآن، مثل جزء عمّ؟</h3><p>نعم. سجّل ما حفظته من قبل، ثم اختر الحفظ بالعكس. عندها يسير الحفظ الجديد سورةً سورةً نحو الفاتحة، فتحفظ كل سورة من أول صفحة فيها، ويتخطى ما حفظته من قبل.</p></div>
-      <div><h3>هل يمكنني متابعة أكثر من شخص؟</h3><p>نعم. أضف شخصًا لكل طفل أو طالب. لكل شخص هدفه وجدوله وسجلاته ولونه الخاص.</p></div>
-      <div><h3>أي مصحف يستخدم؟</h3><p>مصحف المدينة ذو 604 صفحات، بخمسة عشر سطرًا في الصفحة، أو المصحف الهندي الباكستاني ذو الخمسة عشر سطرًا (610 صفحات)، أو ذو الثلاثة عشر سطرًا (847 صفحة). اختره في أعلى الإعدادات؛ ولكل شخص مصحفه، وتتبعه كل الصفحات والأسطر والسور والأجزاء.</p></div>
-      <div><h3>هل هو مجاني، وأين تُحفظ بياناتي؟</h3><p>هو مجاني ولا يحتاج إلى حساب. تُحفظ خطتك وسجلاتك في متصفحك على جهازك.</p></div>
+      <div><h3>ما مساعد الحفظ؟</h3><p>تطبيق ويب مجاني يساعدك على حفظ القرآن. تُدخل ما حفظته وهدفك، فيحسب لك كل يوم: كم تحفظ، وكم تراجع من الجديد، وكم تراجع من القديم، بالسور والصفحات والأسطر.</p></div>
+      <div><h3>ما الفرق بين مراجعة الجديد والمراجعة؟</h3><p>مراجعة الجديد لما حفظته مؤخرًا حتى يثبت: تراجع حفظ كل أسبوع كل يوم في ذلك الأسبوع و21 يومًا بعده، ثم بعد 3 و7 و14 و30 يومًا. أما المراجعة فلكل حفظك القديم، تراجعه كله مرة كل 30 يومًا (أو المدة التي تختارها).</p></div>
+      <div><h3>كيف تُحسب المقادير اليومية؟</h3><p>اختر تاريخًا للإنهاء أو مقدارًا تحفظه كل أسبوع، بالصفحات أو الأسطر، واليوم الذي تبدأ فيه. يتوزع الحفظ الجديد على أيام دراستك، ومراجعة القديم هي صفحاتك القديمة مقسومة على أيام الدورة.</p></div>
+      <div><h3>ماذا لو فعلت أكثر من هدفي أو أقل؟</h3><p>للحفظ الجديد مقدار لكل أسبوع، فإذا زدت يومًا خفّت الأيام التالية. أما المراجعة فهدفها اليومي ثابت، وتبدأ قائمة كل يوم من أول صفحة لم تراجعها في هذه الدورة، فلا يتكرر شيء ولا يفوتك شيء.</p></div>
+      <div><h3>هل أستطيع تسجيل مراجعة سور ليست في قائمة اليوم؟</h3><p>نعم. في بطاقة المراجعة اضغط على أي سورة راجعتها ولم تكتمل، أو أدخل أرقام الصفحات. تُحسب لذلك اليوم، وكل صفحة تُحسب مرة واحدة، وترى أي السور اكتملت في هذه الدورة.</p></div>
+      <div><h3>هل يوجد وضع لرمضان؟</h3><p>نعم، من الإعدادات. اختر أول يوم من رمضان (محسوب بتقويم أم القرى، ويمكنك تغييره)، وكم ختمة تريد، والصفحة التي تبدأ منها. يعرض لك كل يوم كم تقرأ ومن أين، ويتابع ما قرأته كل يوم. ويمكنك إبقاء المراجعة والحفظ الجديد كالمعتاد، أو إيقافهما، أو الزيادة فيهما.</p></div>
+      <div><h3>ماذا لو كنت مريضًا أو مسافرًا أو في أيام الحيض؟</h3><p>اختر ذلك من الإعدادات. المرض يوقف كل شيء لترتاح، ويمكنك أن تضيف أي شيء تقوم به. والسفر يوقف الحفظ الجديد فقط. وفي أيام الحيض تختارين للمراجعة والقراءة والحفظ الجديد: كالمعتاد، أو إيقافها، أو الزيادة فيها. ويمكن أيضًا تسجيل المرض أو السفر في أيام الحيض.</p></div>
+      <div><h3>هل أستطيع الحفظ من آخر القرآن، مثل جزء عمّ؟</h3><p>نعم. سجّل ما حفظته، ثم اختر الحفظ بالعكس. عندها تحفظ سورةً سورةً نحو الفاتحة، كل سورة من أولها، ويُتخطّى ما حفظته من قبل.</p></div>
+      <div><h3>هل أستطيع متابعة أكثر من شخص؟</h3><p>نعم. أضف شخصًا لكل طفل أو طالب، ولكل شخص هدفه وجدوله وسجلاته ولونه.</p></div>
+      <div><h3>أي مصحف يستخدم؟</h3><p>مصحف المدينة (604 صفحات، 15 سطرًا في الصفحة)، أو المصحف الهندي الباكستاني (15 سطرًا، 610 صفحات)، أو (13 سطرًا، 847 صفحة). اختره في أعلى الإعدادات؛ ولكل شخص مصحفه.</p></div>
+      <div><h3>هل هو مجاني، وأين تُحفظ بياناتي؟</h3><p>مجاني ولا يحتاج إلى حساب. تُحفظ خطتك وسجلاتك في متصفحك على جهازك.</p></div>
     </div>
   </section>
 </template>
@@ -728,7 +722,7 @@ window.hhMissing = function(){ return Object.keys(trMissing); };
 var AR_UNITS = { page: ['صفحة', 'صفحات', 'صفحة', 'صفحة واحدة', 'صفحتان', 'صفحتين'],
   line: ['سطر', 'أسطر', 'سطرًا', 'سطر واحد', 'سطران', 'سطرين'], day: ['يوم', 'أيام', 'يومًا', 'يوم واحد', 'يومان', 'يومين'],
   week: ['أسبوع', 'أسابيع', 'أسبوعًا', 'أسبوع واحد', 'أسبوعان', 'أسبوعين'], surah: ['سورة', 'سور', 'سورة', 'سورة واحدة', 'سورتان', 'سورتين'],
-  reading: ['ختمة', 'ختمات', 'ختمة', 'ختمة واحدة', 'ختمتان', 'ختمتين'], juz: ['جزء', 'أجزاء', 'جزءًا', 'جزء واحد', 'جزآن', 'جزأين'] };
+  cycle: ['دورة', 'دورات', 'دورة', 'دورة واحدة', 'دورتان', 'دورتين'], reading: ['ختمة', 'ختمات', 'ختمة', 'ختمة واحدة', 'ختمتان', 'ختمتين'], juz: ['جزء', 'أجزاء', 'جزءًا', 'جزء واحد', 'جزآن', 'جزأين'] };
 function plu(n, en){
   if (!IS_AR) return en;
   var f = AR_UNITS[en] || AR_UNITS[en.replace(/s$/, '')]; if (!f) return tr(en);
@@ -2242,35 +2236,19 @@ function viewToday(){
 }
 
 // Each revision cycle so far: when it started and finished, and the pages revised in it.
-function cycleHistory(st, logs){
-  var run = cycleRun(st, logs), by = {}, list = [];
-  run.keys.forEach(function(k){
-    var c = run.days[k]; if (!(c.amount > EPS)) return;
-    var r = by[c.pass]; if (!r){ r = by[c.pass] = { pass: c.pass, from: k, to: null, pages: 0 }; list.push(r); }
-    r.pages += c.amount; if (c.completed) r.to = k;
-  });
-  return list;
-}
-// A small bar chart of the last few cycles: how many days each took, against the planned cycle.
-function cycleStatsCard(st, logs, t){
-  var hist = cycleHistory(st, logs);
-  if (!hist.length) return '';
-  var cs = cycleState(st, logs, t), done = hist.filter(function(r){ return r.to; }), shown = hist.slice(-8);
-  shown.forEach(function(r){ r.days = diffDays(r.from, r.to || t) + 1; });
-  var max = Math.max(st.cycleDays, Math.max.apply(null, shown.map(function(r){ return r.days; }))) * 1.08;
-  var short = { day: 'numeric', month: 'short' };
-  var avg = done.length ? Math.round(done.reduce(function(a, r){ return a + diffDays(r.from, r.to) + 1; }, 0) / done.length) : 0;
-  var rows = shown.map(function(r){
-    var now = !r.to, pctDone = now && cs ? Math.round(cs.doneIn / cs.total * 100) : 100;
-    return '<div class="crow"><div class="wtop"><b>' + tr('Cycle {n}', { n: r.pass }) + '</b><span>' + tr(now ? '{n} {u} so far' : '{n} {u}', { n: r.days, u: plu(r.days, r.days === 1 ? 'day' : 'days') }) + '</span></div>' +
-      '<div class="cbar"><i class="' + (now ? 'now' : '') + '" style="width:' + Math.min(100, r.days / max * 100) + '%"></i><u style="left:' + (st.cycleDays / max * 100) + '%"></u></div>' +
-      '<p class="wnote">' + fmtDate(r.from, short) + ' – ' + (now ? tr('now · {p}% done', { p: pctDone }) : fmtDate(r.to, short)) + ' · ' + tr('{n} pages revised', { n: fmt1(r.pages), u: plu(fmt1(r.pages), 'pages') }) + '</p></div>';
-  }).join('');
-  return '<section class="card s-old" aria-label="' + tr('Revision cycles') + '"><div class="row-h"><h2 class="h">' + tr('Revision cycles') + '</h2><span class="label">' +
-    tr('{n} finished', { n: done.length }) + '</span></div>' +
-    (avg ? '<p class="muted">' + tr('On average a cycle took {a} {au}. Your plan is every {d} {du}.', { a: avg, au: plu(avg, 'days'), d: st.cycleDays, du: plu(st.cycleDays, 'days') }) + '</p>' : '<p class="muted">' + tr('Your first cycle is still going. Finished cycles show up here.') + '</p>') +
-    '<div class="crows" role="img" aria-label="' + tr('Days each revision cycle took') + '">' + rows + '</div>' +
-    '<p class="wnote">' + tr('Each bar is one revision cycle: the longer the bar, the more days it took to revise everything once. The line marks your plan of {d} {du}, so a bar past the line took longer than planned.', { d: st.cycleDays, du: plu(st.cycleDays, 'days') }) + (hist.length > shown.length ? ' ' + tr('Showing the last {n}.', { n: shown.length }) : '') + '</p></section>';
+// Revision on Your plan: how much of this cycle is done, and how many cycles a month the last four weeks' pace gives.
+function cycleCard(st, logs, t){
+  var cs = cycleState(st, logs, t); if (!cs) return '';
+  var pct = cs.full ? 100 : Math.round(cs.doneIn / cs.total * 100), fin = cs.full ? cs.pass : cs.pass - 1;
+  var pc = pace(st, logs, t), perMonth = pc && pc.oldPerCal > 0 ? pc.oldPerCal * 30 / cs.total : 0;
+  var pm = fmt1(Math.max(0.1, perMonth)), plan = fmt1(30 / st.cycleDays);
+  function cyc(n){ return cnt(n, n === '1' ? 'cycle' : 'cycles'); }
+  return '<section class="card s-old" aria-label="' + tr('Revision') + '"><div class="row-h"><h2 class="h">' + tr('Revision') + '</h2><span class="label">' + tr('{n} finished', { n: fin }) + '</span></div>' +
+    '<div class="big">' + pct + '%<small>' + (cs.full ? tr('Cycle {n} complete, alhamdulillah', { n: cs.pass }) : tr('of cycle {n} done', { n: cs.pass })) + '</small></div>' +
+    '<div class="bar" role="progressbar" aria-label="' + tr('Cycle {n}', { n: cs.pass }) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><i style="width:' + pct + '%"></i></div>' +
+    '<p class="muted">' + tr('{a} of {b} pages revised.', { a: fmt1(cs.doneIn), b: fmt1(cs.total), u: plu(fmt1(cs.total), 'pages') }) + '</p>' +
+    '<p class="muted">' + (perMonth > 0 ? tr('At your pace that is about {n} a month. Your plan is {p} a month.', { n: cyc(pm), p: cyc(plan) })
+      : tr('Revise for a few days to see how many cycles a month you are on track for.')) + '</p></section>';
 }
 
 function viewPlan(){
@@ -2278,8 +2256,6 @@ function viewPlan(){
   var mem = st.startPages + sumN(P.logs, function(){ return true; });
   var rem = Math.max(0, st.goalPages - mem);
   var req = targetInfo(st, rem, t).req;
-  var pc = pace(st, P.logs, t);
-  var p = perDay(st, P.logs, t);
   var known = allKnown(st, P.logs);
 
   var pct = Math.round(Math.min(1, mem / Math.max(1, st.goalPages)) * 100);
@@ -2295,14 +2271,6 @@ function viewPlan(){
       return '<li><div><b>' + esc(rangeLabel(r[0], r[1])) + '</b><small>' + fmtR(r) + ' · ' + juzText([r]) + '</small></div></li>';
     }).join('') + '</ul></details>' : '<p class="muted">' + tr('Nothing marked yet. Add what you have already memorised in Settings.') + '</p>') + '</section>';
 
-  var cdN = pc && pc.oldPerCal > 0 && p.old > 0 ? Math.max(1, Math.round(p.old / pc.oldPerCal)) : 0;
-  var cycleNow = cdN ? tr('about {n} {u}', { n: cdN, u: plu(cdN, 'days') }) : '—';
-  var revCard = '<section class="card" aria-label="' + tr('Revision') + '"><h2 class="h">' + tr('Revision') + '</h2><dl class="kv">' +
-    '<dt>' + tr('New revision due today') + '</dt><dd>' + pagesN(fmt1(p.r)) + '</dd><dt>' + tr('Recent pages still in review') + '</dt><dd>' + pagesN(fmt1(p.recent)) + '</dd>' +
-    '<dt>' + tr('Older pages in the cycle') + '</dt><dd>' + pagesN(fmt1(p.old)) + '</dd>' +
-    '<dt>' + tr('Planned cycle') + '</dt><dd>' + tr('every {n} {u}', { n: st.cycleDays, u: plu(st.cycleDays, 'days') }) + '</dd>' +
-    '<dt>' + tr('Older revision, per study day') + '</dt><dd>' + pagesN(fmt1(p.o)) + '</dd>' +
-    '<dt>' + tr('Cycle at the current rate') + '</dt><dd>' + cycleNow + '</dd></dl></section>';
 
   var ms = milestones(st, mem, req, t);
   var msCard = '';
@@ -2317,7 +2285,7 @@ function viewPlan(){
   }
   var ramNow = !!ramadanOn(st, t);
   // Ramadan first while it is on; otherwise its card sits just above "If you stay on plan".
-  return (ramNow ? ramPlanCard(P, t) : '') + upcomingCard(st, P.logs, t) + cycleStatsCard(st, P.logs, t) + memCard + knownCard + revCard + (ramNow ? '' : ramPlanCard(P, t)) + msCard;
+  return (ramNow ? ramPlanCard(P, t) : '') + upcomingCard(st, P.logs, t) + cycleCard(st, P.logs, t) + memCard + knownCard + (ramNow ? '' : ramPlanCard(P, t)) + msCard;
 }
 
 function srParse(txt){

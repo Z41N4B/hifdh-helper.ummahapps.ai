@@ -14,7 +14,7 @@
 - Sick, travelling or on a period: set in Settings. Sick pauses everything (anything done can still be added) and pauses hard page reviews. Being sick or travelling can be turned on during a period. Travelling pauses new hifdh only. On a period, revision, reading and new hifdh can each be kept as normal, stopped, or increased by a chosen amount a day. New hifdh can also be paused on its own.
 - Daily reading tick with a streak, for reading pages not yet memorised.
 - Ramadan mode: set the first day (suggested from the Umm al-Qura calendar) and 29 or 30 days, how many full readings of the Qur’an (khatm) to finish, and the page to start from, anywhere in the Qur’an. Each day shows the pages to read and where they run from and to, spread over the days left. A Ramadan tracker shows pages read each day and progress towards each khatm. Revision and new hifdh can be kept as normal, stopped or increased, as for a period.
-- Plan view: juz-by-juz progress, current pace, projected finish date, a bar chart of past revision cycles (days each took against the plan), and how daily revision grows as more is memorised.
+- Plan view: juz-by-juz progress, current pace, projected finish date, how much of the current revision cycle is done and how many cycles a month you are on pace for, and how daily revision grows as more is memorised.
 - Several people on one device, for a family or a class, each with their own goal, schedule and colour theme.
 - Memorise forward (towards An-Nas) or backwards surah by surah towards Al-Fatihah (for example starting with Juz Amma), learning each surah from its first page and skipping pages already learned.
 
