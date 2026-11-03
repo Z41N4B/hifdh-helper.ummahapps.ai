@@ -567,7 +567,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 [dir=rtl] .cj[open] summary b::before,[dir=rtl] .uday[open] summary b::before{content:'▾ '}
 [dir=rtl] .cbar{transform:scaleX(-1)}
 /* +1, +½ and −½ read left to right, as numbers do. */
-[dir=rtl] .btns .btn{unicode-bidi:plaintext}
+[dir=rtl] .btns .btn,[dir=rtl] .oadd .btn{unicode-bidi:plaintext}
 [dir=rtl] .label,[dir=rtl] .tl,[dir=rtl] .term,[dir=rtl] .tbl th{font-size:12.5px}
 [dir=rtl] .dbtn .dow{font-size:11px}
 .toph{display:flex; align-items:center; gap:6px; flex:none}
@@ -655,8 +655,8 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 <template id="info-ar">
   <section class="card about" id="about" aria-labelledby="about-h">
     <h2 id="about-h">عن مساعد الحفظ</h2>
-    <p><strong>مساعد الحفظ</strong> أداة مجانية لتخطيط حفظ القرآن ومتابعته. أدخل ما حفظته من قبل وهدفك، فيحسب لك ما تفعله في كل يوم دراسة، بالسور وأرقام الصفحات بدقة في مصحف المدينة (604 صفحة)، أو المصحف الهندي الباكستاني ذي الخمسة عشر سطرًا (610 صفحة)، أو ذي الثلاثة عشر سطرًا (847 صفحة).</p>
-    <h3>ثلاثة أجزاء في كل يوم</h3>
+    <p><strong>مساعد الحفظ</strong> أداة مجانية لتخطيط حفظ القرآن ومتابعته. أدخل ما حفظته من قبل وهدفك، فيحسب لك ما تفعله في كل يوم دراسة، بالسور وأرقام الصفحات بدقة في مصحف المدينة (604 صفحات)، أو المصحف الهندي الباكستاني ذي الخمسة عشر سطرًا (610 صفحات)، أو ذي الثلاثة عشر سطرًا (847 صفحة).</p>
+    <h3>ثلاثة أقسام لكل يوم</h3>
     <ul>
       <li><strong>الحفظ الجديد:</strong> الصفحات أو الأسطر الجديدة التي تحفظها اليوم، بدقة حتى السطر، موزعة على أيام دراستك حتى تصل إلى تاريخ الإنهاء أو المقدار الأسبوعي.</li>
       <li><strong>مراجعة الجديد:</strong> ما حفظته حديثًا، على جدول تكرار متباعد. افتراضيًا يُراجَع حفظ كل أسبوع كل يوم في ذلك الأسبوع ولمدة 21 يومًا بعده، ثم بعد 3 و7 و14 و30 يومًا من ذلك.</li>
@@ -688,7 +688,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <div><h3>ماذا لو كنت مريضًا أو مسافرًا أو في فترة الحيض؟</h3><p>اختر ذلك من الإعدادات. المرض يوقف كل شيء لترتاح، ومع ذلك لا يزال بإمكانك إضافة أي شيء تقوم به. والسفر يوقف الحفظ الجديد ويُبقي كل ما سواه. وفي فترة الحيض تختارين للمراجعة والقراءة والحفظ الجديد: إبقاءها كالمعتاد، أو إيقافها، أو الزيادة فيها كل يوم. ويمكن أيضًا تسجيل المرض أو السفر أثناء الحيض.</p></div>
       <div><h3>هل يمكنني الحفظ من آخر القرآن، مثل جزء عمّ؟</h3><p>نعم. سجّل ما حفظته من قبل، ثم اختر الحفظ بالعكس. عندها يسير الحفظ الجديد سورةً سورةً نحو الفاتحة، فتحفظ كل سورة من أول صفحة فيها، ويتخطى ما حفظته من قبل.</p></div>
       <div><h3>هل يمكنني متابعة أكثر من شخص؟</h3><p>نعم. أضف شخصًا لكل طفل أو طالب. لكل شخص هدفه وجدوله وسجلاته ولونه الخاص.</p></div>
-      <div><h3>أي مصحف يستخدم؟</h3><p>مصحف المدينة ذو 604 صفحة بخمسة عشر سطرًا في الصفحة، أو المصحف الهندي الباكستاني ذو الخمسة عشر سطرًا (610 صفحة)، أو ذو الثلاثة عشر سطرًا (847 صفحة). اختره في أعلى الإعدادات؛ ولكل شخص مصحفه، وتتبعه كل الصفحات والأسطر والسور والأجزاء.</p></div>
+      <div><h3>أي مصحف يستخدم؟</h3><p>مصحف المدينة ذو 604 صفحات، بخمسة عشر سطرًا في الصفحة، أو المصحف الهندي الباكستاني ذو الخمسة عشر سطرًا (610 صفحات)، أو ذو الثلاثة عشر سطرًا (847 صفحة). اختره في أعلى الإعدادات؛ ولكل شخص مصحفه، وتتبعه كل الصفحات والأسطر والسور والأجزاء.</p></div>
       <div><h3>هل هو مجاني، وأين تُحفظ بياناتي؟</h3><p>هو مجاني ولا يحتاج إلى حساب. تُحفظ خطتك وسجلاتك في متصفحك على جهازك.</p></div>
     </div>
   </section>
@@ -708,7 +708,11 @@ var LANG = (function(){
   return q ? q[1] : s === 'ar' ? 'ar' : 'en';
 })();
 var IS_AR = LANG === 'ar', AR = IS_AR && window.HH_AR ? window.HH_AR : null, trMissing = {};
-function fill(t, v){ return v ? String(t).replace(/\{(\w+)\}/g, function(m, k){ return v[k] != null ? v[k] : m; }) : t; }
+function fill(t, v){
+  if (!v) return t;
+  var s = String(t).replace(/\{(\w+)\}/g, function(m, k){ return v[k] != null ? v[k] : m; });
+  return IS_AR ? arCount(s) : s;
+}
 function tr(s, v){
   var t = s;
   if (AR){ if (AR[s] != null) t = AR[s]; else trMissing[s] = 1; }
@@ -716,21 +720,35 @@ function tr(s, v){
 }
 // Strings with no Arabic yet, for checking a translation: hhMissing() in the console.
 window.hhMissing = function(){ return Object.keys(trMissing); };
-// The word after a number. English is as the caller chose it (page or pages); Arabic counts its own way:
-// 3 to 10 take the plural, everything else (1, fractions, 11 and up) the singular.
-var AR_UNITS = { page: ['صفحة', 'صفحات'], line: ['سطر', 'أسطر'], day: ['يوم', 'أيام'], week: ['أسبوع', 'أسابيع'],
-  surah: ['سورة', 'سور'], reading: ['ختمة', 'ختمات'], juz: ['جزء', 'أجزاء'] };
+// The word after a number. English is as the caller chose it (page or pages); Arabic counts its own way, by the last
+// two digits: 3 to 10 take the plural (5 صفحات, 604 صفحات), 11 to 99 the singular with tanween (15 سطرًا), and the rest
+// (fractions, 100, 101) the plain singular. 1 and 2 also get the singular here; arCount then says them the Arabic way.
+// Forms: singular, plural, after 11 to 99, one, two (subject), two (after a preposition or as object).
+var AR_UNITS = { page: ['صفحة', 'صفحات', 'صفحة', 'صفحة واحدة', 'صفحتان', 'صفحتين'],
+  line: ['سطر', 'أسطر', 'سطرًا', 'سطر واحد', 'سطران', 'سطرين'], day: ['يوم', 'أيام', 'يومًا', 'يوم واحد', 'يومان', 'يومين'],
+  week: ['أسبوع', 'أسابيع', 'أسبوعًا', 'أسبوع واحد', 'أسبوعان', 'أسبوعين'], surah: ['سورة', 'سور', 'سورة', 'سورة واحدة', 'سورتان', 'سورتين'],
+  reading: ['ختمة', 'ختمات', 'ختمة', 'ختمة واحدة', 'ختمتان', 'ختمتين'], juz: ['جزء', 'أجزاء', 'جزءًا', 'جزء واحد', 'جزآن', 'جزأين'] };
 function plu(n, en){
   if (!IS_AR) return en;
   var f = AR_UNITS[en] || AR_UNITS[en.replace(/s$/, '')]; if (!f) return tr(en);
-  var x = typeof n === 'number' ? n : /^\d+$/.test(String(n)) ? Number(n) : NaN;
-  return x === Math.floor(x) && x >= 3 && x <= 10 ? f[1] : f[0];
+  var x = typeof n === 'number' ? n : /^\d+$/.test(String(n)) ? Number(n) : NaN, h = x % 100;
+  return x !== Math.floor(x) ? f[0] : h >= 3 && h <= 10 ? f[1] : h >= 11 && h <= 99 ? f[2] : f[0];
 }
+// Arabic does not write "1 صفحة" or "2 صفحة": it says صفحة واحدة and صفحتين. A ^ before the number in an Arabic line
+// marks it as the subject, which takes صفحتان; the ^ itself is never shown.
+var AR_BY_ONE = {};
+Object.keys(AR_UNITS).forEach(function(k){ AR_BY_ONE[AR_UNITS[k][0]] = AR_UNITS[k]; });
+var AR_ONE_TWO = new RegExp('(^|[^\\d.^\\u2066\\u2069])(\\^?)([12]) (' + Object.keys(AR_BY_ONE).join('|') + ')(?![\\u0621-\\u065F])', 'g');
+function arCount(s){
+  return String(s).replace(AR_ONE_TWO, function(m, pre, subj, d, w){ var f = AR_BY_ONE[w]; return pre + (d === '1' ? f[3] : subj ? f[4] : f[5]); }).replace(/\^/g, '');
+}
+// A number with its word, standing on its own as a label or value: "2 pages" in English, صفحتان in Arabic.
+function cnt(s, en){ return IS_AR ? arCount('^' + s + ' ' + plu(s, en)) : s + ' ' + en; }
 // A page number as shown: p.12 in English.
 function pgL(n){ return tr('p.{n}', { n: n }); }
 // An amount of pages: "2 pages", "½ page".
-function qp(v){ var s = fmtQ(v); return s + ' ' + plu(s, v > 1 ? 'pages' : 'page'); }
-function pagesN(s){ return s + ' ' + plu(s, 'pages'); }
+function qp(v){ var s = fmtQ(v); return cnt(s, v > 1 ? 'pages' : 'page'); }
+function pagesN(s){ return cnt(s, 'pages'); }
 var SEP = IS_AR ? '، ' : ', ';
 var LOCALE = IS_AR ? 'ar-u-nu-latn-ca-gregory' : 'en-GB';
 // The day of the week on the week strip: three letters in English, a short name in Arabic.
@@ -757,15 +775,15 @@ function countActive(days, fromIso, toIso){
 }
 function sumN(logs, pred){ var t = 0; for (var k in logs){ if (pred(k)) t += num(logs[k].n); } return t; }
 
-// In Arabic, keeps 2¾ and <¼ reading left to right inside the right-to-left text (else they show as ¾2 and ¼>).
-function ltrN(s){ return IS_AR && /\D/.test(s) ? '\u2066' + s + '\u2069' : s; }
+// 2¾ in English. Arabic says the whole number first, "two and three quarters", so it is written 2 و¾: read from the
+// right, the 2 comes first, and the order cannot be mistaken as 2¾ could (¾2 to a reader of right-to-left text).
 function fmtQ(v){
   if (!(v > 0)) return '0';
-  if (v < 0.125) return ltrN('<¼');
-  var q = Math.round(v * 4), w = Math.floor(q / 4), f = q % 4;
-  return ltrN((w ? String(w) : '') + ['', '¼', '½', '¾'][f]);
+  if (v < 0.125) return IS_AR ? 'أقل من ¼' : '<¼';
+  var q = Math.round(v * 4), w = Math.floor(q / 4), f = q % 4, fr = ['', '¼', '½', '¾'][f];
+  return IS_AR && w && f ? w + ' و' + fr : (w ? String(w) : '') + fr;
 }
-function fmtL(v){ v = num(v); if (!(v > 0)) return '0'; var n = Math.round(v * LINES); return n < 1 ? ltrN('<1') : String(n); }
+function fmtL(v){ v = num(v); if (!(v > 0)) return '0'; var n = Math.round(v * LINES); return n < 1 ? (IS_AR ? 'أقل من 1' : '<1') : String(n); }
 function fmt1(v){ v = Math.round(num(v) * 10) / 10; return String(v).replace(/\.0$/, ''); }
 
 // ----- Qur’an map. Page p covers x in [p-1, p). These start as the Madinah mushaf (604 pages, 15 lines) and are
@@ -1675,7 +1693,7 @@ function srItems(st, due, d){
     var drs = normIv([].concat.apply([], dly.map(function(it){ return it.b.iv; })));
     var dDone = dly.every(function(it){ return it.done; }), dPart = !dDone && dly.some(function(it){ return it.got > 0; });
     var dNames = namesIn(drs);
-    items.push('<li class="sri' + (dDone ? ' ok' : '') + '"><span>' + esc(dNames) + '<small>' + tr('Every day · recent new hifdh · {n} pages', { n: fmtQ(dly.reduce(function(t, it){ return t + it.b.size; }, 0)) }) + '</small></span><b>' +
+    items.push('<li class="sri' + (dDone ? ' ok' : '') + '"><span>' + esc(dNames) + '<small>' + tr('Every day · recent new hifdh · {n} pages', { n: fmtQ(dly.reduce(function(t, it){ return t + it.b.size; }, 0)), u: plu(fmtQ(dly.reduce(function(t, it){ return t + it.b.size; }, 0)), 'pages') }) + '</small></span><b>' +
       (dDone ? '✓ ' : '') + drs.map(function(r){ return fmtLines(r[0], r[1]); }).join(SEP) + (dPart ? ' · ' + tr('part') : '') + '</b></li>');
   }
   items = items.concat(spc.map(function(it){
@@ -1779,10 +1797,10 @@ function ramProgressHtml(s, t){
   }).join('');
   var note = s.all >= s.total ? (R.khatms > 1 ? tr('All {n} readings finished, alhamdulillah. May Allah accept it from you.', { n: R.khatms }) : tr('Your khatm finished, alhamdulillah. May Allah accept it from you.'))
     : t < R.from ? tr('Ramadan starts on {d}, insha’Allah.', { d: fmtDate(R.from, { weekday: 'long', day: 'numeric', month: 'long' }) })
-    : diff >= 1 ? tr('{n} {u} ahead. Reading the same amount every day, you’d have read about {e} pages by now.', { n: fmt1(diff), u: plu(fmt1(diff), 'pages'), e: fmt1(expect) })
-    : diff <= -1 ? tr('{n} {u} behind. Reading the same amount every day, you’d have read about {e} pages by now. What is left is spread over the days remaining.', { n: fmt1(-diff), u: plu(fmt1(-diff), 'pages'), e: fmt1(expect) })
+    : diff >= 1 ? tr('{n} {u} ahead. Reading the same amount every day, you’d have read about {e} pages by now.', { n: fmt1(diff), u: plu(fmt1(diff), 'pages'), e: fmt1(expect), eu: plu(fmt1(expect), 'pages') })
+    : diff <= -1 ? tr('{n} {u} behind. Reading the same amount every day, you’d have read about {e} pages by now. What is left is spread over the days remaining.', { n: fmt1(-diff), u: plu(fmt1(-diff), 'pages'), e: fmt1(expect), eu: plu(fmt1(expect), 'pages') })
     : tr('Right on track to finish on time.');
-  return '<div class="wtop"><b>' + (R.khatms > 1 ? tr('Khatm {k} of {n}', { k: Math.min(R.khatms, k + 1), n: R.khatms }) : tr('Khatm')) + '</b><span>' + tr('{a} of {b} pages', { a: fmt1(readN), b: s.total }) + ' · ' + pct + '%</span></div>' +
+  return '<div class="wtop"><b>' + (R.khatms > 1 ? tr('Khatm {k} of {n}', { k: Math.min(R.khatms, k + 1), n: R.khatms }) : tr('Khatm')) + '</b><span>' + tr('{a} of {b} pages', { a: fmt1(readN), b: s.total, u: plu(s.total, 'pages') }) + ' · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
     '<div class="rchart" role="img" aria-label="' + tr('Pages read each day of Ramadan') + '">' + bars + '</div>' +
     '<div class="rchart-x"><span>' + tr('Day {n}', { n: 1 }) + '</span><span>' + tr('Day {n}', { n: R.days }) + '</span></div>' +
@@ -1817,8 +1835,8 @@ function ramPlanCard(P, t){
   var sd = diffDays(t, R.from), when = t < R.from ? tr('Starts in {n} {u}', { n: sd, u: plu(sd, sd === 1 ? 'day' : 'days') }) : t > end ? tr('Finished') : tr('Day {k} of {n}', { k: s.dayNo, n: R.days });
   var read = s.days.filter(function(x){ return x.v > 0; }).length;
   return '<section class="card s-read" aria-label="' + tr('Ramadan reading') + '"><div class="row-h"><h2 class="h">' + tr('Ramadan reading') + '</h2><span class="label">' + when + '</span></div>' +
-    '<p class="muted">' + fmtDate(R.from, f) + ' – ' + fmtDate(end, f) + '. ' + tr(R.khatms > 1 ? 'Aiming for {n} full readings of the Qur’an from {s}, {p}.' : 'Aiming for one full reading of the Qur’an from {s}, {p}.', { n: R.khatms, s: esc(NAMES[surahIdxOfPage(R.startPage)]), p: pgL(R.startPage) }) +
-    (read ? ' ' + tr('Read on {n} {u}, about {a} pages a day.', { n: read, u: plu(read, read === 1 ? 'day' : 'days'), a: fmt1(s.all / read) }) : '') + '</p>' +
+    '<p class="muted">' + fmtDate(R.from, f) + ' – ' + fmtDate(end, f) + '. ' + tr(R.khatms > 1 ? 'Aiming for {n} full readings of the Qur’an from {s}, {p}.' : 'Aiming for one full reading of the Qur’an from {s}, {p}.', { n: R.khatms, u: plu(R.khatms, 'readings'), s: esc(NAMES[surahIdxOfPage(R.startPage)]), p: pgL(R.startPage) }) +
+    (read ? ' ' + tr('Read on {n} {u}, about {a} pages a day.', { n: read, u: plu(read, read === 1 ? 'day' : 'days'), a: fmt1(s.all / read), au: plu(fmt1(s.all / read), 'pages') }) : '') + '</p>' +
     ramProgressHtml(s, t) + '</section>';
 }
 // Removing something already done takes two taps: the first turns the button into Remove, the second removes it.
@@ -1896,7 +1914,7 @@ function upcomingCard(st, logs, t){
     }
     x = iso(addDays(parse(x), 1)); i++;
   }
-  var nd = function(n){ return n + ' ' + plu(n, 'days'); };
+  var nd = function(n){ return cnt(n, 'days'); };
   return '<section class="card" id="upcoming" aria-label="' + tr('Coming up') + '"><div class="row-h"><h2 class="h">' + tr('New revision, coming up') + '</h2>' +
     '<span class="uchips" role="group" aria-label="' + tr('How many days') + '"><button type="button" class="chip xs" data-a="updays" data-n="3" aria-pressed="' + (upDays === 3) + '">' + nd(3) + '</button><button type="button" class="chip xs" data-a="updays" data-n="7" aria-pressed="' + (upDays === 7) + '">' + nd(7) + '</button>' +
     '<button type="button" class="chip xs" data-a="updays" data-n="14" aria-pressed="' + (upDays === 14) + '">' + nd(14) + '</button></span></div>' +
@@ -1978,7 +1996,7 @@ function cycleHtml(st, logs, d){
     '<small class="hint">' + tr('Choosing a surah fills in all of its pages. Change the page numbers for part of it.') + '</small>' +
     (oxr.msg ? '<small class="hint err">' + esc(oxr.msg) + '</small>' : '') + '</div></details>' : '';
   return markedHtml + '<details class="hall"' + (cyc.open ? ' open' : '') + ' data-cyc><summary>' + tr('Mark what you’ve revised: tap a surah or enter pages · see this cycle') + '</summary><div class="hadd">' + form +
-    '<div class="wtop"><b>' + (c.full ? tr('Cycle {n} complete, alhamdulillah', { n: c.pass }) : tr('Cycle {n}', { n: c.pass })) + '</b><span>' + tr('{a} of {b} pages', { a: fmt1(c.doneIn), b: fmt1(c.total) }) + ' · ' + pct + '%</span></div>' +
+    '<div class="wtop"><b>' + (c.full ? tr('Cycle {n} complete, alhamdulillah', { n: c.pass }) : tr('Cycle {n}', { n: c.pass })) + '</b><span>' + tr('{a} of {b} pages', { a: fmt1(c.doneIn), b: fmt1(c.total), u: plu(fmt1(c.total), 'pages') }) + ' · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
     '<p class="wnote"><span class="rv ok">✓ ' + tr('done') + '</span> <span class="rv part">◐ ' + tr('part done') + '</span> <span class="rv">' + tr('not yet') + '</span></p>' +
     (canTap ? '<p class="wnote">' + tr('Tap a surah you’ve revised that isn’t done yet. Your next list starts from the first pages not done.') + '</p>' : '') +
@@ -2193,7 +2211,7 @@ function viewToday(){
   var rows = STREAMS.map(function(sd){
     if (sd.key === 'n' && hideN && !(w.done.n > 0)) return '';
     if (sd.key !== 'n' && hideRev && !(w.done[sd.key] > 0)) return '';
-    var L = sd.key === 'n' && nLines, fmtQ = L ? function(v){ return fmtL(v) + ' ' + plu(fmtL(v), 'lines'); } : fmtQ0;
+    var L = sd.key === 'n' && nLines, fmtQ = L ? function(v){ return cnt(fmtL(v), 'lines'); } : fmtQ0;
     var done = w.done[sd.key], plan = w.plan[sd.key], left = Math.max(0, plan - done);
     var pr = plan > 0 ? Math.min(1, done / plan) : (done > 0 ? 1 : 0);
     // Once today's target for this stream is met, what is left falls on the study days after today.
@@ -2234,7 +2252,7 @@ function cycleStatsCard(st, logs, t){
     var now = !r.to, pctDone = now && cs ? Math.round(cs.doneIn / cs.total * 100) : 100;
     return '<div class="crow"><div class="wtop"><b>' + tr('Cycle {n}', { n: r.pass }) + '</b><span>' + tr(now ? '{n} {u} so far' : '{n} {u}', { n: r.days, u: plu(r.days, r.days === 1 ? 'day' : 'days') }) + '</span></div>' +
       '<div class="cbar"><i class="' + (now ? 'now' : '') + '" style="width:' + Math.min(100, r.days / max * 100) + '%"></i><u style="left:' + (st.cycleDays / max * 100) + '%"></u></div>' +
-      '<p class="wnote">' + fmtDate(r.from, short) + ' – ' + (now ? tr('now · {p}% done', { p: pctDone }) : fmtDate(r.to, short)) + ' · ' + tr('{n} pages revised', { n: fmt1(r.pages) }) + '</p></div>';
+      '<p class="wnote">' + fmtDate(r.from, short) + ' – ' + (now ? tr('now · {p}% done', { p: pctDone }) : fmtDate(r.to, short)) + ' · ' + tr('{n} pages revised', { n: fmt1(r.pages), u: plu(fmt1(r.pages), 'pages') }) + '</p></div>';
   }).join('');
   return '<section class="card s-old" aria-label="' + tr('Revision cycles') + '"><div class="row-h"><h2 class="h">' + tr('Revision cycles') + '</h2><span class="label">' +
     tr('{n} finished', { n: done.length }) + '</span></div>' +
@@ -2254,8 +2272,8 @@ function viewPlan(){
 
   var pct = Math.round(Math.min(1, mem / Math.max(1, st.goalPages)) * 100);
   var memCard = '<section class="card" aria-label="' + tr('Memorised so far') + '"><span class="label">' + tr('Memorised so far') + '</span>' +
-    '<div class="big">' + fmt1(mem) + '<small>' + tr('{u} · {j} juz', { u: plu(fmt1(mem), 'pages'), j: fmt1(mem / JUZ) }) + '</small></div>' +
-    '<p class="muted">' + tr(rem > 0 ? '{p}% of the {g}-page goal, {r} pages to go.' : '{p}% of the {g}-page goal.', { p: pct, g: st.goalPages, r: fmt1(rem) }) + '</p>' +
+    '<div class="big">' + fmt1(mem) + '<small>' + tr('{u} · {j} juz', { u: plu(fmt1(mem), 'pages'), j: fmt1(mem / JUZ), ju: plu(fmt1(mem / JUZ), 'juz') }) + '</small></div>' +
+    '<p class="muted">' + tr(rem > 0 ? '{p}% of the {g}-page goal, {r} pages to go.' : '{p}% of the {g}-page goal.', { p: pct, g: st.goalPages, r: fmt1(rem), gu: plu(st.goalPages, 'pages'), ru: plu(fmt1(rem), 'pages') }) + '</p>' +
     '<div class="juz" role="img" aria-label="' + tr('{n} of 30 juz memorised', { n: fmt1(mem / JUZ) }) + '">' + juzTiles(known, st.goalPages, false) + '</div>' +
     '<p class="wnote">' + tr('Each tile shows how much of that juz is learned.') + '</p></section>';
 
@@ -2280,7 +2298,7 @@ function viewPlan(){
     msCard = '<section class="card" aria-label="' + tr('Looking ahead') + '"><h2 class="h">' + tr('If you stay on plan, insha’Allah') + '</h2>' +
       '<div class="tblw"><table class="tbl"><thead><tr><th>' + tr('Memorised') + '</th><th>' + tr('Around') + '</th><th>' + tr('Revision a day') + '</th></tr></thead><tbody>' +
       ms.map(function(m){
-        return '<tr><td><b>' + fmt1(m.pages / JUZ) + ' ' + plu(fmt1(m.pages / JUZ), 'juz') + '</b><small>' + pagesN(m.pages) + '</small></td><td>' + fmtDate(m.date, { month: 'short', year: 'numeric' }) +
+        return '<tr><td><b>' + cnt(fmt1(m.pages / JUZ), 'juz') + '</b><small>' + pagesN(m.pages) + '</small></td><td>' + fmtDate(m.date, { month: 'short', year: 'numeric' }) +
           '</td><td><b>' + pagesN(fmt1(m.rev)) + '</b></td></tr>';
       }).join('') + '</tbody></table></div>' +
       '<p class="wnote">' + tr('Daily revision is new revision plus older revision.') + '</p></section>';
@@ -2291,7 +2309,7 @@ function viewPlan(){
 }
 
 function srParse(txt){
-  var parts = String(txt || '').split(/[\s,]+/).filter(Boolean), a = parts.map(Number);
+  var parts = String(txt || '').split(/[\s,،]+/).filter(Boolean), a = parts.map(Number);
   if (a.length > 8) return { err: tr('Use up to 8 review days.') };
   for (var i = 0; i < a.length; i++){
     if (!(Number.isInteger(a[i]) && a[i] >= 1 && a[i] <= 365)) return { err: tr('Review days must be whole numbers from 1 to 365.') };
@@ -2304,7 +2322,7 @@ function srWords(st, steps){
   var D = srDaily(st), sp = steps || srSteps(st);
   return tr('is revised every study day that week') +
     (D ? tr(', then every study day for {x}', { x: D % 7 === 0 ? tr('{n} more {u}', { n: D / 7, u: plu(D / 7, D === 7 ? 'week' : 'weeks') }) : tr('{n} more {u}', { n: D, u: plu(D, D === 1 ? 'day' : 'days') }) }) : '') +
-    (sp.length ? tr(', then comes back {x} days after that', { x: listAnd(sp) }) : '') + tr(', then joins the older revision cycle');
+    (sp.length ? tr(', then comes back {x} days after that', { x: listAnd(sp), u: plu(sp[sp.length - 1], 'days') }) : '') + tr(', then joins the older revision cycle');
 }
 function listAnd(a){
   if (IS_AR && a.length > 1){ try { return new Intl.ListFormat('ar', { type: 'conjunction' }).format(a.map(String)); } catch (e) { return a.slice(0, -1).join('، ') + ' و' + a[a.length - 1]; } }
@@ -2313,7 +2331,7 @@ function listAnd(a){
 function validate(f){
   var e = [], t = todayIso();
   if (!f.name || !String(f.name).trim()) e.push(tr('Enter a name.'));
-  if (!(f.goalPages >= 1 && f.goalPages <= PAGES)) e.push(tr('The goal must be between 1 and {n} pages.', { n: PAGES }));
+  if (!(f.goalPages >= 1 && f.goalPages <= PAGES)) e.push(tr('The goal must be between 1 and {n} pages.', { n: PAGES, u: plu(PAGES, 'pages') }));
   else if (f.startPages > f.goalPages + 0.001) e.push(tr('More pages are marked as learned than the goal. Raise the goal or remove a range.'));
   if (f.targetMode === 'weekly'){
     var wpg = f.weeklyUnit === 'lines' ? f.weeklyAmount / LINES : f.weeklyAmount;
@@ -2386,7 +2404,7 @@ function viewSettings(){
     }).join('') + '</div>' +
     '<small class="hint">' + mushafInfo(MUSHAF)[3] +
     ' ' + tr('All pages and lines are shown in this mushaf. Changing it moves what you have learned and logged to the same places in the other one.') + '</small></section>';
-  var goalChips = GOAL_JUZ.map(function(n){ return [n + ' ' + plu(n, 'juz'), Math.round(n * JUZ)]; }).concat([[tr('Whole Qur’an'), PAGES]]).map(function(g){
+  var goalChips = GOAL_JUZ.map(function(n){ return [cnt(n, 'juz'), Math.round(n * JUZ)]; }).concat([[tr('Whole Qur’an'), PAGES]]).map(function(g){
     return '<button type="button" class="chip" data-a="goal" data-n="' + g[1] + '" aria-pressed="' + (Math.round(num(f.goalPages)) === g[1]) + '"' + (g[1] < PAGES && g[1] <= f.startPages + EPS ? ' disabled' : '') + '>' + g[0] + '</button>';
   }).join('');
   var parts = [mus, '<section class="card"><h2 class="h">' + (first ? tr('Name and colour') : tr('Person')) + '</h2>' +
@@ -2397,7 +2415,7 @@ function viewSettings(){
     '<section class="card"><h2 class="h">' + tr('What you have already memorised') + '</h2>' +
     '<p class="muted">' + tr('Tap a juz to mark it learned or not. For part of a juz, or part of a surah, add an exact range below.') + '</p>' +
     '<div class="juz" role="group" aria-label="' + tr('Juz learned') + '">' + juzTiles(normIv(f.base), PAGES, true) + '</div>' +
-    '<p class="wnote">' + tr('<b>{n} {u}</b> learned, about {j} juz.', { n: fmt1(f.startPages), u: plu(fmt1(f.startPages), 'pages'), j: fmt1(f.startPages / JUZ) }) + '</p>' + knownList +
+    '<p class="wnote">' + tr('<b>{n} {u}</b> learned, about {j} juz.', { n: fmt1(f.startPages), u: plu(fmt1(f.startPages), 'pages'), j: fmt1(f.startPages / JUZ), ju: plu(fmt1(f.startPages / JUZ), 'juz') }) + '</p>' + knownList +
     '<div class="field"><span class="lab">' + tr('Add surahs') + '</span><div class="rng2">' +
     '<span>' + tr('From') + '</span><select class="inp" id="r-fs" aria-label="' + tr('From surah') + '">' + surahOptions(rng.fs) + '</select>' +
     '<span>' + tr('To') + '</span><select class="inp" id="r-ts" aria-label="' + tr('To surah') + '">' + surahOptions(rng.ts) + '</select></div>' +
@@ -2422,7 +2440,7 @@ function viewSettings(){
 
     '<section class="card"><h2 class="h">' + tr('Targets') + '</h2>' +
     '<div class="field"><label for="f-goal">' + tr('Goal, in pages') + '</label><div class="chips" role="group" aria-label="' + tr('Goal') + '">' + goalChips + '</div>' +
-    '<input class="inp" id="f-goal" type="number" inputmode="decimal" min="1" max="' + PAGES + '" step="1" value="' + val(f.goalPages) + '"><small class="hint">' + tr('How much you want to have memorised in all, counting what you have already memorised. {n} pages is the whole Qur’an in the {m}, {l} lines to a page.', { n: PAGES, m: mushafName(MUSHAF), l: LINES }) + '</small></div>' +
+    '<input class="inp" id="f-goal" type="number" inputmode="decimal" min="1" max="' + PAGES + '" step="1" value="' + val(f.goalPages) + '"><small class="hint">' + tr('How much you want to have memorised in all, counting what you have already memorised. {n} pages is the whole Qur’an in the {m}, {l} lines to a page.', { n: PAGES, u: plu(PAGES, 'pages'), m: mushafName(MUSHAF), l: LINES }) + '</small></div>' +
     '<div class="field"><label for="f-start">' + tr('Start on') + '</label><input class="inp" id="f-start" type="date" value="' + (f.startDate || todayIso()) + '"><small class="hint">' + tr('The day you begin. Your weeks then start on that day of the week too, and each week’s new hifdh is set on it. Days before it have no targets.') + '</small></div>' +
     '<div class="field"><span class="lab" id="lab-mode">' + tr('Set the pace by') + '</span><div class="chips" role="group" aria-labelledby="lab-mode">' +
     '<button type="button" class="chip" data-a="mode" data-m="date" aria-pressed="' + !wk + '">' + tr('Finish date') + '</button>' +
@@ -2524,9 +2542,9 @@ function ramadanSetCard(st){
     '<div class="field"><label for="ram-from">' + tr('First day of Ramadan') + '</label><input class="inp" id="ram-from" type="date" value="' + R.from + '">' +
     '<small class="hint">' + tr('Worked out from the Umm al-Qura calendar. Change it if the moon is sighted on a different day where you are.') + '</small></div>' +
     '<div class="field"><span class="lab" id="lab-ramdays">' + tr('Days in Ramadan') + '</span><div class="chips" role="group" aria-labelledby="lab-ramdays">' +
-    [29, 30].map(function(n){ return '<button type="button" class="chip" data-a="ramdays" data-n="' + n + '" aria-pressed="' + (R.days === n) + '">' + n + ' ' + plu(n, 'days') + '</button>'; }).join('') + '</div></div>' +
+    [29, 30].map(function(n){ return '<button type="button" class="chip" data-a="ramdays" data-n="' + n + '" aria-pressed="' + (R.days === n) + '">' + cnt(n, 'days') + '</button>'; }).join('') + '</div></div>' +
     '<div class="field"><label for="ram-k">' + tr('Full readings of the Qur’an to finish') + '</label><input class="inp" id="ram-k" type="number" inputmode="numeric" min="1" max="30" step="1" value="' + R.khatms + '">' +
-    '<small class="hint">' + tr(R.khatms > 1 ? '{k} readings are {t} pages, about {p} {pu} a day over {d} days.' : 'One reading is {t} pages, about {p} {pu} a day over {d} days.', { k: R.khatms, t: R.khatms * PAGES, p: per, pu: plu(per, 'pages'), d: R.days }) + '</small></div>' +
+    '<small class="hint">' + tr(R.khatms > 1 ? '{k} readings are {t} pages, about {p} {pu} a day over {d} days.' : 'One reading is {t} pages, about {p} {pu} a day over {d} days.', { k: R.khatms, ku: plu(R.khatms, 'readings'), t: R.khatms * PAGES, p: per, pu: plu(per, 'pages'), d: R.days }) + '</small></div>' +
     '<div class="field"><span class="lab">' + tr('Start reading from') + '</span><div class="hrow"><select class="inp" id="ram-s" aria-label="' + tr('Surah to start reading from') + '">' + surahOptions(surahIdxOfPage(R.startPage)) + '</select>' +
     '<input class="inp" id="ram-p" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" value="' + R.startPage + '" aria-label="' + tr('Page to start reading from') + '"></div>' +
     '<small class="hint">' + tr('Start anywhere, for example where your last reading ended. After An-Nas it carries on from Al-Fatihah.') + '</small></div>' +
