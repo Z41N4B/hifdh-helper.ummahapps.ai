@@ -1296,8 +1296,9 @@ function weekNew(st, logs, dateIso){
     if (x >= t && act.indexOf(x) >= 0) got = Math.max(got, Math.max(0, plan - before) / daysFrom(x));
     before += got;
   });
-  var left = daysFrom(dateIso);
-  return { plan: plan, before: before, left: left, base: p0.n, n: left ? Math.max(0, plan - before) / left : 0 };
+  // Logs keep 4 decimals, so a finished week can leave a sliver of a line: that is nothing left.
+  var left = daysFrom(dateIso), rest = plan - before;
+  return { plan: plan, before: before, left: left, base: p0.n, n: left && rest > 0.001 ? rest / left : 0 };
 }
 function dayTargets(st, logs, dateIso){
   var p = perDay(st, logs, dateIso);
@@ -1319,7 +1320,7 @@ function slicesFor(st, logs, dateIso, todayStr, p, lg){
   var planned = [];
   if (dateIso === todayStr && p.active && p.state === 'ok'){
     var rem = Math.max(0, p.tn - num(lg.n));
-    if (rem > EPS) planned = advance(allKnown(st, logs), st.next.x, st.next.dir, rem, st.next.s).segs.map(function(s){ return [s.a, s.b]; });
+    if (rem > 0.001) planned = advance(allKnown(st, logs), st.next.x, st.next.dir, rem, st.next.s).segs.map(function(s){ return [s.a, s.b]; });
   }
   out.n = pageRanges(day.concat(planned));
   // The same stretches kept to the line, joined where one carries straight on from the last.
@@ -1648,6 +1649,7 @@ function fmtLines(a, b){
   // A line split between two days (half a page is 7½ lines) is shown on both.
   var p1 = Math.floor(a + EPS) + 1, l1 = Math.floor((a - (p1 - 1)) * LINES + 1e-3) + 1;
   var p2 = Math.max(p1, Math.ceil(b - EPS)), l2 = Math.ceil((b - (p2 - 1)) * LINES - 1e-3); if (l2 <= 0) l2 = LINES;
+  if (p1 === p2 && l2 < l1) l2 = l1;
   if (l1 === 1 && l2 === LINES) return fmtR([p1, p2]);
   if (p1 === p2) return pgL(p1) + ' ' + (l1 === l2 ? tr('line {n}', { n: l1 }) : tr('lines {a}–{b}', { a: l1, b: l2 }));
   return pgL(p1) + ' ' + tr('line {n}', { n: l1 }) + ' – ' + pgL(p2) + ' ' + tr('line {n}', { n: l2 });
