@@ -6,7 +6,7 @@ window.HH_SURAHS = ["الفاتحة","البقرة","آل عمران","النس�
 window.HH_AR = {
 // The page itself
 "Hifdh Helper · Free Qur’an Memorisation (Hifdh) Tracker and Planner": "مساعد الحفظ · متابعة حفظ القرآن ومراجعته وتخطيطهما",
-"Free Qur’an memorisation (hifdh or hifz) tracker. Daily targets for new hifdh, spaced repetition revision and a full revision cycle, with surah-by-surah progress, hard pages, modes for being sick, travelling or on your period, and a Ramadan mode with a khatm reading tracker.": "متابعة حفظ القرآن: هدف يومي للحفظ الجديد، ومراجعة تتباعد مع الوقت، ودورة لمراجعة كل المحفوظ، مع التقدم سورةً سورة، والصفحات الصعبة، وأوضاع للمرض والسفر والحيض، ووضع لرمضان لمتابعة الختمة.",
+"Free Qur’an memorisation (hifdh or hifz) tracker with daily targets, spaced repetition revision, surah-by-surah progress, and Ramadan and travel modes.": "متابعة حفظ القرآن: هدف يومي للحفظ الجديد، ومراجعة تتباعد مع الوقت، ودورة لمراجعة كل المحفوظ، مع التقدم سورةً سورة، والصفحات الصعبة، وأوضاع للمرض والسفر والحيض، ووضع لرمضان لمتابعة الختمة.",
 "Hifdh Helper": "مساعد الحفظ",
 "Install app": "ثبّت التطبيق",
 "How to install": "طريقة التثبيت",
