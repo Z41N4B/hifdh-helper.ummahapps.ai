@@ -199,6 +199,7 @@ window.HH_AR = {
 
 // Revision
 "{n} older {u}, one full cycle every {d} {du}.": "القديم: ^{n} {u}، تراجعه كله كل {d} {du}.",
+"{n} {u}, one full cycle every {d} {du}.": "^{n} {u}، تراجعها كلها كل {d} {du}.",
 "No older pages yet.": "لا توجد صفحات قديمة بعد.",
 "Revision is paused today. Anything you revise still counts.": "المراجعة متوقفة اليوم. وكل ما تراجعه يُحسب.",
 "Mark today’s list done": "أنجزت قائمة اليوم",
@@ -443,6 +444,13 @@ window.HH_AR = {
 "{n} lines make one page. The amount is spread over your study days, and the finish date follows from it.": "{n} سطرًا = صفحة واحدة. يتوزع المقدار على أيام دراستك، ومنه يُحسب تاريخ الإنهاء.",
 "Finish by": "الإنهاء بحلول",
 "Revise everything older every (days)": "راجع كل حفظك القديم مرة كل (أيام)",
+"Revise the whole Qur’an every (days)": "راجع القرآن كله مرة كل (أيام)",
+"I’ve memorised the whole Qur’an": "حفظت القرآن كله",
+"about {a} {u} a day, the whole Qur’an every {d} {du}": "نحو {a} {u} في اليوم، والقرآن كله كل {d} {du}",
+"Clearing removes every day logged for {name}. What you have already memorised stays as set.": "المسح يحذف كل الأيام المسجلة لـ{name}. ويبقى ما حفظته من قبل كما هو.",
+"Sick or on your period": "المرض أو الحيض",
+"Everything is paused: no targets for revision, reading or hard pages. You can still add anything you do.": "كل شيء متوقف: لا أهداف للمراجعة ولا القراءة ولا الصفحات الصعبة. ويمكنك أن تضيف أي شيء تقوم به.",
+"Set a reading goal for Ramadan, such as one or more full readings of the Qur’an (khatm), starting anywhere you like. Choose how revision changes while it lasts, and a Ramadan reading tracker shows how much you have read.": "حدّد هدف قراءة لرمضان، مثل ختمة أو أكثر، من أي موضع تشاء. واختر كيف تتغير المراجعة في رمضان، وسترى كم قرأت.",
 "A shorter cycle means more revision each day. Many students aim for 7 to 30 days.": "كلما قصرت الدورة زادت المراجعة كل يوم. كثير من الطلاب يختارون من 7 إلى 30 يومًا.",
 "What you memorise each week is revised every day that week. From the start of the next week it is revised every day for a set number of days. Then it comes back on a schedule, with longer gaps each time, then joins the older revision cycle. Missed reviews carry over.": "ما تحفظه في الأسبوع تراجعه كل يوم في ذلك الأسبوع. ثم تراجعه كل يوم لعدد من الأيام تختاره. ثم يعود بعد مدد تطول كل مرة، ثم يدخل في دورة مراجعة القديم. وما يفوتك من مراجعة ينتقل إلى اليوم التالي.",
 "Then every day for (days)": "ثم كل يوم لمدة (أيام)",

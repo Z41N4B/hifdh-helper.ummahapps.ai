@@ -944,6 +944,10 @@ function segsOf(logs, pred){
   return out;
 }
 function allKnown(st, logs){ return unionIv(st.base || [], segsOf(logs, function(){ return true; })); }
+// The whole Qur'an is memorised, so there is no new hifdh to plan.
+function isHafidh(st, logs){ return measure(allKnown(st, logs)) >= PAGES - 0.01; }
+// New revision has nothing to work on until new pages have been logged.
+function noNewRev(st, logs){ return isHafidh(st, logs) && !sumN(logs, function(){ return true; }); }
 function knownBefore(st, logs, dateIso){ return unionIv(st.base || [], segsOf(logs, function(k){ return k < dateIso; })); }
 function oldPool(st, logs, dateIso){
   var recent = srAt(st, logs, dateIso).pool;
@@ -1310,7 +1314,7 @@ function dayTargets(st, logs, dateIso){
   p.active = active;
   var e = p.fx = dayEffects(st, dateIso);
   p.newPaused = e.nw === 'none'; p.revOff = e.rev === 'none';
-  p.tn = active && !p.newPaused ? p.n + e.nwMore : 0;
+  p.tn = active && !p.newPaused ? p.n + (p.state === 'done' ? 0 : e.nwMore) : 0;
   p.tr = active && !p.revOff ? p.r : 0;
   p.to = active && !p.revOff ? p.o + e.revMore : 0;
   return p;
@@ -1905,6 +1909,7 @@ function hardCard(P, d, t, groups){
   return h + '</section>';
 }
 function upcomingCard(st, logs, t){
+  if (noNewRev(st, logs)) return '';
   var P = cur();
   var end = iso(addDays(parse(t), upDays - 1)), hf = hardForecast(P, t, end);
   var r = srRun(st, logs, srUntil(end), t), rows = [], x = t, i = 0;
@@ -2068,6 +2073,8 @@ function breakStrip(st){
 }
 // Sections on Today, in the order each person chose. The Ramadan card takes the place of Daily reading in Ramadan.
 var SECTIONS = [['n', tr('New hifdh')], ['r', tr('New revision')], ['hard', tr('Hard pages')], ['o', tr('Revision')], ['read', tr('Daily reading')], ['listen', tr('Listening')]];
+// The sections that can show on Today for this person.
+function shownSections(st){ var full = isHafidh(st, cur().logs); return sectionOrder(st).filter(function(k){ return !full || (k !== 'n' && k !== 'listen' && (k !== 'r' || !noNewRev(st, cur().logs))); }); }
 function sectionOrder(st){
   var o = (Array.isArray(st.order) ? st.order : []).filter(function(k, i, a){ return a.indexOf(k) === i && SECTIONS.some(function(s){ return s[0] === k; }); });
   SECTIONS.forEach(function(s){ if (o.indexOf(s[0]) < 0) o.push(s[0]); });
@@ -2113,15 +2120,15 @@ function viewToday(){
   // is paused but the cards stay, so anything done can still be added.
   var fx = p.fx, sick = fx.mode === 'sick';
   var revD = revAmount(st, P.logs, d), oxD = Math.max(0, revD - num(lg.o)), tt = p.tn + p.tr + p.to, td = lg.n + lg.r + revD;
-  var hideN = p.newPaused && !sick && !(num(lg.n) > 0);
-  var hideRev = p.revOff && !sick && !(num(lg.r) > 0 || revD > 0);
+  var hideN = (p.newPaused && !sick || isHafidh(st, P.logs)) && !(num(lg.n) > 0);
+  var hideRev = p.revOff && !sick && !(num(lg.r) > 0 || revD > 0), noRec = noNewRev(st, P.logs);
   var ramD = ramadanOn(st, d), ramS = ramD ? ramStats(P, d) : null;
   var hideRead = !ramD && fx.read === 'none' && !sick && !readsOf(P)[d];
   // In Ramadan the reading piece fills with the pages read against the day's Ramadan target.
   var readPct = ramS ? (ramS.target > 0 ? Math.min(1, ramS.today / ramS.target) : (ramS.today > 0 ? 1 : 0)) * 100 : (readsOf(P)[d] ? 100 : 0);
   var segs = STREAMS.map(function(sd, i){
     if (hideN && sd.key === 'n') return '';
-    if (hideRev && sd.key !== 'n') return '';
+    if (hideRev && sd.key !== 'n' || noRec && sd.key === 'r') return '';
     var tg = p[sd.t], dn = (lg[sd.key] || 0) + (sd.key === 'o' ? oxD : 0), pr = tg > 0 ? Math.min(1, dn / tg) : (dn > 0 ? 1 : 0);
     var grow = tt > 0 ? Math.max(tg, tt * 0.04) : 1;
     return '<div class="s' + (i + 1) + '" style="flex:' + grow + '"><i style="width:' + (pr * 100) + '%"></i></div>';
@@ -2155,7 +2162,7 @@ function viewToday(){
       : p.notStarted ? '<div class="hero-n"><b>' + tr('Not started') + '</b><span>' + tr('Your plan starts on {d}. Anything you log still counts.', { d: fmtDate(st.startDate, { weekday: 'long', day: 'numeric', month: 'long' }) }) + '</span></div>'
       : '<div class="hero-n"><b>' + tr('Rest day') + '</b><span>' + tr('Anything you log still counts.') + '</span></div>') + fxNote +
     '<div class="seg" aria-hidden="true">' + segs + '</div>' +
-    '<div class="legend">' + (hideN ? '' : '<span><i class="sw new"></i>' + tr('New hifdh') + '</span>') + (hideRev ? '' : '<span><i class="sw rec"></i>' + tr('New revision') + '</span><span><i class="sw old"></i>' + tr('Revision') + '</span>') + (hideRead ? '' : '<span><i class="sw read"></i>' + tr('Reading') + '</span>') + (hAll > 0 ? '<span><i class="sw hard"></i>' + tr('Hard pages') + ' ' + hDone + '/' + hAll + '</span>' : '') + '</div></section>';
+    '<div class="legend">' + (hideN ? '' : '<span><i class="sw new"></i>' + tr('New hifdh') + '</span>') + (hideRev ? '' : (noRec ? '' : '<span><i class="sw rec"></i>' + tr('New revision') + '</span>') + '<span><i class="sw old"></i>' + tr('Revision') + '</span>') + (hideRead ? '' : '<span><i class="sw read"></i>' + tr('Reading') + '</span>') + (hAll > 0 ? '<span><i class="sw hard"></i>' + tr('Hard pages') + ' ' + hDone + '/' + hAll + '</span>' : '') + '</div></section>';
 
   var baseN = p.wk ? p.wk.base : p.n, half = 0.5 / LINES;
   var adjN = !p.wk || !p.active ? ''
@@ -2177,7 +2184,7 @@ function viewToday(){
       : sr.poolSize > EPS ? (d === t ? tr('Nothing due today.') : tr('Nothing due on this day.')) : tr('Nothing due yet.')) +
     ' ' + tr('Each week’s new hifdh {x}.', { x: srWords(st) });
   var whyO = p.old <= 0 ? tr('No older pages yet.')
-    : tr('{n} older {u}, one full cycle every {d} {du}.', { n: fmtQ(p.old), u: plu(fmtQ(p.old), 'pages'), d: st.cycleDays, du: plu(st.cycleDays, 'days') }) + (fx.revMore > 0 ? ' ' + tr(fx.period ? 'Includes {n} extra {u} a day you chose for your period.' : 'Includes {n} extra {u} a day you chose for Ramadan.', { n: fmtQ(fx.revMore), u: plu(fmtQ(fx.revMore), fx.revMore > 1 ? 'pages' : 'page') }) : '');
+    : tr(noRec ? '{n} {u}, one full cycle every {d} {du}.' : '{n} older {u}, one full cycle every {d} {du}.', { n: fmtQ(p.old), u: plu(fmtQ(p.old), 'pages'), d: st.cycleDays, du: plu(st.cycleDays, 'days') }) + (fx.revMore > 0 ? ' ' + tr(fx.period ? 'Includes {n} extra {u} a day you chose for your period.' : 'Includes {n} extra {u} a day you chose for Ramadan.', { n: fmtQ(fx.revMore), u: plu(fmtQ(fx.revMore), fx.revMore > 1 ? 'pages' : 'page') }) : '');
   if (p.revOff){ whyR = whyO = sick ? tr('Paused while you rest. You can still add anything you do.') : tr('Revision is paused today. Anything you revise still counts.'); }
 
   var nsa = nextStartAt(st, P.logs), ns = nsa ? nsa.p : null, nsName = nsa ? NAMES[nsa.i] : '';
@@ -2210,7 +2217,7 @@ function viewToday(){
   var sec = {
     n: hideN ? '' : fold('n', tr('New hifdh'), met(lg.n || 0, p.tn), cardN, idle(lg.n || 0, p.tn) && p.state !== 'overdue'),
     listen: hideN ? '' : fold('listen', tr('Listening'), past && !!listensOf(P)[d], listenCard(P, d, t)),
-    r: hideRev ? '' : fold('r', tr('New revision'), met(lg.r || 0, p.tr), card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active && !p.revOff, exR), idle(lg.r || 0, p.tr)),
+    r: hideRev || noRec ? '' : fold('r', tr('New revision'), met(lg.r || 0, p.tr), card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active && !p.revOff, exR), idle(lg.r || 0, p.tr)),
     o: hideRev ? '' : fold('o', tr('Revision'), met(revD, p.to), card(STREAMS[2], p.to, lg.o || 0, whyO, p.active && !p.revOff, exO, false, false, oxD), idle(revD, p.to)) + tadabbur,
     read: ramD ? fold('read', tr('Ramadan reading'), ramS && met(ramS.today, ramS.target), ramCard(P, d, t)) : hideRead ? '' : fold('read', tr('Daily reading'), past && !!readsOf(P)[d], readCard(P, d, t, fx)),
     hard: fold('hard', tr('Hard pages'), d === t && !hDueNow && (hardLogOf(P)[d] || 0) > 0, hardCard(P, d, t, [{ name: tr('New hifdh'), pages: expand(sl.n) }, { name: tr('New revision'), pages: revPages }, { name: tr('Revision'), pages: expand(sl.o) }]))
@@ -2222,7 +2229,7 @@ function viewToday(){
   var pT = d === t ? p : w.wd.indexOf(t) >= 0 ? dayTargets(st, P.logs, t) : null, lgT = P.logs[t] || {};
   var rows = STREAMS.map(function(sd){
     if (sd.key === 'n' && hideN && !(w.done.n > 0)) return '';
-    if (sd.key !== 'n' && hideRev && !(w.done[sd.key] > 0)) return '';
+    if (sd.key !== 'n' && hideRev && !(w.done[sd.key] > 0) || sd.key === 'r' && noRec) return '';
     var L = sd.key === 'n' && nLines, fmtQ = L ? function(v){ return cnt(fmtL(v), 'lines'); } : fmtQ0;
     var done = w.done[sd.key], plan = w.plan[sd.key], left = Math.max(0, plan - done);
     var pr = plan > 0 ? Math.min(1, done / plan) : (done > 0 ? 1 : 0);
@@ -2317,9 +2324,12 @@ function listAnd(a){
 function validate(f){
   var e = [], t = todayIso();
   if (!f.name || !String(f.name).trim()) e.push(tr('Enter a name.'));
-  if (!(f.goalPages >= 1 && f.goalPages <= PAGES)) e.push(tr('The goal must be between 1 and {n} pages.', { n: PAGES, u: plu(PAGES, 'pages') }));
+  var full = isHafidh(f, cur().logs);
+  if (full){}
+  else if (!(f.goalPages >= 1 && f.goalPages <= PAGES)) e.push(tr('The goal must be between 1 and {n} pages.', { n: PAGES, u: plu(PAGES, 'pages') }));
   else if (f.startPages > f.goalPages + 0.001) e.push(tr('More pages are marked as learned than the goal. Raise the goal or remove a range.'));
-  if (f.targetMode === 'weekly'){
+  if (full){}
+  else if (f.targetMode === 'weekly'){
     var wpg = f.weeklyUnit === 'lines' ? f.weeklyAmount / LINES : f.weeklyAmount;
     if (!(f.weeklyAmount > 0)) e.push(tr('Enter how much to memorise each week.'));
     else if (wpg > PAGES) e.push(tr('That is more than the whole Qur’an in a week. Lower the amount.'));
@@ -2333,6 +2343,10 @@ function validate(f){
 }
 
 function previewHtml(f){
+  if (isHafidh(f, cur().logs)){
+    var rq = fmt1(PAGES / Math.max(1, f.cycleDays * activeCount(f.days) / 7));
+    return '<ul class="pv"><li><i class="sw old"></i><div><b>' + tr('Revision') + '</b> ' + tr('about {a} {u} a day, the whole Qur’an every {d} {du}', { a: rq, u: plu(rq, 'pages'), d: f.cycleDays, du: plu(f.cycleDays, 'days') }) + '</div></li></ul>';
+  }
   var c = previewCalc(f, todayIso());
   var qn = fmtQ(c.n), wk = fmt1(c.weekly), ln = Math.max(1, Math.round(c.n * LINES));
   var nTxt = c.n > 0
@@ -2367,7 +2381,8 @@ var SETUP_STEPS = ['Mushaf', 'Name', 'Memorised', 'Start', 'Goal', 'Revision', '
 var GOAL_JUZ = [1, 2, 3, 5, 10];
 function viewSettings(){
   if (!draft){ draft = clone(cur().settings); draft.name = cur().name; draft.srText = srSteps(draft).join(', '); }
-  var f = draft, first = !cur().settings.setupDone;
+  var f = draft, first = !cur().settings.setupDone, full = isHafidh(f, cur().logs);
+  var noNew = noNewRev(f, cur().logs);
   var ws = Number.isInteger(f.weekStart) ? f.weekStart : 1, dayNames = IS_AR ? [0, 1, 2, 3, 4, 5, 6].map(function(i){ return fmtDate(iso(addDays(parse('2023-01-01'), i)), { weekday: 'long' }); }) : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   var order = [0, 1, 2, 3, 4, 5, 6].map(function(i){ return (ws + i) % 7; });
   var chips = order.map(function(di){
@@ -2401,6 +2416,7 @@ function viewSettings(){
     '<section class="card"><h2 class="h">' + tr('What you have already memorised') + '</h2>' +
     '<p class="muted">' + tr('Tap a juz to mark it learned or not. For part of a juz, or part of a surah, add an exact range below.') + '</p>' +
     '<div class="juz" role="group" aria-label="' + tr('Juz learned') + '">' + juzTiles(normIv(f.base), PAGES, true) + '</div>' +
+    (full ? '' : '<button type="button" class="btn wide" data-a="hafidh">' + tr('I’ve memorised the whole Qur’an') + '</button>') +
     '<p class="wnote">' + tr('<b>{n} {u}</b> learned, about {j} juz.', { n: fmt1(f.startPages), u: plu(fmt1(f.startPages), 'pages'), j: fmt1(f.startPages / JUZ), ju: plu(fmt1(f.startPages / JUZ), 'juz') }) + '</p>' + knownList +
     '<div class="field"><span class="lab">' + tr('Add surahs') + '</span><div class="rng2">' +
     '<span>' + tr('From') + '</span><select class="inp" id="r-fs" aria-label="' + tr('From surah') + '">' + surahOptions(rng.fs) + '</select>' +
@@ -2440,17 +2456,18 @@ function viewSettings(){
       : '<div class="field"><label for="f-date">' + tr('Finish by') + '</label><input class="inp" id="f-date" type="date" value="' + (f.goalDate || '') + '"></div>') + '</section>',
 
     '<section class="card"><h2 class="h">' + tr('Revision') + '</h2>' +
-    '<div class="field"><label for="f-cycle">' + tr('Revise everything older every (days)') + '</label><input class="inp" id="f-cycle" type="number" inputmode="numeric" min="1" max="365" step="1" value="' + val(f.cycleDays) + '"><small class="hint">' + tr('A shorter cycle means more revision each day. Many students aim for 7 to 30 days.') + '</small></div>' +
-    '<div class="field"><span class="lab">' + tr('New revision') + '</span><small class="hint">' + tr('What you memorise each week is revised every day that week. From the start of the next week it is revised every day for a set number of days. Then it comes back on a schedule, with longer gaps each time, then joins the older revision cycle. Missed reviews carry over.') + '</small></div>' +
+    '<div class="field"><label for="f-cycle">' + (full ? tr('Revise the whole Qur’an every (days)') : tr('Revise everything older every (days)')) + '</label><input class="inp" id="f-cycle" type="number" inputmode="numeric" min="1" max="365" step="1" value="' + val(f.cycleDays) + '"><small class="hint">' + tr('A shorter cycle means more revision each day. Many students aim for 7 to 30 days.') + '</small></div>' +
+    (noNew ? '' : '<div class="field"><span class="lab">' + tr('New revision') + '</span><small class="hint">' + tr('What you memorise each week is revised every day that week. From the start of the next week it is revised every day for a set number of days. Then it comes back on a schedule, with longer gaps each time, then joins the older revision cycle. Missed reviews carry over.') + '</small></div>' +
     '<div class="field"><label for="f-daily">' + tr('Then every day for (days)') + '</label><input class="inp" id="f-daily" type="number" inputmode="numeric" min="0" max="90" step="1" value="' + val(f.srDaily) + '"><small class="hint">' + tr('Counted from the start of the next week. 21 days is 3 weeks. Use 0 to stop after the week it was learned.') + '</small></div>' +
-    '<div class="field"><label for="f-steps">' + tr('Then review after (days)') + '</label><input class="inp" id="f-steps" type="text" inputmode="numeric" autocomplete="off" value="' + esc(f.srText) + '"><small class="hint">' + tr('Counted from the end of the every-day days, separated by commas, for example 3, 7, 14, 30. Leave it empty to go straight into the older revision cycle.') + '</small></div></section>',
+    '<div class="field"><label for="f-steps">' + tr('Then review after (days)') + '</label><input class="inp" id="f-steps" type="text" inputmode="numeric" autocomplete="off" value="' + esc(f.srText) + '"><small class="hint">' + tr('Counted from the end of the every-day days, separated by commas, for example 3, 7, 14, 30. Leave it empty to go straight into the older revision cycle.') + '</small></div>') + '</section>',
 
     '<section class="card"><h2 class="h">' + tr('Study days') + '</h2>' +
     '<div class="field"><span class="lab" id="lab-days">' + tr('Days you study') + '</span><div class="chips" role="group" aria-labelledby="lab-days">' + chips + '</div><small class="hint">' + tr('Daily amounts are spread over these days only.') + '</small></div></section>'];
+  if (full) parts.splice(3, 2); // Where to start from, and Targets.
   var finish = '<section class="card"><h2 class="h">' + tr('What this means') + '</h2><div id="preview"></div></section>' +
     '<ul class="errs" id="formErr" role="alert"></ul>';
   if (first){
-    var sN = Math.min(setupStep, parts.length - 1), lastStep = sN === parts.length - 1;
+    var sN = setupStep = Math.min(setupStep, parts.length - 1), lastStep = sN === parts.length - 1;
     return '<p class="stepof">' + tr('Step {k} of {n}', { k: sN + 1, n: parts.length }) + '</p>' + parts[sN] + (lastStep ? finish : '') +
       '<div class="stepnav">' + (sN > 0 ? '<button class="btn" data-a="step" data-d="-1">' + tr('Back') + '</button>' : '<span></span>') +
       (lastStep ? '<button class="btn solid" id="saveBtn" data-a="save">' + tr('Save and start') + '</button>' : '<button class="btn solid" data-a="step" data-d="1">' + tr('Next') + '</button>') + '</div>' +
@@ -2460,9 +2477,9 @@ function viewSettings(){
     '<button class="btn solid wide" id="saveBtn" data-a="save">' + tr('Save changes') + '</button>' +
     '<h2 class="sect">' + tr('Changes straight away') + '</h2><p class="muted sectp">' + tr('Everything below takes effect as soon as you tap it, without Save.') + '</p>' +
     breakCard(cur().settings) + orderCard(cur().settings) + ramadanSetCard(cur().settings) +
-    '<section class="card"><h2 class="h">' + tr('Logs') + '</h2><p class="muted">' + tr('Clearing removes every day logged for {name}, including the pages those days added. What you have already memorised and where your new hifdh starts from stay as set.', { name: esc(pname(cur())) }) + '</p>' +
+    '<section class="card"><h2 class="h">' + tr('Logs') + '</h2><p class="muted">' + tr(full ? 'Clearing removes every day logged for {name}. What you have already memorised stays as set.' : 'Clearing removes every day logged for {name}, including the pages those days added. What you have already memorised and where your new hifdh starts from stay as set.', { name: esc(pname(cur())) }) + '</p>' +
     '<button class="btn wide" data-a="reset">' + (resetArmed ? tr('Tap again to erase all logs') : tr('Clear all logs')) + '</button></section>' +
-    removeCard() + pauseCard(cur().settings);
+    removeCard() + (full ? '' : pauseCard(cur().settings));
 }
 function removeCard(){
   return '<section class="card"><h2 class="h">' + tr('Remove person') + '</h2><p class="muted">' + (S.people.length < 2 ? tr('Keep at least one person. Add someone else first if you want to remove this one.') : tr('Deletes {name} and all of their logs. This cannot be undone.', { name: esc(pname(cur())) })) + '</p>' +
@@ -2472,9 +2489,14 @@ function removeCard(){
 // A period can overlap being sick or travelling; sick and travelling don't overlap each other. The period option can be hidden.
 function canBreak(st, m){
   if (!BREAK_NAMES[m] || openBreak(st, m)) return false;
+  // Travelling only pauses new hifdh, so a hafidh needs it only to lighten period choices.
+  if (m === 'travel' && isHafidh(st, cur().logs) && !openBreak(st, 'period')) return false;
   return m === 'period' ? !st.hidePeriod : !(openBreak(st, 'sick') || openBreak(st, 'travel'));
 }
-function breakTitle(st){ return st.hidePeriod && !openBreak(st, 'period') ? tr('Sick or travelling') : tr('Sick, travelling or on your period'); }
+function breakTitle(st){
+  if (isHafidh(st, cur().logs) && !openBreak(st, 'travel')) return st.hidePeriod && !openBreak(st, 'period') ? tr('Sick') : tr('Sick or on your period');
+  return st.hidePeriod && !openBreak(st, 'period') ? tr('Sick or travelling') : tr('Sick, travelling or on your period');
+}
 function breakCard(st){
   var ob = openBreaks(st), h = '<section class="card" id="breakCard"><h2 class="h">' + breakTitle(st) + '</h2>';
   var can = ['sick', 'travel', 'period'].filter(function(m){ return canBreak(st, m); });
@@ -2485,7 +2507,7 @@ function breakCard(st){
   return h + '<p class="wnote"><button class="linkb" data-a="hideperiod">' + (st.hidePeriod ? tr('Show “On my period” again') : tr('I don’t need “On my period”')) + '</button></p></section>';
 }
 function orderCard(st){
-  var ord = sectionOrder(st), name = function(k){ return SECTIONS.filter(function(s){ return s[0] === k; })[0][1]; };
+  var ord = shownSections(st), name = function(k){ return SECTIONS.filter(function(s){ return s[0] === k; })[0][1]; };
   return '<section class="card" id="orderCard"><h2 class="h">' + tr('Order of the Today page') + '</h2><p class="muted">' + tr('Move sections up or down.') + '</p><ul class="olist">' +
     ord.map(function(k, i){
       return '<li><span>' + name(k) + (k === 'read' ? ' <small>(' + tr('Ramadan reading in Ramadan') + ')</small>' : '') + '</span>' +
@@ -2494,15 +2516,15 @@ function orderCard(st){
     }).join('') + '</ul></section>';
 }
 function breakPart(st, b, both){
-  var h = '';
+  var h = '', full = isHafidh(st, cur().logs);
   var since = fmtDate(b.from, { weekday: 'long', day: 'numeric', month: 'long' });
-  var desc = b.mode === 'sick' ? tr('Everything is paused: no targets for new hifdh, revision, reading or hard pages. You can still add anything you do.')
-    : b.mode === 'travel' ? tr('New hifdh is paused.') + ' ' + (both ? tr('Revision and reading follow your period choices, but never more than normal while you travel.') : tr('Revision, reading and hard pages carry on as normal.'))
+  var desc = b.mode === 'sick' ? tr(full ? 'Everything is paused: no targets for revision, reading or hard pages. You can still add anything you do.' : 'Everything is paused: no targets for new hifdh, revision, reading or hard pages. You can still add anything you do.')
+    : b.mode === 'travel' ? (full ? '' : tr('New hifdh is paused.') + ' ') + (both ? tr('Revision and reading follow your period choices, but never more than normal while you travel.') : tr('Revision, reading and hard pages carry on as normal.'))
     : tr('Choose what changes each day while it lasts.') + (both ? ' ' + tr('Being sick or travelling goes on top of this.') : '');
   h += '<p>' + tr('<b>{x}</b> since {d}.', { x: BREAK_NAMES[b.mode], d: since }) + '</p><p class="muted">' + desc + '</p>';
   if (b.mode === 'period'){
     var o = Object.assign(periodDefaults(), b.opts || {});
-    h += [['rev', 'Revision', 'Not revising', 'More revision'], ['read', 'Reading', 'Not reading', 'More reading'], ['nw', 'New hifdh', 'No new hifdh', 'More new hifdh']].map(function(a){
+    h += [['rev', 'Revision', 'Not revising', 'More revision'], ['read', 'Reading', 'Not reading', 'More reading'], ['nw', 'New hifdh', 'No new hifdh', 'More new hifdh']].filter(function(a){ return !full || a[0] !== 'nw'; }).map(function(a){
       var k = a[0];
       return '<div class="field"><span class="lab" id="lab-brk-' + k + '">' + tr(a[1]) + '</span><div class="chips" role="group" aria-labelledby="lab-brk-' + k + '">' +
         [['normal', 'As normal'], ['none', a[2]], ['more', a[3]]].map(function(c){
@@ -2518,8 +2540,8 @@ function breakPart(st, b, both){
 // Ramadan: like a break, changes take effect straight away, without Save.
 var ramOffArmed = false;
 function ramadanSetCard(st){
-  var R = ramadanOf(st), h = '<section class="card" id="ramCard"><h2 class="h">' + tr('Ramadan') + '</h2>';
-  if (!R) return h + '<p class="muted">' + tr('Set a reading goal for Ramadan, such as one or more full readings of the Qur’an (khatm), starting anywhere you like. Choose how revision and new hifdh change while it lasts, and a Ramadan reading tracker shows how much you have read.') + '</p>' +
+  var R = ramadanOf(st), full = isHafidh(st, cur().logs), h = '<section class="card" id="ramCard"><h2 class="h">' + tr('Ramadan') + '</h2>';
+  if (!R) return h + '<p class="muted">' + tr(full ? 'Set a reading goal for Ramadan, such as one or more full readings of the Qur’an (khatm), starting anywhere you like. Choose how revision changes while it lasts, and a Ramadan reading tracker shows how much you have read.' : 'Set a reading goal for Ramadan, such as one or more full readings of the Qur’an (khatm), starting anywhere you like. Choose how revision and new hifdh change while it lasts, and a Ramadan reading tracker shows how much you have read.') + '</p>' +
     '<button class="btn wide" data-a="ramon">' + tr('Set up Ramadan') + '</button></section>';
   var t = todayIso(), end = iso(addDays(parse(ramEnd(R)), -1)), f = { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' };
   var per = Math.ceil(R.khatms * PAGES / R.days);
@@ -2534,7 +2556,7 @@ function ramadanSetCard(st){
     '<div class="field"><span class="lab">' + tr('Start reading from') + '</span><div class="hrow"><select class="inp" id="ram-s" aria-label="' + tr('Surah to start reading from') + '">' + surahOptions(surahIdxOfPage(R.startPage)) + '</select>' +
     '<input class="inp" id="ram-p" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" value="' + R.startPage + '" aria-label="' + tr('Page to start reading from') + '"></div>' +
     '<small class="hint">' + tr('Start anywhere, for example where your last reading ended. After An-Nas it carries on from Al-Fatihah.') + '</small></div>' +
-    [['rev', 'Revision', 'Not revising', 'More revision'], ['nw', 'New hifdh', 'No new hifdh', 'More new hifdh']].map(function(a){
+    [['rev', 'Revision', 'Not revising', 'More revision'], ['nw', 'New hifdh', 'No new hifdh', 'More new hifdh']].filter(function(a){ return !full || a[0] !== 'nw'; }).map(function(a){
       var k = a[0];
       return '<div class="field"><span class="lab" id="lab-ram-' + k + '">' + tr('{x} in Ramadan', { x: tr(a[1]) }) + '</span><div class="chips" role="group" aria-labelledby="lab-ram-' + k + '">' +
         [['normal', 'As normal'], ['none', a[2]], ['more', a[3]]].map(function(c){
@@ -2848,6 +2870,7 @@ document.addEventListener('click', function(e){
     setupStep = Math.max(0, Math.min(SETUP_STEPS.length - 1, setupStep + Number(t.dataset.d)));
     render(); try { window.scrollTo(0, 0); } catch (x) {}
   }
+  else if (a === 'hafidh'){ draft.base = [[0, PAGES]]; syncStart(); render(); }
   else if (a === 'juzt'){
     var iv = juzIv(Number(t.dataset.i)), full = overlapIv(draft.base, iv[0], iv[1]) >= (iv[1] - iv[0]) - EPS;
     draft.base = full ? subtractIv(draft.base, [iv]) : unionIv(draft.base, [iv]);
@@ -2884,8 +2907,8 @@ document.addEventListener('click', function(e){
   }
   else if (a === 'fold'){ var fk = viewDate + ':' + t.dataset.k; openDone[fk] = !openDone[fk]; render(); }
   else if (a === 'secmove'){
-    var stO = cur().settings, ord = sectionOrder(stO), i0 = ord.indexOf(t.dataset.k), i1 = i0 + Number(t.dataset.d);
-    if (i0 < 0 || i1 < 0 || i1 >= ord.length) return;
+    var stO = cur().settings, ord = sectionOrder(stO), vis = shownSections(stO), i0 = ord.indexOf(t.dataset.k), i1 = ord.indexOf(vis[vis.indexOf(t.dataset.k) + Number(t.dataset.d)]);
+    if (i0 < 0 || i1 < 0) return;
     ord[i0] = ord[i1]; ord[i1] = t.dataset.k; stO.order = ord; if (draft) draft.order = ord.slice();
     touch(); render();
   }
@@ -2929,6 +2952,7 @@ document.addEventListener('click', function(e){
     var f = clone(draft); var nm = String(f.name || '').trim().slice(0, 24); delete f.name; delete f._wTouched;
     f.pauses = clone(pausesOf(cur().settings)); f.breaks = clone(breaksOf(cur().settings)); f.ramadan = clone(cur().settings.ramadan || null);
     var spp = srParse(f.srText); if (spp.steps) f.srSteps = spp.steps; delete f.srText;
+    if (isHafidh(f, cur().logs)) f.goalPages = PAGES;
     f.base = normIv(f.base); f.startPages = Math.round(measure(f.base) * 100) / 100; f.goalPages = Math.round(f.goalPages);
     f.cycleDays = Math.round(f.cycleDays);
     // The first time, the start date shown (today) is saved, so weeks start on the day you begin.
