@@ -445,6 +445,11 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .target b{font:700 40px/1 var(--f-display); letter-spacing:-.02em; color:var(--ci); font-variant-numeric:tabular-nums}
 .target span{color:var(--muted); font-size:13px}
 .why{color:var(--muted); font-size:14px}
+.tdwrap{display:contents}
+.noexp .why:not(.must), .noexp .wnote:not(.must){display:none}
+.todayfoot{text-align:center; margin:0}
+.todayfoot .linkb{font-size:12px; font-weight:500; color:var(--muted)}
+.olist li.secoff > span{color:var(--muted)}
 .bar{height:10px; background:var(--track); border-radius:999px; overflow:hidden}
 .bar i{display:block; height:100%; background:var(--c); border-radius:999px}
 .done{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
@@ -466,8 +471,9 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .foldbar small{color:var(--muted); font-weight:600; font-size:13px}
 .foldc.open .foldbar{margin-bottom:8px}
 .olist{list-style:none; padding:0; margin:0}
-.olist li{display:grid; grid-template-columns:1fr auto auto; gap:6px; align-items:center; padding:6px 0; border-bottom:1px solid var(--line)}
+.olist li{display:flex; gap:6px; align-items:center; padding:6px 0; border-bottom:1px solid var(--line)}
 .olist li:last-child{border-bottom:0}
+.olist li > span{flex:1; min-width:0}
 .olist small{color:var(--muted)}
 .olist .btn{min-width:40px}
 .sect{font:600 13px var(--f-body); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 2px}
@@ -1404,7 +1410,7 @@ function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function defaults(){
   return { startPages: 60, base: [[0, 60]], next: { x: 60, dir: 1 }, goalPages: PAGES, goalDate: iso(addDays(new Date(), 730)),
            targetMode: 'weekly', weeklyAmount: 1, weeklyUnit: 'pages', ramadan: null,
-           cycleDays: 30, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', srSteps: SR_DEFAULT.slice(), srDaily: 21, weekStart: 1, startDate: null, mushaf: MUSHAF };
+           cycleDays: 30, days: [true,true,true,true,true,true,true], setupDone: false, newUnit: 'pages', srSteps: SR_DEFAULT.slice(), srDaily: 21, weekStart: 1, startDate: null, mushaf: MUSHAF, hidePeriod: true };
 }
 var TINTS = ['Sage', 'Rose', 'Sky', 'Lavender', 'Peach', 'Aqua', 'Sunshine', 'Bubblegum', 'Ocean', 'Lime', 'Midnight', 'Plum', 'Daisy'].map(function(n){ return tr(n); });
 function newPerson(name, tint){
@@ -1420,6 +1426,8 @@ function normPerson(p, i){
   useMushaf(src.mushaf);
   var s = Object.assign(defaults(), src);
   s.mushaf = MUSHAF;
+  if (src.hidePeriod === undefined) s.hidePeriod = !breaksOf(src).some(function(b){ return b && b.mode === 'period'; });
+  if (!s.offSec || typeof s.offSec !== 'object') s.offSec = {};
   if (!Array.isArray(s.days) || s.days.length !== 7) s.days = defaults().days;
   // One-time update: "every day for the last few days" became every day that week, then straight into the older cycle.
   if (s.revMode === 'window'){ s.srSteps = []; s.srDaily = 0; }
@@ -1838,7 +1846,7 @@ function ramCard(P, d, t){
   return '<section class="card s-read" aria-labelledby="h-ram"><div class="card-h"><div class="ttl"><h2 id="h-ram">' + tr('Ramadan reading') + '</h2></div>' +
     '<div class="target"><span class="tl">' + (d === t ? tr('Today’s target') : tr('Target')) + '</span><div class="tv"><b>' + tgt + '</b><span>' + plu(tgt, 'pages') + '</span></div>' +
     '<span class="tdn">' + (d === t ? tr('Read today: ') : tr('Read: ')) + '<b>' + fmt1(got) + '</b></span></div></div>' +
-    '<p class="why">' + why + '</p>' +
+    '<p class="why must">' + why + '</p>' +
     '<div class="bar" role="progressbar" aria-label="' + tr('Ramadan reading today') + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(pr * 100) + '"><i style="width:' + (pr * 100) + '%"></i></div>' +
     '<div class="done"><label for="ram-done">' + tr('Read') + '</label><input class="rnum" id="ram-done" type="number" inputmode="numeric" min="0" step="1" value="' + fmt1(got) + '"' + dis + ' aria-label="' + tr('Pages of Qur’an read') + '"><span class="togo">' + togo + '</span></div>' +
     '<div class="btns"><button class="btn" data-a="ramadd" data-v="-1"' + (got <= 0 ? ' disabled' : dis) + ' aria-label="' + tr('Remove one page') + '">−1</button>' +
@@ -1903,7 +1911,7 @@ function hardCard(P, d, t, groups){
     var pick = groups.filter(function(g){ return g.pages.length; }).map(function(g){
       return '<div class="pgrp"><span class="label">' + g.name + '</span><div class="pchips">' + g.pages.slice(0, 40).map(function(n){
         return '<button type="button" class="chip xs" data-a="hardadd" data-pg="' + n + '" aria-pressed="' + !!isHard[n] + '">' + n + '</button>';
-      }).join('') + (g.pages.length > 40 ? '<span class="wnote">' + tr('+{n} more', { n: g.pages.length - 40 }) + '</span>' : '') + '</div></div>';
+      }).join('') + (g.pages.length > 40 ? '<span class="wnote must">' + tr('+{n} more', { n: g.pages.length - 40 }) + '</span>' : '') + '</div></div>';
     }).join('');
     var halfChips = '<div class="chips" role="group" aria-label="' + tr('Which part of the page') + '">' + [['0', 'Whole page'], ['1', 'First half'], ['2', 'Second half']].map(function(c){
       return '<button type="button" class="chip xs" data-a="hardhalf" data-half="' + c[0] + '" aria-pressed="' + (hpHalf === Number(c[0])) + '">' + tr(c[1]) + '</button>';
@@ -2022,7 +2030,7 @@ function cycleHtml(st, logs, d){
     (canTap ? '<p class="wnote">' + tr('Tap a surah you’ve revised that isn’t done yet. Your next list starts from the first pages not done.') + '</p>' : '') +
     '<div class="chips"><button type="button" class="chip xs" data-a="cychide" aria-pressed="' + cycHide + '">' + tr('Hide finished juz') + '</button></div>' +
     (hidden ? '<p class="wnote">' + tr(hidden === 1 ? '{n} finished juz is hidden.' : '{n} finished juz are hidden.', { n: hidden }) + '</p>' : '') +
-    '<div class="ulist">' + (rows.length ? rows.map(function(r){ return r.h; }).join('') : '<p class="wnote">' + tr('Every juz in this cycle is done.') + '</p>') + '</div></div></details>';
+    '<div class="ulist">' + (rows.length ? rows.map(function(r){ return r.h; }).join('') : '<p class="wnote must">' + tr('Every juz in this cycle is done.') + '</p>') + '</div></div></details>';
 }
 // The known part of each surah inside one juz, as page intervals.
 function juzSurahParts(j, known){
@@ -2081,6 +2089,8 @@ function breakStrip(st){
 var SECTIONS = [['n', tr('New hifdh')], ['r', tr('New revision')], ['hard', tr('Hard pages')], ['o', tr('Revision')], ['read', tr('Daily reading')], ['listen', tr('Listening')]];
 // The sections that can show on Today for this person.
 function shownSections(st){ var full = isHafidh(st, cur().logs); return sectionOrder(st).filter(function(k){ return !full || (k !== 'n' && k !== 'listen' && (k !== 'r' || !noNewRev(st, cur().logs))); }); }
+// Daily reading and Listening are optional.
+function secOff(st, k){ return !!(st.offSec && st.offSec[k]); }
 function sectionOrder(st){
   var o = (Array.isArray(st.order) ? st.order : []).filter(function(k, i, a){ return a.indexOf(k) === i && SECTIONS.some(function(s){ return s[0] === k; }); });
   SECTIONS.forEach(function(s){ if (o.indexOf(s[0]) < 0) o.push(s[0]); });
@@ -2129,7 +2139,8 @@ function viewToday(){
   var hideN = (p.newPaused && !sick || isHafidh(st, P.logs)) && !(num(lg.n) > 0);
   var hideRev = p.revOff && !sick && !(num(lg.r) > 0 || revD > 0), noRec = noNewRev(st, P.logs);
   var ramD = ramadanOn(st, d), ramS = ramD ? ramStats(P, d) : null;
-  var hideRead = !ramD && fx.read === 'none' && !sick && !readsOf(P)[d];
+  var readOff = secOff(st, 'read');
+  var hideRead = !ramD && (readOff || fx.read === 'none' && !sick && !readsOf(P)[d]);
   // In Ramadan the reading piece fills with the pages read against the day's Ramadan target.
   var readPct = ramS ? (ramS.target > 0 ? Math.min(1, ramS.today / ramS.target) : (ramS.today > 0 ? 1 : 0)) * 100 : (readsOf(P)[d] ? 100 : 0);
   var segs = STREAMS.map(function(sd, i){
@@ -2148,7 +2159,7 @@ function viewToday(){
   var fxBits = [];
   if (fx.period && fx.mode !== 'sick'){
     if (fx.rev === 'none') fxBits.push(tr('no revision')); else if (fx.revMore > 0) fxBits.push(tr('{n} extra {u} of revision', { n: fmtQ(fx.revMore), u: plu(fmtQ(fx.revMore), fx.revMore > 1 ? 'pages' : 'page') }));
-    if (fx.read === 'none') fxBits.push(tr('no reading')); else if (fx.readMore > 0) fxBits.push(tr('about {n} {u} of reading', { n: fmt1(fx.readMore), u: plu(fmt1(fx.readMore), fx.readMore > 1 ? 'pages' : 'page') }));
+    if (readOff){} else if (fx.read === 'none') fxBits.push(tr('no reading')); else if (fx.readMore > 0) fxBits.push(tr('about {n} {u} of reading', { n: fmt1(fx.readMore), u: plu(fmt1(fx.readMore), fx.readMore > 1 ? 'pages' : 'page') }));
     if (fx.nw === 'none'){ if (fx.mode !== 'travel') fxBits.push(tr('no new hifdh')); } else if (fx.nwMore > 0) fxBits.push(tr('{n} extra {u} of new hifdh', { n: fmtQ(fx.nwMore), u: plu(fmtQ(fx.nwMore), fx.nwMore > 1 ? 'pages' : 'page') }));
   }
   var fxFull = isHafidh(st, P.logs), fxRevNote = fx.revCap ? tr('revision reduced to {n} {u} a day', { n: fmtQ(fx.revCap), u: plu(fmtQ(fx.revCap), fx.revCap > 1 ? 'pages' : 'page') }) : '';
@@ -2157,7 +2168,7 @@ function viewToday(){
     : fxFull ? (fx.period ? tr('Safe travels.') : tr('Travelling: revision as normal. Safe travels.'))
     : fx.period ? tr('Travelling: new hifdh is paused. Safe travels.') : tr('Travelling: new hifdh is paused, everything else as normal. Safe travels.');
   var fxNote = (fx.mode === 'travel' ? '<p class="wnote">' + fxTravel + '</p>' : '') +
-    (fx.period && fx.mode !== 'sick' ? '<p class="wnote">' + tr('On your period: {x}.', { x: fxBits.length ? listAnd(fxBits) : fx.revCap ? tr('reading as normal') : fx.mode === 'travel' ? tr('revision and reading as normal') : tr('everything as normal') }) + '</p>' : '');
+    (fx.period && fx.mode !== 'sick' ? '<p class="wnote">' + tr('On your period: {x}.', { x: fxBits.length ? listAnd(fxBits) : fx.revCap ? tr(readOff ? 'hard pages as normal' : 'reading as normal') : fx.mode === 'travel' ? tr(readOff ? 'revision as normal' : 'revision and reading as normal') : tr('everything as normal') }) + '</p>' : '');
   // A line for Ramadan saying what it changes, unless a period or being sick has set things instead.
   if (fx.ram){
     var ramBits = [];
@@ -2199,11 +2210,11 @@ function viewToday(){
   if (p.revOff){ whyR = whyO = sick ? tr('Paused while you rest. You can still add anything you do.') : tr('Revision is paused today. Anything you revise still counts.'); }
 
   var nsa = nextStartAt(st, P.logs), ns = nsa ? nsa.p : null, nsName = nsa ? NAMES[nsa.i] : '';
-  var nextLine = '<p class="wnote">' + (ns
+  var nextLine = '<p class="wnote' + (ns ? '' : ' must') + '">' + (ns
     ? tr(st.next.dir > 0 ? 'Learning on from <b>{x}</b>, going forward.' : 'Learning on from <b>{x}</b>, going backwards.', { x: esc(nsName) + ' ' + fmtR([ns, ns]) + (nsa.line > 1 ? ' ' + tr('line {n}', { n: nsa.line }) : '') }) + ' '
     : tr(st.next.dir > 0 ? '<b>No unlearned pages left going forward from here</b>, so new pages cannot be added. Change where you learn from to keep going.' : '<b>No unlearned pages left going backwards from here</b>, so new pages cannot be added. Change where you learn from to keep going.') + ' ') +
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">' + tr('Change') + '</button></p>';
-  var exN = whereLinesHtml(sl.nIv, d === t ? tr('New today') : tr('New')) + nextLine;
+  var exN = (st.hideWhy && p.state === 'overdue' ? '<p class="wnote must">' + whyN + '</p>' : '') + whereLinesHtml(sl.nIv, d === t ? tr('New today') : tr('New')) + nextLine;
   var exR = srHtml(st, P.logs, sr, d, t, lg.r || 0);
   // Quick amounts revised, beside Mark done.
   var oAdd = '<div class="oadd">' + [[0.5, '+½'], [1, '+1'], [2, '+2'], [5, '+5'], [10, '+10']].map(function(b){
@@ -2227,7 +2238,7 @@ function viewToday(){
   var tadabbur = '<figure class="ayah"><p lang="ar" dir="rtl">أَفَلَا يَتَدَبَّرُونَ ٱلْقُرْءَانَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَآ</p>' + (IS_AR ? '' : '<p class="mean">“Then do they not reflect upon the Qur’an, or are there locks upon [their] hearts?”</p>') + '<figcaption>' + tr('Muhammad 47:24 · Sahih International') + '</figcaption><p class="ponder">' + tr('Don’t forget to pause on some ayaat and ponder over what Allah {swt} wants you to learn from them.', { swt: '<span lang="ar" dir="rtl">سُبْحَانَهُ وَتَعَالَىٰ</span>' }) + '</p></figure>';
   var sec = {
     n: hideN ? '' : fold('n', tr('New hifdh'), met(lg.n || 0, p.tn), cardN, idle(lg.n || 0, p.tn) && p.state !== 'overdue'),
-    listen: hideN ? '' : fold('listen', tr('Listening'), past && !!listensOf(P)[d], listenCard(P, d, t)),
+    listen: hideN || secOff(st, 'listen') ? '' : fold('listen', tr('Listening'), past && !!listensOf(P)[d], listenCard(P, d, t)),
     r: hideRev || noRec ? '' : fold('r', tr('New revision'), met(lg.r || 0, p.tr), card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active && !p.revOff, exR), idle(lg.r || 0, p.tr)),
     o: hideRev ? '' : fold('o', tr('Revision'), met(revD, p.to), card(STREAMS[2], p.to, lg.o || 0, whyO, p.active && !p.revOff, exO, false, false, oxD), idle(revD, p.to)) + tadabbur,
     read: ramD ? fold('read', tr('Ramadan reading'), ramS && met(ramS.today, ramS.target), ramCard(P, d, t)) : hideRead ? '' : fold('read', tr('Daily reading'), past && !!readsOf(P)[d], readCard(P, d, t, fx)),
@@ -2256,7 +2267,8 @@ function viewToday(){
   var weekCard = '<section class="card" aria-label="' + tr('This week') + '"><div class="row-h"><h2 class="h">' + tr('This week') + '</h2><span class="label">' +
     fmtDate(wd[0], { day: 'numeric', month: 'short' }) + ' – ' + fmtDate(wd[6], { day: 'numeric', month: 'short' }) + '</span></div>' + rows + '</section>';
 
-  return banner + head + '<div class="wk">' + strip + '</div>' + ayah + hero + (d === t ? breakStrip(st) : '') + cards + weekCard;
+  return '<div class="tdwrap' + (st.hideWhy ? ' noexp' : '') + '">' + banner + head + '<div class="wk">' + strip + '</div>' + ayah + hero + (d === t ? breakStrip(st) : '') + cards + weekCard + '</div>' +
+    '<p class="todayfoot"><button type="button" class="linkb" data-a="hidewhy">' + (st.hideWhy ? tr('Show explanations') : tr('Hide explanations')) + '</button></p>';
 }
 
 // Each revision cycle so far: when it started and finished, and the pages revised in it.
@@ -2512,13 +2524,15 @@ function breakCard(st){
   ob.forEach(function(b){ h += breakPart(st, b, ob.length > 1); });
   if (can.length) h += (ob.length ? '<p class="muted">' + tr('You can also add:') + '</p>' : '') + '<div class="chips">' +
     can.map(function(m){ return '<button type="button" class="chip" data-a="brk" data-m="' + m + '">' + BREAK_NAMES[m] + '</button>'; }).join('') + '</div>';
-  return h + '<p class="wnote"><button class="linkb" data-a="hideperiod">' + (st.hidePeriod ? tr('Show “On my period” again') : tr('I don’t need “On my period”')) + '</button></p></section>';
+  return h + '<p class="wnote"><button class="linkb" data-a="hideperiod">' + (st.hidePeriod ? tr('Show “On my period”') : tr('I don’t need “On my period”')) + '</button></p></section>';
 }
 function orderCard(st){
   var ord = shownSections(st), name = function(k){ return SECTIONS.filter(function(s){ return s[0] === k; })[0][1]; };
-  return '<section class="card" id="orderCard"><h2 class="h">' + tr('Order of the Today page') + '</h2><p class="muted">' + tr('Move sections up or down.') + '</p><ul class="olist">' +
+  return '<section class="card" id="orderCard"><h2 class="h">' + tr('Order of the Today page') + '</h2><p class="muted">' + tr('Move sections up or down. Daily reading and Listening are optional, so you can turn them off.') + '</p><ul class="olist">' +
     ord.map(function(k, i){
-      return '<li><span>' + name(k) + (k === 'read' ? ' <small>(' + tr('Ramadan reading in Ramadan') + ')</small>' : '') + '</span>' +
+      var opt = k === 'read' || k === 'listen', off = secOff(st, k);
+      return '<li' + (off ? ' class="secoff"' : '') + '><span>' + name(k) + (k === 'read' ? ' <small>(' + tr('Ramadan reading in Ramadan') + ')</small>' : '') + '</span>' +
+        (opt ? '<button type="button" class="chip xs" data-a="secoff" data-k="' + k + '" aria-pressed="' + !off + '" aria-label="' + tr('Show {x} on Today', { x: name(k) }) + '">' + (off ? tr('Off') : '✓ ' + tr('On')) + '</button>' : '') +
         '<button type="button" class="btn sm" data-a="secmove" data-k="' + k + '" data-d="-1"' + (i ? '' : ' disabled') + ' aria-label="' + tr('Move {x} up', { x: name(k) }) + '">↑</button>' +
         '<button type="button" class="btn sm" data-a="secmove" data-k="' + k + '" data-d="1"' + (i < ord.length - 1 ? '' : ' disabled') + ' aria-label="' + tr('Move {x} down', { x: name(k) }) + '">↓</button></li>';
     }).join('') + '</ul></section>';
@@ -2527,12 +2541,12 @@ function breakPart(st, b, both){
   var h = '', full = isHafidh(st, cur().logs);
   var since = fmtDate(b.from, { weekday: 'long', day: 'numeric', month: 'long' });
   var desc = b.mode === 'sick' ? tr(full ? 'Everything is paused: no targets for revision, reading or hard pages. You can still add anything you do.' : 'Everything is paused: no targets for new hifdh, revision, reading or hard pages. You can still add anything you do.')
-    : b.mode === 'travel' ? (full ? '' : tr('New hifdh is paused.') + ' ') + (both ? tr('Revision and reading follow your period choices, but never more than normal while you travel.') : tr('Reading and hard pages carry on as normal.'))
+    : b.mode === 'travel' ? (full ? '' : tr('New hifdh is paused.') + ' ') + (both ? tr('Revision and reading follow your period choices, but never more than normal while you travel.') : tr(secOff(st, 'read') ? 'Hard pages carry on as normal.' : 'Reading and hard pages carry on as normal.'))
     : tr('Choose what changes each day while it lasts.') + (both ? ' ' + tr('Being sick or travelling goes on top of this.') : '');
   h += '<p>' + tr('<b>{x}</b> since {d}.', { x: BREAK_NAMES[b.mode], d: since }) + '</p><p class="muted">' + desc + '</p>';
   if (b.mode === 'period'){
     var o = Object.assign(periodDefaults(), b.opts || {});
-    h += [['rev', 'Revision', 'Not revising', 'More revision'], ['read', 'Reading', 'Not reading', 'More reading'], ['nw', 'New hifdh', 'No new hifdh', 'More new hifdh']].filter(function(a){ return !full || a[0] !== 'nw'; }).map(function(a){
+    h += [['rev', 'Revision', 'Not revising', 'More revision'], ['read', 'Reading', 'Not reading', 'More reading'], ['nw', 'New hifdh', 'No new hifdh', 'More new hifdh']].filter(function(a){ return (!full || a[0] !== 'nw') && (a[0] !== 'read' || !secOff(st, 'read')); }).map(function(a){
       var k = a[0];
       return '<div class="field"><span class="lab" id="lab-brk-' + k + '">' + tr(a[1]) + '</span><div class="chips" role="group" aria-labelledby="lab-brk-' + k + '">' +
         [['normal', 'As normal'], ['none', a[2]], ['more', a[3]]].map(function(c){
@@ -2582,7 +2596,7 @@ function ramadanSetCard(st){
         (R[k] === 'more' ? '<div class="hrow"><input class="inp" id="ram-' + k + '" type="number" inputmode="decimal" min="0.25" step="0.25" value="' + val(num(R[k + 'More'])) + '" aria-label="' + tr('How many more pages a day for {x}', { x: IS_AR ? tr(a[1]) : a[1].toLowerCase() }) + '"><span class="muted" style="align-self:center">' + tr('more pages a day') + '</span></div>' : '') +
         '</div>';
     }).join('') +
-    '<p class="wnote">' + tr('If you are sick, travelling or on your period during Ramadan, that setting is used on top.') + '</p>' +
+    '<p class="wnote">' + (st.hidePeriod ? tr('If you are sick or travelling during Ramadan, that setting is used on top.') : tr('If you are sick, travelling or on your period during Ramadan, that setting is used on top.')) + '</p>' +
     '<button class="btn wide" data-a="ramoff">' + (ramOffArmed ? tr('Tap again to remove the Ramadan plan') : tr('Remove the Ramadan plan')) + '</button></section>';
   return h;
 }
@@ -2817,6 +2831,10 @@ document.addEventListener('click', function(e){
     stB.breaks = breaksOf(stB).concat([nb]); if (draft) draft.breaks = clone(stB.breaks);
     touch(); render();
   }
+  else if (a === 'hidewhy'){
+    var stW = cur().settings; stW.hideWhy = !stW.hideWhy; if (draft) draft.hideWhy = stW.hideWhy;
+    touch(); render();
+  }
   else if (a === 'hideperiod'){
     var stH = cur().settings; stH.hidePeriod = !stH.hidePeriod; if (draft) draft.hidePeriod = stH.hidePeriod;
     touch(); render();
@@ -2923,6 +2941,10 @@ document.addEventListener('click', function(e){
     touch(); render();
   }
   else if (a === 'fold'){ var fk = viewDate + ':' + t.dataset.k; openDone[fk] = !openDone[fk]; render(); }
+  else if (a === 'secoff'){
+    var stF = cur().settings, off = Object.assign({}, stF.offSec); off[t.dataset.k] = !off[t.dataset.k]; stF.offSec = off; if (draft) draft.offSec = Object.assign({}, off);
+    touch(); render();
+  }
   else if (a === 'secmove'){
     var stO = cur().settings, ord = sectionOrder(stO), vis = shownSections(stO), i0 = ord.indexOf(t.dataset.k), i1 = ord.indexOf(vis[vis.indexOf(t.dataset.k) + Number(t.dataset.d)]);
     if (i0 < 0 || i1 < 0) return;
