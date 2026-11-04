@@ -112,6 +112,8 @@ window.HH_AR = {
 "More": "المزيد",
 "Hide": "إخفاء",
 "Done · show": "أُنجز · عرض",
+"Nothing today · show": "لا شيء اليوم · عرض",
+"Nothing this day · show": "لا شيء في هذا اليوم · عرض",
 
 // Stream cards
 "New hifdh": "الحفظ الجديد",

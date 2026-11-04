@@ -2075,10 +2075,10 @@ function sectionOrder(st){
 }
 // A section that is done for the day folds down to one line; tap it to open it again.
 var openDone = {};
-function fold(key, name, done, html){
-  if (!done || !html) return html;
+function fold(key, name, done, html, none){
+  if ((!done && !none) || !html) return html;
   var open = !!openDone[viewDate + ':' + key];
-  return '<div class="foldc' + (open ? ' open' : '') + '"><button type="button" class="foldbar" data-a="fold" data-k="' + key + '" aria-expanded="' + open + '"><span>✓ ' + name + '</span><small>' + (open ? tr('Hide') : tr('Done · show')) + '</small></button>' + (open ? html : '') + '</div>';
+  return '<div class="foldc' + (open ? ' open' : '') + '"><button type="button" class="foldbar" data-a="fold" data-k="' + key + '" aria-expanded="' + open + '"><span>' + (done ? '✓ ' : '') + name + '</span><small>' + (open ? tr('Hide') : done ? tr('Done · show') : viewDate === todayIso() ? tr('Nothing today · show') : tr('Nothing this day · show')) + '</small></button>' + (open ? html : '') + '</div>';
 }
 // What an inactive day is called on the cards: a rest day, or a day before the plan starts.
 var restWord = tr('Rest day');
@@ -2202,14 +2202,16 @@ function viewToday(){
   // Pages being worked on today, so a hard one can be marked with a tap.
   var expand = function(rs){ var a = []; rs.forEach(function(r){ for (var n = r[0]; n <= r[1]; n++) a.push(n); }); return a; };
   var revPages = expand(pageRanges(normIv([].concat.apply([], sr.due.map(function(it){ return it.b.iv; })))));
-  var past = d <= t, met = function(dn, tg){ return past && tg > 0 && dn >= tg - 0.001; };
+  var past = d <= t, met = function(dn, tg){ return past && (tg > 0 ? dn >= tg - 0.001 : dn > 0); };
+  // Nothing set for this day and nothing logged: fold away too. Past the finish date, the New hifdh card has something to say.
+  var idle = function(dn, tg){ return tg <= 0 && !(dn > 0); };
   var hDueNow = d === t && !sick ? hardOf(P).filter(function(x){ return hardDue(x) <= t; }).length : 0;
   var tadabbur = '<figure class="ayah"><p lang="ar" dir="rtl">أَفَلَا يَتَدَبَّرُونَ ٱلْقُرْءَانَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَآ</p>' + (IS_AR ? '' : '<p class="mean">“Then do they not reflect upon the Qur’an, or are there locks upon [their] hearts?”</p>') + '<figcaption>' + tr('Muhammad 47:24 · Sahih International') + '</figcaption><p class="ponder">' + tr('Don’t forget to pause on some ayaat and ponder over what Allah {swt} wants you to learn from them.', { swt: '<span lang="ar" dir="rtl">سُبْحَانَهُ وَتَعَالَىٰ</span>' }) + '</p></figure>';
   var sec = {
-    n: hideN ? '' : fold('n', tr('New hifdh'), met(lg.n || 0, p.tn), cardN),
+    n: hideN ? '' : fold('n', tr('New hifdh'), met(lg.n || 0, p.tn), cardN, idle(lg.n || 0, p.tn) && p.state !== 'overdue'),
     listen: hideN ? '' : fold('listen', tr('Listening'), past && !!listensOf(P)[d], listenCard(P, d, t)),
-    r: hideRev ? '' : fold('r', tr('New revision'), met(lg.r || 0, p.tr), card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active && !p.revOff, exR)),
-    o: hideRev ? '' : fold('o', tr('Revision'), met(revD, p.to), card(STREAMS[2], p.to, lg.o || 0, whyO, p.active && !p.revOff, exO, false, false, oxD)) + tadabbur,
+    r: hideRev ? '' : fold('r', tr('New revision'), met(lg.r || 0, p.tr), card(STREAMS[1], p.tr, lg.r || 0, whyR, p.active && !p.revOff, exR), idle(lg.r || 0, p.tr)),
+    o: hideRev ? '' : fold('o', tr('Revision'), met(revD, p.to), card(STREAMS[2], p.to, lg.o || 0, whyO, p.active && !p.revOff, exO, false, false, oxD), idle(revD, p.to)) + tadabbur,
     read: ramD ? fold('read', tr('Ramadan reading'), ramS && met(ramS.today, ramS.target), ramCard(P, d, t)) : hideRead ? '' : fold('read', tr('Daily reading'), past && !!readsOf(P)[d], readCard(P, d, t, fx)),
     hard: fold('hard', tr('Hard pages'), d === t && !hDueNow && (hardLogOf(P)[d] || 0) > 0, hardCard(P, d, t, [{ name: tr('New hifdh'), pages: expand(sl.n) }, { name: tr('New revision'), pages: revPages }, { name: tr('Revision'), pages: expand(sl.o) }]))
   };
