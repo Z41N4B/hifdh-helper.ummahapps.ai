@@ -130,7 +130,7 @@
         {
           "@type": "Question",
           "name": "What if I am sick, travelling or on my period?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifdh and keeps everything else. On your period you choose, for revision, reading and new hifdh, whether to keep it as normal, stop it, or do more each day. You can also be sick or travelling during your period." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifdh, and you choose whether to keep revision as normal, reduce it or stop it. On your period you choose, for revision, reading and new hifdh, whether to keep it as normal, stop it, or do more each day. You can also be sick or travelling during your period." }
         },
         {
           "@type": "Question",
@@ -632,7 +632,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <div><h3>What happens if I do more or less than my target?</h3><p>For new hifdh the week has a set amount, so doing extra one day makes the following days lighter. For revision the daily target stays the same, and each day’s list starts from the first pages you have not revised yet in this cycle, so nothing is repeated or missed.</p></div>
       <div><h3>Can I mark revision of surahs that were not on today’s list?</h3><p>Yes. On the Revision card, tap any surah you revised that is not done yet, or enter page numbers. It counts towards the day, each page is counted once, and you can see which surahs are done in the current cycle, juz by juz.</p></div>
       <div><h3>Is there a Ramadan mode?</h3><p>Yes. Set it up in Settings. Choose the first day of Ramadan (worked out from the Umm al-Qura calendar, and easy to change), how many full readings of the Qur’an you want to finish, and the page to start from. Each day shows how many pages to read and from where, and a Ramadan tracker shows the pages read each day. You can also keep revision and new hifdh as normal, stop them, or do more each day.</p></div>
-      <div><h3>What if I am sick, travelling or on my period?</h3><p>Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifdh and keeps everything else. On your period you choose, for revision, reading and new hifdh, whether to keep it as normal, stop it, or do more each day. You can also be sick or travelling during your period.</p></div>
+      <div><h3>What if I am sick, travelling or on my period?</h3><p>Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifdh, and you choose whether to keep revision as normal, reduce it or stop it. On your period you choose, for revision, reading and new hifdh, whether to keep it as normal, stop it, or do more each day. You can also be sick or travelling during your period.</p></div>
       <div><h3>Can I memorise from the end of the Qur’an, such as Juz Amma?</h3><p>Yes. Mark what you have already memorised, then choose to go backwards. New hifdh then goes surah by surah towards Al-Fatihah, learning each surah from its first page, and skips anything already known.</p></div>
       <div><h3>Can I track more than one person?</h3><p>Yes. Add a person for each child or student. Each person has their own goal, schedule, logs and colour theme.</p></div>
       <div><h3>Which mushaf does it use?</h3><p>The 604-page Madinah mushaf with 15 lines to a page, the 610-page 15-line Indo-Pak mushaf, or the 847-page 13-line Indo-Pak mushaf. Choose it at the top of Settings; each person can have their own, and all pages, lines, surahs and juz follow it.</p></div>
@@ -1191,6 +1191,7 @@ function pausedOn(st, x){ return pausesOf(st).some(function(p){ return x >= p.fr
 function isPaused(st){ var ps = pausesOf(st); return !!(ps.length && !ps[ps.length - 1].to); }
 // Sick, travelling or on a period: each is { mode, from, to, opts } with to = null while it is on.
 // For a period, opts sets revision (rev), reading (read) and new hifdh (nw) to normal, none or more, with how much more a day.
+// For travelling, opts sets revision (rev) to normal, less or none, with revLess pages a day for less.
 var BREAK_NAMES = { sick: tr('Sick'), travel: tr('Travelling'), period: tr('On my period') };
 function breaksOf(st){ return Array.isArray(st.breaks) ? st.breaks : []; }
 // A period can overlap being sick or travelling; sick and travelling don't overlap each other.
@@ -1198,6 +1199,7 @@ function breaksOnDay(st, x){ return breaksOf(st).filter(function(b){ return x >=
 function openBreaks(st){ return breaksOf(st).filter(function(b){ return !b.to; }); }
 function openBreak(st, m){ return openBreaks(st).filter(function(b){ return b.mode === m; })[0] || null; }
 function periodDefaults(){ return { rev: 'normal', revMore: 1, read: 'normal', readMore: 5, nw: 'normal', nwMore: 0.5 }; }
+function travelDefaults(){ return { rev: 'normal', revLess: 5 }; }
 // Ramadan: { from, days (29 or 30), khatms (full readings to finish), startPage, rev/revMore, nw/nwMore like a period }.
 // Pages read each day of Ramadan are kept in the person's rlog: { 'YYYY-MM-DD': pages }.
 var RAM_OPTS = ['normal', 'none', 'more'];
@@ -1253,6 +1255,9 @@ function dayEffects(st, x){
     e.nw = 'none'; e.nwMore = 0;
     // Travelling during a period: revision and reading take the lighter of the two, so no extra pages.
     if (pb){ if (e.rev === 'more'){ e.rev = 'normal'; e.revMore = 0; } if (e.read === 'more'){ e.read = 'normal'; e.readMore = 0; } }
+    var tv = Object.assign(travelDefaults(), b.opts || {});
+    if (tv.rev === 'none'){ e.rev = 'none'; e.revMore = 0; }
+    else if (tv.rev === 'less' && e.rev !== 'none'){ e.rev = 'normal'; e.revMore = 0; e.revCap = Math.max(0.25, num(tv.revLess)); }
   }
   return e;
 }
@@ -1317,6 +1322,7 @@ function dayTargets(st, logs, dateIso){
   p.tn = active && !p.newPaused ? p.n + (p.state === 'done' ? 0 : e.nwMore) : 0;
   p.tr = active && !p.revOff ? p.r : 0;
   p.to = active && !p.revOff ? p.o + e.revMore : 0;
+  if (e.revCap) p.to = Math.min(p.to, e.revCap);
   return p;
 }
 // Which pages go with each card on a given day.
@@ -1421,7 +1427,7 @@ function normPerson(p, i){
   if (!(Number.isInteger(s.srDaily) && s.srDaily >= 0 && s.srDaily <= 90)) s.srDaily = 21;
   if (!(Number.isInteger(s.weekStart) && s.weekStart >= 0 && s.weekStart <= 6)) s.weekStart = 1;
   s.breaks = breaksOf(s).filter(function(b){ return b && BREAK_NAMES[b.mode] && /^\d{4}-\d\d-\d\d$/.test(b.from) && (b.to == null || (/^\d{4}-\d\d-\d\d$/.test(b.to) && b.to > b.from)); })
-    .map(function(b){ var o = { mode: b.mode, from: b.from, to: b.to || null }; if (b.mode === 'period') o.opts = Object.assign(periodDefaults(), b.opts || {}); return o; });
+    .map(function(b){ var o = { mode: b.mode, from: b.from, to: b.to || null }; if (b.mode === 'period') o.opts = Object.assign(periodDefaults(), b.opts || {}); if (b.mode === 'travel') o.opts = Object.assign(travelDefaults(), b.opts || {}); return o; });
   s.pauses = pausesOf(s).filter(function(p){ return p && /^\d{4}-\d\d-\d\d$/.test(p.from) && (p.to == null || (/^\d{4}-\d\d-\d\d$/.test(p.to) && p.to > p.from)); })
     .map(function(p){ return { from: p.from, to: p.to || null }; });
   if (!(typeof s.startDate === 'string' && /^\d{4}-\d\d-\d\d$/.test(s.startDate))) s.startDate = null;
@@ -2069,7 +2075,7 @@ function breakStrip(st){
   }).join('');
   var on = openBreaks(st).length;
   return '<div class="brkstrip"><span>' + (on ? tr('Tap to turn off') : tr('Not a normal day?')) + '</span><div class="chips">' + chips + '</div>' +
-    '<button class="linkb" data-a="tab" data-tab="settings" data-focus="breakCard">' + (openBreak(st, 'period') ? tr('Period choices') : tr('More')) + '</button></div>';
+    '<button class="linkb" data-a="tab" data-tab="settings" data-focus="breakCard">' + (openBreak(st, 'period') ? tr('Period choices') : openBreak(st, 'travel') ? tr('Travel choices') : tr('More')) + '</button></div>';
 }
 // Sections on Today, in the order each person chose. The Ramadan card takes the place of Daily reading in Ramadan.
 var SECTIONS = [['n', tr('New hifdh')], ['r', tr('New revision')], ['hard', tr('Hard pages')], ['o', tr('Revision')], ['read', tr('Daily reading')], ['listen', tr('Listening')]];
@@ -2145,8 +2151,13 @@ function viewToday(){
     if (fx.read === 'none') fxBits.push(tr('no reading')); else if (fx.readMore > 0) fxBits.push(tr('about {n} {u} of reading', { n: fmt1(fx.readMore), u: plu(fmt1(fx.readMore), fx.readMore > 1 ? 'pages' : 'page') }));
     if (fx.nw === 'none'){ if (fx.mode !== 'travel') fxBits.push(tr('no new hifdh')); } else if (fx.nwMore > 0) fxBits.push(tr('{n} extra {u} of new hifdh', { n: fmtQ(fx.nwMore), u: plu(fmtQ(fx.nwMore), fx.nwMore > 1 ? 'pages' : 'page') }));
   }
-  var fxNote = (fx.mode === 'travel' ? '<p class="wnote">' + (fx.period ? tr('Travelling: new hifdh is paused. Safe travels.') : tr('Travelling: new hifdh is paused, everything else as normal. Safe travels.')) + '</p>' : '') +
-    (fx.period && fx.mode !== 'sick' ? '<p class="wnote">' + tr('On your period: {x}.', { x: fxBits.length ? listAnd(fxBits) : fx.mode === 'travel' ? tr('revision and reading as normal') : tr('everything as normal') }) + '</p>' : '');
+  var fxFull = isHafidh(st, P.logs), fxRevNote = fx.revCap ? tr('revision reduced to {n} {u} a day', { n: fmtQ(fx.revCap), u: plu(fmtQ(fx.revCap), fx.revCap > 1 ? 'pages' : 'page') }) : '';
+  var fxTravel = fx.revCap ? (fxFull ? tr('Travelling: {x}. Safe travels.', { x: fxRevNote }) : tr('Travelling: new hifdh is paused, {x}. Safe travels.', { x: fxRevNote }))
+    : !fx.period && fx.rev === 'none' ? (fxFull ? tr('Travelling: no revision. Safe travels.') : tr('Travelling: new hifdh and revision are paused. Safe travels.'))
+    : fxFull ? (fx.period ? tr('Safe travels.') : tr('Travelling: revision as normal. Safe travels.'))
+    : fx.period ? tr('Travelling: new hifdh is paused. Safe travels.') : tr('Travelling: new hifdh is paused, everything else as normal. Safe travels.');
+  var fxNote = (fx.mode === 'travel' ? '<p class="wnote">' + fxTravel + '</p>' : '') +
+    (fx.period && fx.mode !== 'sick' ? '<p class="wnote">' + tr('On your period: {x}.', { x: fxBits.length ? listAnd(fxBits) : fx.revCap ? tr('reading as normal') : fx.mode === 'travel' ? tr('revision and reading as normal') : tr('everything as normal') }) + '</p>' : '');
   // A line for Ramadan saying what it changes, unless a period or being sick has set things instead.
   if (fx.ram){
     var ramBits = [];
@@ -2184,7 +2195,7 @@ function viewToday(){
       : sr.poolSize > EPS ? (d === t ? tr('Nothing due today.') : tr('Nothing due on this day.')) : tr('Nothing due yet.')) +
     ' ' + tr('Each week’s new hifdh {x}.', { x: srWords(st) });
   var whyO = p.old <= 0 ? tr('No older pages yet.')
-    : tr(noRec ? '{n} {u}, one full cycle every {d} {du}.' : '{n} older {u}, one full cycle every {d} {du}.', { n: fmtQ(p.old), u: plu(fmtQ(p.old), 'pages'), d: st.cycleDays, du: plu(st.cycleDays, 'days') }) + (fx.revMore > 0 ? ' ' + tr(fx.period ? 'Includes {n} extra {u} a day you chose for your period.' : 'Includes {n} extra {u} a day you chose for Ramadan.', { n: fmtQ(fx.revMore), u: plu(fmtQ(fx.revMore), fx.revMore > 1 ? 'pages' : 'page') }) : '');
+    : tr(noRec ? '{n} {u}, one full cycle every {d} {du}.' : '{n} older {u}, one full cycle every {d} {du}.', { n: fmtQ(p.old), u: plu(fmtQ(p.old), 'pages'), d: st.cycleDays, du: plu(st.cycleDays, 'days') }) + (fx.revCap && p.o > fx.revCap ? ' ' + tr('Reduced while you travel.') : '') + (fx.revMore > 0 ? ' ' + tr(fx.period ? 'Includes {n} extra {u} a day you chose for your period.' : 'Includes {n} extra {u} a day you chose for Ramadan.', { n: fmtQ(fx.revMore), u: plu(fmtQ(fx.revMore), fx.revMore > 1 ? 'pages' : 'page') }) : '');
   if (p.revOff){ whyR = whyO = sick ? tr('Paused while you rest. You can still add anything you do.') : tr('Revision is paused today. Anything you revise still counts.'); }
 
   var nsa = nextStartAt(st, P.logs), ns = nsa ? nsa.p : null, nsName = nsa ? NAMES[nsa.i] : '';
@@ -2489,12 +2500,9 @@ function removeCard(){
 // A period can overlap being sick or travelling; sick and travelling don't overlap each other. The period option can be hidden.
 function canBreak(st, m){
   if (!BREAK_NAMES[m] || openBreak(st, m)) return false;
-  // Travelling only pauses new hifdh, so a hafidh needs it only to lighten period choices.
-  if (m === 'travel' && isHafidh(st, cur().logs) && !openBreak(st, 'period')) return false;
   return m === 'period' ? !st.hidePeriod : !(openBreak(st, 'sick') || openBreak(st, 'travel'));
 }
 function breakTitle(st){
-  if (isHafidh(st, cur().logs) && !openBreak(st, 'travel')) return st.hidePeriod && !openBreak(st, 'period') ? tr('Sick') : tr('Sick or on your period');
   return st.hidePeriod && !openBreak(st, 'period') ? tr('Sick or travelling') : tr('Sick, travelling or on your period');
 }
 function breakCard(st){
@@ -2519,7 +2527,7 @@ function breakPart(st, b, both){
   var h = '', full = isHafidh(st, cur().logs);
   var since = fmtDate(b.from, { weekday: 'long', day: 'numeric', month: 'long' });
   var desc = b.mode === 'sick' ? tr(full ? 'Everything is paused: no targets for revision, reading or hard pages. You can still add anything you do.' : 'Everything is paused: no targets for new hifdh, revision, reading or hard pages. You can still add anything you do.')
-    : b.mode === 'travel' ? (full ? '' : tr('New hifdh is paused.') + ' ') + (both ? tr('Revision and reading follow your period choices, but never more than normal while you travel.') : tr('Revision, reading and hard pages carry on as normal.'))
+    : b.mode === 'travel' ? (full ? '' : tr('New hifdh is paused.') + ' ') + (both ? tr('Revision and reading follow your period choices, but never more than normal while you travel.') : tr('Reading and hard pages carry on as normal.'))
     : tr('Choose what changes each day while it lasts.') + (both ? ' ' + tr('Being sick or travelling goes on top of this.') : '');
   h += '<p>' + tr('<b>{x}</b> since {d}.', { x: BREAK_NAMES[b.mode], d: since }) + '</p><p class="muted">' + desc + '</p>';
   if (b.mode === 'period'){
@@ -2533,6 +2541,15 @@ function breakPart(st, b, both){
         (o[k] === 'more' ? '<div class="hrow"><input class="inp" id="brk-' + k + '" type="number" inputmode="decimal" min="0.25" step="' + (k === 'read' ? 1 : 0.25) + '" value="' + val(num(o[k + 'More'])) + '" aria-label="' + tr('How many more pages a day for {x}', { x: IS_AR ? tr(a[1]) : a[1].toLowerCase() }) + '"><span class="muted" style="align-self:center">' + tr('more pages a day') + '</span></div>' : '') +
         '</div>';
     }).join('');
+  }
+  if (b.mode === 'travel'){
+    var tv = Object.assign(travelDefaults(), b.opts || {});
+    h += '<div class="field"><span class="lab" id="lab-brk-tv">' + tr('Revision while travelling') + '</span><div class="chips" role="group" aria-labelledby="lab-brk-tv">' +
+      [['normal', 'As normal'], ['less', 'Less revision'], ['none', 'Not revising']].map(function(c){
+        return '<button type="button" class="chip" data-a="brkopt" data-m="travel" data-k="rev" data-v="' + c[0] + '" aria-pressed="' + (tv.rev === c[0]) + '">' + tr(c[1]) + '</button>';
+      }).join('') + '</div>' +
+      (tv.rev === 'less' ? '<div class="hrow"><input class="inp" id="brk-travel" type="number" inputmode="decimal" min="0.25" step="0.25" value="' + val(num(tv.revLess)) + '" aria-label="' + tr('How many pages of revision a day while travelling') + '"><span class="muted" style="align-self:center">' + tr('pages a day') + '</span></div>' +
+        (full ? '' : '<small class="hint">' + tr('This is for Revision. New revision carries on as normal.') + '</small>') : '') + '</div>';
   }
   var endLabel = b.mode === 'sick' ? tr('I’m feeling better') : b.mode === 'travel' ? tr('I’m back home') : tr('My period has ended');
   return '<div class="brkpart">' + h + '<button class="btn solid wide" data-a="brkend" data-m="' + b.mode + '">' + endLabel + '</button></div>';
@@ -2796,7 +2813,7 @@ document.addEventListener('click', function(e){
   }
   else if (a === 'brk'){
     var stB = cur().settings, m = t.dataset.m; if (!canBreak(stB, m)) return;
-    var nb = { mode: m, from: todayIso(), to: null }; if (m === 'period') nb.opts = periodDefaults();
+    var nb = { mode: m, from: todayIso(), to: null }; if (m === 'period') nb.opts = periodDefaults(); if (m === 'travel') nb.opts = travelDefaults();
     stB.breaks = breaksOf(stB).concat([nb]); if (draft) draft.breaks = clone(stB.breaks);
     touch(); render();
   }
@@ -2811,8 +2828,8 @@ document.addEventListener('click', function(e){
     touch(); render();
   }
   else if (a === 'brkopt'){
-    var cb = openBreak(cur().settings, 'period'); if (!cb) return;
-    cb.opts = Object.assign(periodDefaults(), cb.opts || {}); cb.opts[t.dataset.k] = t.dataset.v;
+    var cbm = t.dataset.m || 'period', cb = openBreak(cur().settings, cbm); if (!cb) return;
+    cb.opts = Object.assign(cbm === 'travel' ? travelDefaults() : periodDefaults(), cb.opts || {}); cb.opts[t.dataset.k] = t.dataset.v;
     if (draft) draft.breaks = clone(breaksOf(cur().settings));
     touch(); render();
   }
@@ -3032,6 +3049,12 @@ document.addEventListener('change', function(e){
     else if (id === 'ram-p'){ if (rn >= 1 && rn <= PAGES) Rc.startPage = Math.round(rn); }
     else { var rk = id.slice(4); Rc[rk + 'More'] = rn > 0 ? Math.round(rn * 100) / 100 : ramadanBase()[rk + 'More']; }
     ramSync(); return;
+  }
+  if (id === 'brk-travel'){
+    var cb3 = openBreak(cur().settings, 'travel'), v3 = parseFloat(e.target.value); if (!cb3) return;
+    cb3.opts = Object.assign(travelDefaults(), cb3.opts || {}); cb3.opts.revLess = v3 > 0 ? Math.round(v3 * 100) / 100 : travelDefaults().revLess;
+    if (draft) draft.breaks = clone(breaksOf(cur().settings));
+    touch(); render(); return;
   }
   if (/^brk-(rev|read|nw)$/.test(id)){
     var cb2 = openBreak(cur().settings, 'period'); if (!cb2) return;
