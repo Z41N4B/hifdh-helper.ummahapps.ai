@@ -1115,7 +1115,7 @@ function cycleDay(st, logs, k, before){
     var over = o - measure(cover);
     if (over > EPS){ passAfter = pass + 1; after = takeIv(pool, 0, over); }
   }
-  return { pool: pool, total: total, plan: plan, rev: rev, ox: ox, amount: amount, pass: pass,
+  return { pool: pool, total: total, notDone: notDone, plan: plan, rev: rev, ox: ox, amount: amount, pass: pass,
            after: { done: after, pass: passAfter }, completed: completed };
 }
 var cycMemo = null, cycVer = 0;
@@ -1134,6 +1134,8 @@ function cycleAt(st, logs, d){
   var prev = run.keys.filter(function(k){ return k < d; }), before = prev.length ? run.days[prev[prev.length - 1]].after : { done: [], pass: 1 };
   return cycleDay(st, logs, d, before);
 }
+// What was revised on a day: the pages from the list first worked out as stretches, then those marked by hand, in page order.
+function revRows(c){ return joinOn(subtractIv(c.rev, c.ox)).concat(c.ox).sort(function(a, b){ return a[0] - b[0]; }); }
 // Pages revised on a day for the Revision card, counting each page once.
 function revAmount(st, logs, d){ var l = logs[d]; return l && (num(l.o) > 0 || oxOf(l) > 0) ? cycleAt(st, logs, d).amount : 0; }
 function nextPage(nx){ return Math.max(1, Math.min(PAGES, Math.floor(nx.x + EPS) + 1)); }
@@ -1959,8 +1961,8 @@ function cycleState(st, logs, d){
 function cycleHtml(st, logs, d){
   var c = cycleState(st, logs, d); if (!c) return '';
   var t = todayIso(), canTap = d <= t, lg = logs[d] || {}, pct = Math.round(c.doneIn / c.total * 100), rows = [], hidden = 0;
-  var marked = Array.isArray(lg.ox) ? normIv(lg.ox) : [];
-  var markedHtml = marked.length ? '<div class="where"><div class="where-h"><span class="label">' + (d === t ? tr('Marked today') : tr('Marked')) + '</span><span>' + qp(oxOf(lg)) + '</span></div><ul class="hlist">' +
+  var cd = cycleAt(st, logs, d), marked = revRows(cd);
+  var markedHtml = marked.length ? '<div class="where"><div class="where-h"><span class="label">' + (d === t ? tr('Revised today') : tr('Revised')) + '</span><span>' + qp(cd.amount) + '</span></div><ul class="hlist">' +
     marked.map(function(r, i){
       return '<li><div class="hl"><span>' + esc(namesIn([r])) + '</span><b>' + fmtLines(r[0], r[1]) + '</b>' +
         (canTap ? xBtn('oxrm', 'data-i="' + i + '"', 'oxrm:' + i, tr('Undo {x}', { x: fmtLines(r[0], r[1]) })) : '') + '</div></li>';
@@ -1979,7 +1981,7 @@ function cycleHtml(st, logs, d){
       var left = x.k === 'part' ? joinOn(subtractIv(x.s.iv, c.done)).filter(function(r){ return r[1] - r[0] > GAP; }) : [];
       var leftTxt = left.length ? tr('left: {x}', { x: left.slice(0, 2).map(function(r){ return fmtLines(r[0], r[1]); }).join(SEP) + (left.length > 2 ? ' ' + tr('+{n} more', { n: left.length - 2 }) : '') }) : '';
       var inner = (x.k === 'ok' ? '✓ ' : x.k === 'part' ? '◐ ' : '') + esc(x.s.name) + (leftTxt ? '<small>' + leftTxt + '</small>' : whole ? '' : '<small>' + pr.map(fmtR).join(SEP) + '</small>');
-      // Done surahs are shown only; to undo a tap, use × in the Marked list.
+      // Done surahs are shown only; to undo a tap, use × in the Revised list.
       if (!canTap || x.k === 'ok') return '<span class="rv ' + x.k + '">' + inner + '</span>';
       return '<button type="button" class="rv ' + x.k + '" data-a="cycsurah" data-j="' + j + '" data-s="' + x.s.i + '">' + inner + '</button>';
     }).join('');
@@ -2718,6 +2720,15 @@ document.addEventListener('click', function(e){
   else if (a === 'today'){ viewDate = todayIso(); render(); }
   else if (a === 'add'){
     var prev = (cur().logs[viewDate] && cur().logs[viewDate][t.dataset.k]) || 0;
+    if (t.dataset.k === 'o'){
+      // Stays open so what was added can be seen and undone. With pages marked, add the next pages not revised yet, so nothing is counted twice.
+      openDone[viewDate + ':o'] = true;
+      var Lq = cur().logs[viewDate];
+      if (Lq && oxOf(Lq) > 0){
+        var cq = cycleAt(cur().settings, cur().logs, viewDate), more = takeIv(subtractIv(cq.notDone, cq.rev), 0, Number(t.dataset.v));
+        if (measure(more) > EPS){ Lq.ox = unionIv(Lq.ox, more); touch(); render(); return; }
+      }
+    }
     if (t.dataset.l) setLog(t.dataset.k, Math.max(0, Math.round(prev * LINES) + Number(t.dataset.l)) / LINES);
     else setLog(t.dataset.k, prev + Number(t.dataset.v));
   }
@@ -2740,7 +2751,7 @@ document.addEventListener('click', function(e){
     var p = dayTargets(cur().settings, cur().logs, viewDate), sd = STREAMS.filter(function(s){ return s.key === t.dataset.k; })[0];
     var q = Math.round(p[sd.t] * 4) / 4; if (p[sd.t] > 0 && q === 0) q = 0.25;
     // Mark done on Revision means the day's list is done; pages also tapped are not counted twice.
-    if (sd.key === 'o' && p[sd.t] > 0) q = Math.ceil(p[sd.t] * 1e4) / 1e4;
+    if (sd.key === 'o' && p[sd.t] > 0){ q = Math.ceil(p[sd.t] * 1e4) / 1e4; openDone[viewDate + ':o'] = true; }
     if (sd.key === 'r' && p[sd.t] > 0) q = Math.ceil(p[sd.t] * 1e4) / 1e4;
     if (sd.key === 'n' && cur().settings.newUnit === 'lines'){ q = Math.max(1, Math.round(p[sd.t] * LINES)) / LINES; }
     setLog(t.dataset.k, q);
@@ -2822,9 +2833,10 @@ document.addEventListener('click', function(e){
   }
   else if (a === 'oxrm'){
     if (!armed(t.dataset.key)) return;
-    var Lr = cur().logs[viewDate]; if (!Lr || !Array.isArray(Lr.ox)) return;
-    var rr = normIv(Lr.ox)[Number(t.dataset.i)]; if (!rr) return;
-    Lr.ox = subtractIv(Lr.ox, [rr]);
+    var Lr = cur().logs[viewDate]; if (!Lr) return;
+    var cr = cycleAt(cur().settings, cur().logs, viewDate), rr = revRows(cr)[Number(t.dataset.i)]; if (!rr) return;
+    // The list's pages are only an amount, so what stays is kept as marked pages.
+    Lr.ox = subtractIv(cr.rev, [rr]); Lr.o = 0;
     if (!Lr.ox.length) delete Lr.ox;
     if (!Lr.n && !Lr.r && !Lr.o && !Lr.ox) delete cur().logs[viewDate];
     touch(); render();

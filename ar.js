@@ -204,7 +204,7 @@ window.HH_AR = {
 "Still to revise": "بقي للمراجعة",
 "Revise today": "راجع اليوم",
 "Today’s list is done, alhamdulillah.": "أُنجزت قائمة اليوم، الحمد لله.",
-"Marked today": "سُجّل اليوم",
+"Revised today": "راجعتها اليوم",
 "Marked": "مُسجَّل",
 "Undo {x}": "تراجع عن {x}",
 "left: {x}": "الباقي: {x}",
