@@ -1824,8 +1824,8 @@ function ramProgressHtml(s, t){
   }).join('');
   var note = s.all >= s.total ? (R.khatms > 1 ? tr('All {n} readings finished, alhamdulillah. May Allah accept it from you.', { n: R.khatms }) : tr('Your khatm finished, alhamdulillah. May Allah accept it from you.'))
     : t < R.from ? tr('Ramadan starts on {d}, insha’Allah.', { d: fmtDate(R.from, { weekday: 'long', day: 'numeric', month: 'long' }) })
-    : diff >= 1 ? tr('{n} {u} ahead. Reading the same amount every day, you’d have read about {e} pages by now.', { n: fmt1(diff), u: plu(fmt1(diff), 'pages'), e: fmt1(expect), eu: plu(fmt1(expect), 'pages') })
-    : diff <= -1 ? tr('{n} {u} behind. Reading the same amount every day, you’d have read about {e} pages by now. What is left is spread over the days remaining.', { n: fmt1(-diff), u: plu(fmt1(-diff), 'pages'), e: fmt1(expect), eu: plu(fmt1(expect), 'pages') })
+    : diff >= 1 ? tr('{n} {u} ahead.', { n: fmt1(diff), u: plu(fmt1(diff), 'pages') })
+    : diff <= -1 ? tr('{n} {u} behind. What is left is spread over the days remaining.', { n: fmt1(-diff), u: plu(fmt1(-diff), 'pages') })
     : tr('Right on track to finish on time.');
   return '<div class="wtop"><b>' + (R.khatms > 1 ? tr('Khatm {k} of {n}', { k: Math.min(R.khatms, k + 1), n: R.khatms }) : tr('Khatm')) + '</b><span>' + tr('{a} of {b} pages', { a: fmt1(readN), b: s.total, u: plu(s.total, 'pages') }) + ' · ' + pct + '%</span></div>' +
     '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
