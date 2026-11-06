@@ -1573,13 +1573,14 @@ var cyc = { open: false, j: null };
 // Whether finished juz are hidden in the revision cycle list, remembered per device.
 var HIDE_KEY = 'hifz-tracker-hidedone', cycHide = false;
 try { cycHide = !!localStorage.getItem(HIDE_KEY); } catch (e) {}
-var hpOpen = false, hpHalf = 0;
+var hpOpen = false, hpHalf = 0, hallOpen = false;
 var pauseAsk = false;
 var oxr = { s: 0, f: '', t: '', open: false, pages: false, j: null, msg: '' };
 // Keep the "Revised other pages?" form open across redraws once it has been opened.
 document.addEventListener('toggle', function(e){ if (!e.target || !e.target.hasAttribute) return; if (e.target.hasAttribute('data-oxpages')) oxr.pages = e.target.open;
   if (e.target.hasAttribute('data-cyc')) cyc.open = e.target.open;
   if (e.target.hasAttribute('data-hp')) hpOpen = e.target.open;
+  if (e.target.hasAttribute('data-hall') && viewDate === todayIso()) hallOpen = e.target.open;
   if (e.target.hasAttribute('data-cj')){ var cj = Number(e.target.getAttribute('data-cj')); if (e.target.open) cyc.j = cj; else if (cyc.j === cj || cyc.j == null) cyc.j = -1; } }, true);
 
 var $ = function(s){ return document.querySelector(s); };
@@ -1898,7 +1899,7 @@ function hardCard(P, d, t, groups){
     h += '<p class="wnote">' + (dayEffects(P.settings, d).mode === 'sick' ? tr('Hard pages are paused while you rest. Their reviews pick up again when you’re better.') : tr('No hard pages due today.')) + '</p>';
   }
   if (rest.length){
-    h += '<details class="hall"' + (d !== t ? ' open' : '') + '><summary>' + (due.length ? tr('Other hard pages') : tr('All hard pages')) + ' (' + rest.length + ')</summary><ul class="hlist">' +
+    h += '<details class="hall"' + (d !== t || hallOpen ? ' open' : '') + ' data-hall><summary>' + (due.length ? tr('Other hard pages') : tr('All hard pages')) + ' (' + rest.length + ')</summary><ul class="hlist">' +
       rest.map(function(x){
         return '<li><div class="hl"><span>' + esc(hardName(x)) + '<small>' + tr('Next extra review {d} · {k} of {n}', { d: fmtDate(hardDue(x), short), k: x.st + 1, n: HARD_STEPS.length }) + '</small></span><b>' + hardPart(x) + '</b>' +
           xBtn('hardrm', 'data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '"', 'hardrm:' + hardKey(x), tr('Take {x} off the hard list', { x: hardPart(x) })) + '</div></li>';
