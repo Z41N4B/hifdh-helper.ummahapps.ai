@@ -6,6 +6,7 @@ window.HH_SURAHS = ["الفاتحة","البقرة","آل عمران","النس�
 window.HH_AR = {
 // The page itself
 "Hifdh Helper · Free Qur’an Memorisation (Hifdh) Tracker and Planner": "مساعد الحفظ · متابعة حفظ القرآن ومراجعته وتخطيطهما",
+"Free Qur’an memorisation (hifdh or hifz) tracker. Revise different parts of the Qur’an while tracking your progress, with daily targets and spaced repetition.": "متابعة حفظ القرآن مجانًا: راجع مواضع شتّى من القرآن وتابع تقدّمك، بأهداف يومية ومراجعة تتباعد مع الوقت.",
 "Free Qur’an memorisation (hifdh or hifz) tracker with daily targets, spaced repetition revision, surah-by-surah progress, and Ramadan and travel modes.": "متابعة حفظ القرآن: هدف يومي للحفظ الجديد، ومراجعة تتباعد مع الوقت، ودورة لمراجعة كل المحفوظ، مع التقدم سورةً سورة، والصفحات الصعبة، وأوضاع للمرض والسفر والحيض، ووضع لرمضان لمتابعة الختمة.",
 "Hifdh Helper": "مساعد الحفظ",
 "Install app": "ثبّت التطبيق",
@@ -77,6 +78,12 @@ window.HH_AR = {
 "Next week": "الأسبوع التالي",
 "Tomorrow": "غدًا",
 "Welcome to Hifdh Helper": "أهلًا بك في مساعد الحفظ",
+"It helps you revise different parts of the Qur’an while tracking your progress.": "راجع مواضع شتّى من القرآن وتابع تقدّمك.",
+"Hifdh Helper · Free Qur’an Memorisation Tracker": "مساعد الحفظ · متابعة حفظ القرآن مجانًا",
+"Revise different parts of the Qur’an while tracking your progress: daily targets for new hifdh, spaced repetition and a full revision cycle you can track surah by surah. Free, no sign-up.": "راجع مواضع شتّى من القرآن وتابع تقدّمك: أهداف يومية للحفظ الجديد، ومراجعة تتباعد مع الوقت، ودورة لمراجعة كل المحفوظ سورةً سورة. مجانًا وبلا تسجيل.",
+"Revise different parts of the Qur’an while tracking your progress. Daily targets for new hifdh and revision, hard pages, and a Ramadan khatm tracker. Free, no sign-up.": "راجع مواضع شتّى من القرآن وتابع تقدّمك. أهداف يومية للحفظ والمراجعة، والصفحات الصعبة، ومتابعة ختمات رمضان. مجانًا وبلا تسجيل.",
+"Hifdh Helper: plan your Qur’an memorisation day by day": "مساعد الحفظ: نظّم حفظ القرآن يومًا بيوم",
+"A free Qur’an memorisation (hifdh) tracker and planner that helps you revise different parts of the Qur’an while tracking your progress. It turns a goal into daily targets for new hifdh, new revision and older revision.": "أداة مجانية لمتابعة حفظ القرآن ومراجعته: راجع مواضع شتّى من القرآن وتابع تقدّمك، بأهداف يومية للحفظ الجديد ومراجعته ومراجعة المحفوظ القديم.",
 "Set up your personal plan in {n} simple steps. Based on your goals and current memorisation level, Hifdh Helper will create a daily schedule showing you what to memorise, what to revise from your recent learning, and what to review from your older memorisation.": "جهّز خطتك في {n} خطوات بسيطة. بحسب هدفك وما حفظته، يضع لك مساعد الحفظ جدولًا يوميًا: ما تحفظه، وما تراجعه من حفظك الجديد، وما تراجعه من حفظك القديم.",
 "The schedule below is just an example. Once you’ve set up your plan, it will be replaced with your own daily schedule.": "هذا الجدول مثال فقط. بعد تجهيز خطتك يظهر جدولك أنت.",
 "Set up my plan": "جهّز خطتي",
