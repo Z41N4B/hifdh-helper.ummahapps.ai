@@ -1576,7 +1576,7 @@ var cyc = { open: false, j: null };
 // Whether finished juz are hidden in the revision cycle list, remembered per device.
 var HIDE_KEY = 'hifz-tracker-hidedone', cycHide = false;
 try { cycHide = !!localStorage.getItem(HIDE_KEY); } catch (e) {}
-var hpOpen = false, hpHalf = 0, hallOpen = false;
+var hpOpen = false, hpHalf = 0, hallOpen = false, hpVal = ''; // hpVal: the page typed in the hard page box, kept across redraws
 var pauseAsk = false;
 var oxr = { s: 0, f: '', t: '', open: false, pages: false, j: null, msg: '' };
 // Keep the "Revised other pages?" form open across redraws once it has been opened.
@@ -1920,7 +1920,7 @@ function hardCard(P, d, t, groups){
     var halfChips = '<div class="chips" role="group" aria-label="' + tr('Which part of the page') + '">' + [['0', 'Whole page'], ['1', 'First half'], ['2', 'Second half']].map(function(c){
       return '<button type="button" class="chip xs" data-a="hardhalf" data-half="' + c[0] + '" aria-pressed="' + (hpHalf === Number(c[0])) + '">' + tr(c[1]) + '</button>';
     }).join('') + '</div>';
-    h += '<div class="hadd"><label for="hardPg">' + tr('Mark a page as hard') + '</label>' + halfChips + '<div class="hrow"><input class="inp" id="hardPg" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="' + tr('Page number') + '">' +
+    h += '<div class="hadd"><label for="hardPg">' + tr('Mark a page as hard') + '</label>' + halfChips + '<div class="hrow"><input class="inp" id="hardPg" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" placeholder="' + tr('Page number') + '" value="' + esc(hpVal) + '">' +
       '<button class="btn sm hardb" data-a="hardadd">' + tr('Mark as hard') + '</button></div>' +
       (pick ? '<details class="hall"' + (hpOpen ? ' open' : '') + ' data-hp><summary>' + tr('Or pick one of today’s pages') + '</summary>' + pick + '</details>' : '') + '</div>';
   }
@@ -2968,6 +2968,7 @@ document.addEventListener('click', function(e){
     if (ex && t.dataset.pg){ H.splice(H.indexOf(ex), 1); }            // tapping a marked page chip again unmarks it
     else if (ex){ ex.st = 0; ex.m = todayIso(); ex.last = null; }     // marking again starts its extra reviews over
     else H.push({ pg: pg, half: hpHalf, m: todayIso(), st: 0, last: null });
+    if (!t.dataset.pg) hpVal = '';
     touch(); render();
   }
   else if (a === 'hardhalf'){ hpHalf = Number(t.dataset.half) || 0; render(); }
@@ -3043,6 +3044,7 @@ var FIELDS = {
 };
 document.addEventListener('input', function(e){
   var id = e.target.id, m = FIELDS[id];
+  if (id === 'hardPg') hpVal = e.target.value;
   if (e.target.classList && e.target.classList.contains('num')){
     if (typing) clearTimeout(typing.timer);
     typing = { el: e.target, k: e.target.dataset.k, date: viewDate, timer: setTimeout(commitTyping, 300) };
