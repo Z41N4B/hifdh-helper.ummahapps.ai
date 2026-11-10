@@ -433,6 +433,7 @@ window.HH_AR = {
 "What you have already memorised": "ما حفظته من قبل",
 "Tap a juz to mark it learned or not. For part of a juz, or part of a surah, add an exact range below.": "اضغط على جزء لتجعله محفوظًا أو غير محفوظ. وإن حفظت بعض جزء أو بعض سورة، فأضف الصفحات بالتحديد أدناه.",
 "Juz learned": "الأجزاء المحفوظة",
+"The juz buttons add that much to it.": "وأزرار الأجزاء تضيف إليه.",
 "<b>{n} {u}</b> learned, about {j} juz.": "المحفوظ <b>^{n} {u}</b>، نحو {j} {ju}.",
 "Add surahs": "أضف سورًا",
 "Part of a surah? Choose exact pages": "بعض سورة؟ اختر الصفحات بالتحديد",

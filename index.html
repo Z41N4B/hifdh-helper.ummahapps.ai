@@ -1120,13 +1120,16 @@ function cycleDay(st, logs, k, before){
   var l = logs[k] || {}, pool = oldPool(st, logs, k), total = measure(pool), done = before.done, pass = before.pass;
   if (total > EPS && measure(subtractIv(pool, done)) < EPS){ done = []; pass++; }
   var notDone = subtractIv(pool, done), to = dayTargets(st, logs, k).to;
+  // Fewer pages left in this cycle than the day's target: the list carries on from the start of the next cycle.
+  var nd = measure(notDone), nextPool = subtractIv(pool, notDone);
   var plan = takeIv(notDone, 0, to > 0 ? to : 0), o = num(l.o), ox = Array.isArray(l.ox) ? normIv(l.ox) : [];
+  if (to > nd + EPS) plan = plan.concat(takeIv(nextPool, 0, to - nd));
   var cover = dropSliver(takeIv(notDone, 0, o)), rev = unionIv(cover, ox), amount = Math.max(o, measure(rev));
   var after = unionIv(done, unionIv(cover, subtractIv(pool, subtractIv(pool, ox)))), passAfter = pass, completed = false;
   if (total > EPS && measure(subtractIv(pool, after)) < EPS){
     completed = true;
     var over = o - measure(cover);
-    if (over > EPS){ passAfter = pass + 1; after = takeIv(pool, 0, over); }
+    if (over > EPS){ passAfter = pass + 1; after = takeIv(nextPool, 0, over); rev = unionIv(rev, after); amount = Math.max(o, measure(rev)); }
   }
   return { pool: pool, total: total, notDone: notDone, plan: plan, rev: rev, ox: ox, amount: amount, pass: pass,
            after: { done: after, pass: passAfter }, completed: completed };
@@ -2433,9 +2436,12 @@ function viewSettings(){
     }).join('') + '</div>' +
     '<small class="hint">' + mushafInfo(MUSHAF)[3] +
     ' ' + tr('All pages and lines are shown in this mushaf. Changing it moves what you have learned and logged to the same places in the other one.') + '</small></section>';
-  var goalChips = GOAL_JUZ.map(function(n){ return [cnt(n, 'juz'), Math.round(n * JUZ)]; }).concat([[tr('Whole Qur’an'), PAGES]]).map(function(g){
-    return '<button type="button" class="chip" data-a="goal" data-n="' + g[1] + '" aria-pressed="' + (Math.round(num(f.goalPages)) === g[1]) + '"' + (g[1] < PAGES && g[1] <= f.startPages + EPS ? ' disabled' : '') + '>' + g[0] + '</button>';
+  // The juz buttons add that much to what is memorised so far, including new hifdh already logged.
+  var memG = measure(allKnown(f, cur().logs));
+  var goalChips = GOAL_JUZ.map(function(n){ return ['+' + cnt(n, 'juz'), Math.round(memG + n * JUZ)]; }).concat([[tr('Whole Qur’an'), PAGES]]).map(function(g){
+    return '<button type="button" class="chip" data-a="goal" data-n="' + Math.min(PAGES, g[1]) + '" aria-pressed="' + (Math.round(num(f.goalPages)) === g[1]) + '"' + (g[1] > PAGES ? ' disabled' : '') + '>' + g[0] + '</button>';
   }).join('');
+  var memLine = '<p class="wnote">' + tr('<b>{n} {u}</b> learned, about {j} juz.', { n: fmt1(memG), u: plu(fmt1(memG), 'pages'), j: fmt1(memG / JUZ), ju: plu(fmt1(memG / JUZ), 'juz') }) + ' ' + tr('The juz buttons add that much to it.') + '</p>';
   var parts = [mus, '<section class="card"><h2 class="h">' + (first ? tr('Name and colour') : tr('Person')) + '</h2>' +
     '<p class="muted">' + (first ? tr('A few short steps, one at a time. Everything can be changed later in Settings.') : tr('Change anything and the plan updates straight away. Your logs are kept.')) + '</p>' +
     '<div class="field"><label for="f-name">' + tr('Name') + '</label><input class="inp" id="f-name" type="text" maxlength="24" autocomplete="off" value="' + esc(f.name || '') + '"></div>' +
@@ -2469,7 +2475,7 @@ function viewSettings(){
     '<small class="hint" id="nextHint"></small></div></section>',
 
     '<section class="card"><h2 class="h">' + tr('Targets') + '</h2>' +
-    '<div class="field"><label for="f-goal">' + tr('Goal, in pages') + '</label><div class="chips" role="group" aria-label="' + tr('Goal') + '">' + goalChips + '</div>' +
+    '<div class="field"><label for="f-goal">' + tr('Goal, in pages') + '</label>' + memLine + '<div class="chips" role="group" aria-label="' + tr('Goal') + '">' + goalChips + '</div>' +
     '<input class="inp" id="f-goal" type="number" inputmode="decimal" min="1" max="' + PAGES + '" step="1" value="' + val(f.goalPages) + '"><small class="hint">' + tr('How much you want to have memorised in all, counting what you have already memorised. {n} pages is the whole Qur’an in the {m}, {l} lines to a page.', { n: PAGES, u: plu(PAGES, 'pages'), m: mushafName(MUSHAF), l: LINES }) + '</small></div>' +
     '<div class="field"><label for="f-start">' + tr('Start on') + '</label><input class="inp" id="f-start" type="date" value="' + (f.startDate || todayIso()) + '"><small class="hint">' + tr('The day you begin. Your weeks then start on that day of the week too, and each week’s new hifdh is set on it. Days before it have no targets.') + '</small></div>' +
     '<div class="field"><span class="lab" id="lab-mode">' + tr('Set the pace by') + '</span><div class="chips" role="group" aria-labelledby="lab-mode">' +
