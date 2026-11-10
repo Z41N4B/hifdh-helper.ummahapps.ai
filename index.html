@@ -505,7 +505,6 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
 .jz i{position:absolute; inset-inline-start:0; bottom:0; height:5px; background:var(--pc)}
 .jz.full{background:var(--pc); border-color:var(--pc); color:var(--on-pc)}
 .jz.full i{display:none}
-.jz.beyond{border-style:dashed; opacity:.45}
 .kv{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px 14px}
 .kv dt{color:var(--muted)}
 .kv dd{margin:0; text-align:end; font-weight:600; font-variant-numeric:tabular-nums; min-width:0}
@@ -1960,7 +1959,7 @@ function juzTiles(known, goal, interactive){
   var h = '';
   for (var i = 0; i < 30; i++){
     var iv = juzIv(i), len = iv[1] - iv[0], fr = Math.max(0, Math.min(1, overlapIv(known, iv[0], iv[1]) / len));
-    var full = fr >= 0.999, cls = 'jz' + (full ? ' full' : '') + (!interactive && iv[0] >= goal ? ' beyond' : '');
+    var full = fr >= 0.999, cls = 'jz' + (full ? ' full' : '');
     if (interactive){
       h += '<button type="button" class="' + cls + ' jzb" data-a="juzt" data-i="' + i + '" aria-pressed="' + full + '" aria-label="' + tr('Juz {n}, {s}', { n: i + 1, s: tr(full ? 'learned' : fr > 0 ? 'partly learned' : 'not learned') }) + '"><span>' + (i + 1) + '</span><i style="width:' + (fr * 100) + '%"></i></button>';
     } else {
