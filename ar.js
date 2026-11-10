@@ -184,6 +184,8 @@ window.HH_AR = {
 "The finish date has passed. Pick a new one in Settings.": "مرّ موعد الإنهاء الذي حددته. اختر موعدًا جديدًا في الإعدادات.",
 "{n} {nu} left. At {a} {au} a week that is about {w} more {wu}, around {l} {lu} a study day.": "الباقي ^{n} {nu}. بمعدل {a} {au} في الأسبوع تحتاج نحو {w} {wu}، أي نحو {l} {lu} في يوم الدراسة.",
 "{n} {nu} left to the goal over {d} study {du}, about {l} {lu} a day.": "الباقي حتى الهدف ^{n} {nu} خلال {d} {du} للدراسة، أي نحو {l} {lu} في اليوم.",
+"Learning on from <b>{x}</b>.": "تحفظ من <b>{x}</b>.",
+"<b>No unlearned pages left from here</b>, so new pages cannot be added. Change where you learn from to keep going.": "<b>لا صفحات غير محفوظة من هذا الموضع</b>، فلا يمكن إضافة صفحات جديدة. غيّر موضع البدء لتكمل.",
 "Learning on from <b>{x}</b>, going forward.": "تحفظ من <b>{x}</b> إلى الأمام.",
 "Learning on from <b>{x}</b>, going backwards.": "تحفظ من <b>{x}</b> بالعكس.",
 "<b>No unlearned pages left going forward from here</b>, so new pages cannot be added. Change where you learn from to keep going.": "<b>لا صفحات غير محفوظة بعد هذا الموضع</b>، فلا يمكن إضافة صفحات جديدة. غيّر موضع البدء لتكمل.",

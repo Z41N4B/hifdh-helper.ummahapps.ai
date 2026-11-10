@@ -2219,8 +2219,8 @@ function viewToday(){
 
   var nsa = nextStartAt(st, P.logs), ns = nsa ? nsa.p : null, nsName = nsa ? NAMES[nsa.i] : '';
   var nextLine = '<p class="wnote' + (ns ? '' : ' must') + '">' + (ns
-    ? tr(st.next.dir > 0 ? 'Learning on from <b>{x}</b>, going forward.' : 'Learning on from <b>{x}</b>, going backwards.', { x: esc(nsName) + ' ' + fmtR([ns, ns]) + (nsa.line > 1 ? ' ' + tr('line {n}', { n: nsa.line }) : '') }) + ' '
-    : tr(st.next.dir > 0 ? '<b>No unlearned pages left going forward from here</b>, so new pages cannot be added. Change where you learn from to keep going.' : '<b>No unlearned pages left going backwards from here</b>, so new pages cannot be added. Change where you learn from to keep going.') + ' ') +
+    ? tr('Learning on from <b>{x}</b>.', { x: esc(nsName) + ' ' + fmtR([ns, ns]) + (nsa.line > 1 ? ' ' + tr('line {n}', { n: nsa.line }) : '') }) + ' '
+    : tr('<b>No unlearned pages left from here</b>, so new pages cannot be added. Change where you learn from to keep going.') + ' ') +
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="nextCard">' + tr('Change') + '</button></p>';
   var exN = (st.hideWhy && p.state === 'overdue' ? '<p class="wnote must">' + whyN + '</p>' : '') + whereLinesHtml(sl.nIv, d === t ? tr('New today') : tr('New')) + nextLine;
   var exR = srHtml(st, P.logs, sr, d, t, lg.r || 0);
