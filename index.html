@@ -618,7 +618,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
     <h3>Also included</h3>
     <ul>
       <li>See which surahs are revised this cycle, juz by juz, and tap any surah you revised to mark it.</li>
-      <li>Hard pages come back the next day, 3 days later and 7 days later, on top of normal revision.</li>
+      <li>Hard pages come back the next day, 3 days later and 7 days later, on top of normal revision. You can change these days in Settings.</li>
       <li>Modes for being sick, travelling or on your period, so your plan fits your day.</li>
       <li>A Ramadan mode: set how many times you want to read the whole Qur’an (khatm), start anywhere, and track the pages you read each day.</li>
       <li>See how much of your revision cycle is done in Your plan, and how many cycles a month you are on pace for.</li>
@@ -977,8 +977,19 @@ function stripHeadings(ivs){
 // after that (3, 7, 14 and 30 by default). Once every review is done it moves into the older revision cycle.
 // Reviews that are missed or only partly done carry over until they are finished.
 var SR_DEFAULT = [3, 7, 14, 30];
-// A hard page gets extra reviews this many days apart, then leaves the list.
+// A hard page gets extra reviews this many days apart, then leaves the list. It can be changed in Settings.
 var HARD_STEPS = [1, 3, 7];
+function hardSteps(st){ st = st || cur().settings; return Array.isArray(st.hardSteps) && st.hardSteps.length ? st.hardSteps : HARD_STEPS; }
+// Which extra review a hard page is on, kept within the list if it was made shorter.
+function hardSt(h){ return Math.min(h.st, hardSteps().length - 1); }
+function hardParse(txt){
+  var a = String(txt || '').split(/[\s,،]+/).filter(Boolean).map(Number);
+  if (!a.length) return { err: tr('Enter at least one number of days for hard pages.') };
+  if (a.length > 8) return { err: tr('Use up to 8 extra reviews for hard pages.') };
+  for (var i = 0; i < a.length; i++) if (!(Number.isInteger(a[i]) && a[i] >= 1 && a[i] <= 365)) return { err: tr('Days for hard pages must be whole numbers from 1 to 365.') };
+  return { steps: a };
+}
+function hardWhen(){ return listAnd(hardSteps().map(function(n, i){ return i || n !== 1 ? tr('{n} {u} later', { n: n, u: plu(n, 'days') }) : tr('the next day'); })); }
 // Which part of the page a hard page is, as shown: "p.12", "p.12 lines 1–8" or "p.12 lines 8–15" (1–7 and 7–13 in the 13-line mushaf).
 function hardPart(h){ var m = Math.ceil(LINES / 2); return pgL(h.pg) + ['', ' ' + tr('lines {a}–{b}', { a: 1, b: m }), ' ' + tr('lines {a}–{b}', { a: m, b: LINES })][h.half || 0]; }
 // The lines a hard page covers, and its size in pages.
@@ -992,7 +1003,7 @@ function hardOf(P){ return Array.isArray(P.hard) ? P.hard : (P.hard = []); }
 // When a hard page's next extra review is due. Days off sick do not count, so reviews wait rather than pile up:
 // while still sick nothing is due, and afterwards each review is pushed back by the sick days.
 function hardDue(h){
-  var base = h.last || h.m, due = iso(addDays(parse(base), HARD_STEPS[h.st]));
+  var base = h.last || h.m, due = iso(addDays(parse(base), hardSteps()[hardSt(h)]));
   breaksOf(cur().settings).filter(function(b){ return b.mode === 'sick'; }).forEach(function(b){
     var from = b.from > base ? b.from : base, to = b.to || iso(addDays(parse(todayIso()), 1));
     if (from <= due && to > from) due = iso(addDays(parse(due), diffDays(from, to)));
@@ -1004,9 +1015,10 @@ function hardForecast(P, from, to){
   var out = {};
   hardOf(P).forEach(function(h){
     var x = hardDue(h); if (x < from) x = from;
-    for (var st = h.st; st < HARD_STEPS.length && x <= to; st++){
+    var S = hardSteps();
+    for (var st = hardSt(h); st < S.length && x <= to; st++){
       (out[x] = out[x] || []).push({ h: h, st: st });
-      if (st + 1 < HARD_STEPS.length) x = iso(addDays(parse(x), HARD_STEPS[st + 1]));
+      if (st + 1 < S.length) x = iso(addDays(parse(x), S[st + 1]));
     }
   });
   Object.keys(out).forEach(function(k){ out[k].sort(function(a, b){ return a.h.pg - b.h.pg || (a.h.half || 0) - (b.h.half || 0); }); });
@@ -1446,6 +1458,7 @@ function normPerson(p, i){
   if (!(typeof s.startDate === 'string' && /^\d{4}-\d\d-\d\d$/.test(s.startDate))) s.startDate = null;
   s.ramadan = normRamadan(s.ramadan);
   if (srParse(Array.isArray(s.srSteps) ? s.srSteps.join(',') : '').err) s.srSteps = SR_DEFAULT.slice();
+  if (hardParse(Array.isArray(s.hardSteps) ? s.hardSteps.join(',') : '').err) s.hardSteps = HARD_STEPS.slice();
   // One-time update: the old default 1, 3, 7, 14, 30 becomes 3, 7, 14, 30 (a 1-day gap repeats the every-day weeks).
   if (!s.srV){ if (s.srSteps.join(',') === '1,3,7,14,30') s.srSteps = SR_DEFAULT.slice(); s.srV = 2; }
   var logs = (p && p.logs && typeof p.logs === 'object') ? p.logs : {};
@@ -1499,7 +1512,7 @@ function normHard(a){
     if (!h || !Number.isInteger(h.pg) || h.pg < 1 || h.pg > PAGES || !/^\d{4}-\d\d-\d\d$/.test(h.m || '')) return false;
     if (!(h.half === 1 || h.half === 2)) h.half = 0;
     if (seen[hardKey(h)]) return false;
-    if (!(Number.isInteger(h.st) && h.st >= 0 && h.st < HARD_STEPS.length)) h.st = 0;
+    if (!(Number.isInteger(h.st) && h.st >= 0 && h.st < 8)) h.st = 0;
     if (h.last && !/^\d{4}-\d\d-\d\d$/.test(h.last)) h.last = null;
     return (seen[hardKey(h)] = true);
   });
@@ -1754,7 +1767,7 @@ function srHtml(st, logs, sr, d, t, doneR){
   return h + '</div>' + fc + (left ? '<p class="wnote">' + tr('Revise them in this order. What you log is ticked off from the top.') + '</p>' : '') + nxt;
 }
 function hardItem(h, st, extra){
-  return '<li><span>' + esc(hardName(h)) + '<small>' + tr(h.half ? 'Hard half page' : 'Hard page') + ' · ' + tr('extra review {k} of {n}', { k: st + 1, n: HARD_STEPS.length }) + (extra || '') + '</small></span><b>' + hardPart(h) + '</b></li>';
+  return '<li><span>' + esc(hardName(h)) + '<small>' + tr(h.half ? 'Hard half page' : 'Hard page') + ' · ' + tr('extra review {k} of {n}', { k: st + 1, n: hardSteps().length }) + (extra || '') + '</small></span><b>' + hardPart(h) + '</b></li>';
 }
 // Hard-page reviews done per day: { 'YYYY-MM-DD': count }.
 function hardLogOf(P){ return P.hardLog && typeof P.hardLog === 'object' ? P.hardLog : (P.hardLog = {}); }
@@ -1889,14 +1902,14 @@ function hardCard(P, d, t, groups){
   var rest = H.filter(function(h){ return due.indexOf(h) < 0; }).sort(function(a, b){ return hardDue(a) < hardDue(b) ? -1 : hardDue(a) > hardDue(b) ? 1 : a.pg - b.pg || (a.half || 0) - (b.half || 0); });
   var h = '<section class="card s-hard" aria-labelledby="h-hard"><div class="card-h"><div class="ttl"><h2 id="h-hard">' + tr('Hard pages') + '</h2></div>' +
     '<span class="label">' + (H.length ? qp(H.reduce(function(s, x){ return s + (x.half ? 0.5 : 1); }, 0)) : '') + '</span></div>';
-  h += '<p class="why">' + (H.length ? tr('Each hard page comes back {when}, on top of your normal revision. Tap Still hard to start it again.', { when: listAnd(HARD_STEPS.map(function(n, i){ return i ? tr('{n} {u} later', { n: n, u: plu(n, 'days') }) : tr('the next day'); })) })
-    : tr('Found a page hard? Mark it and it comes back the next day, 3 days later and 7 days later, on top of your normal revision.')) + '</p>';
+  h += '<p class="why">' + (H.length ? tr('Each hard page comes back {when}, on top of your normal revision. Tap Still hard to start it again.', { when: hardWhen() })
+    : tr('Found a page hard? Mark it and it comes back {when}, on top of your normal revision.', { when: hardWhen() })) + '</p>';
   if (due.length){
     var dueSize = due.reduce(function(s, x){ return s + (x.half ? 0.5 : 1); }, 0);
     h += '<div class="where"><div class="where-h"><span class="label">' + tr('Due today') + '</span><span>' + qp(dueSize) + '</span></div><ul class="hlist">' +
       due.map(function(x){
         var dd = hardDue(x), late = dd < t ? ' · ' + tr('was due {d}', { d: fmtDate(dd, short) }) : '';
-        return '<li><div class="hl"><span>' + esc(hardName(x)) + '<small>' + tr('Extra review {k} of {n}', { k: x.st + 1, n: HARD_STEPS.length }) + late + '</small></span><b>' + hardPart(x) + '</b></div>' +
+        return '<li><div class="hl"><span>' + esc(hardName(x)) + '<small>' + tr('Extra review {k} of {n}', { k: hardSt(x) + 1, n: hardSteps().length }) + late + '</small></span><b>' + hardPart(x) + '</b></div>' +
           '<div class="hb"><button class="btn sm solid" data-a="hardok" data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '">' + tr('Revised') + '</button><button class="btn sm" data-a="hardagain" data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '">' + tr('Still hard') + '</button></div></li>';
       }).join('') + '</ul></div>';
     if (!P.settings.days[parse(d).getDay()]) h += '<p class="wnote">' + tr('It’s a rest day, so do whatever you can. Anything you can’t do today carries on to tomorrow.') + '</p>';
@@ -1906,7 +1919,7 @@ function hardCard(P, d, t, groups){
   if (rest.length){
     h += '<details class="hall"' + (d !== t || hallOpen ? ' open' : '') + ' data-hall><summary>' + (due.length ? tr('Other hard pages') : tr('All hard pages')) + ' (' + rest.length + ')</summary><ul class="hlist">' +
       rest.map(function(x){
-        return '<li><div class="hl"><span>' + esc(hardName(x)) + '<small>' + tr('Next extra review {d} · {k} of {n}', { d: fmtDate(hardDue(x), short), k: x.st + 1, n: HARD_STEPS.length }) + '</small></span><b>' + hardPart(x) + '</b>' +
+        return '<li><div class="hl"><span>' + esc(hardName(x)) + '<small>' + tr('Next extra review {d} · {k} of {n}', { d: fmtDate(hardDue(x), short), k: hardSt(x) + 1, n: hardSteps().length }) + '</small></span><b>' + hardPart(x) + '</b>' +
           xBtn('hardrm', 'data-pg="' + x.pg + '" data-half="' + (x.half || 0) + '"', 'hardrm:' + hardKey(x), tr('Take {x} off the hard list', { x: hardPart(x) })) + '</div></li>';
       }).join('') + '</ul></details>';
   }
@@ -2367,6 +2380,7 @@ function validate(f){
   else if (f.goalDate <= t && f.startPages < f.goalPages) e.push(tr('Choose a finish date after today.'));
   if (!(f.cycleDays >= 1 && f.cycleDays <= 365)) e.push(tr('Revision cycle must be between 1 and 365 days.'));
   var sp = srParse(f.srText != null ? f.srText : (f.srSteps || []).join(',')); if (sp.err) e.push(sp.err);
+  if (f.hardText != null){ var hp = hardParse(f.hardText); if (hp.err) e.push(hp.err); }
   if (!(Number.isInteger(f.srDaily) && f.srDaily >= 0 && f.srDaily <= 90)) e.push(tr('Every-day revision must be a whole number of days from 0 to 90.'));
   if (activeCount(f.days) < 1) e.push(tr('Choose at least one study day.'));
   return e;
@@ -2410,7 +2424,7 @@ var setupStep = 0;
 var SETUP_STEPS = ['Mushaf', 'Name', 'Memorised', 'Start', 'Goal', 'Revision', 'Study days'].map(function(n){ return tr(n); });
 var GOAL_JUZ = [1, 2, 3, 5, 10];
 function viewSettings(){
-  if (!draft){ draft = clone(cur().settings); draft.name = cur().name; draft.srText = srSteps(draft).join(', '); }
+  if (!draft){ draft = clone(cur().settings); draft.name = cur().name; draft.srText = srSteps(draft).join(', '); draft.hardText = hardSteps(draft).join(', '); }
   var f = draft, first = !cur().settings.setupDone, full = isHafidh(f, cur().logs);
   var noNew = noNewRev(f, cur().logs);
   var ws = Number.isInteger(f.weekStart) ? f.weekStart : 1, dayNames = IS_AR ? [0, 1, 2, 3, 4, 5, 6].map(function(i){ return fmtDate(iso(addDays(parse('2023-01-01'), i)), { weekday: 'long' }); }) : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -2492,7 +2506,8 @@ function viewSettings(){
     '<div class="field"><label for="f-cycle">' + (full ? tr('Revise the whole Qur’an every (days)') : tr('Revise everything older every (days)')) + '</label><input class="inp" id="f-cycle" type="number" inputmode="numeric" min="1" max="365" step="1" value="' + val(f.cycleDays) + '"><small class="hint">' + tr('A shorter cycle means more revision each day. Many students aim for 7 to 30 days.') + '</small></div>' +
     (noNew ? '' : '<div class="field"><span class="lab">' + tr('New revision') + '</span><small class="hint">' + tr('What you memorise each week is revised every day that week. From the start of the next week it is revised every day for a set number of days. Then it comes back on a schedule, with longer gaps each time, then joins the older revision cycle. Missed reviews carry over.') + '</small></div>' +
     '<div class="field"><label for="f-daily">' + tr('Then every day for (days)') + '</label><input class="inp" id="f-daily" type="number" inputmode="numeric" min="0" max="90" step="1" value="' + val(f.srDaily) + '"><small class="hint">' + tr('Counted from the start of the next week. 21 days is 3 weeks. Use 0 to stop after the week it was learned.') + '</small></div>' +
-    '<div class="field"><label for="f-steps">' + tr('Then review after (days)') + '</label><input class="inp" id="f-steps" type="text" inputmode="numeric" autocomplete="off" value="' + esc(f.srText) + '"><small class="hint">' + tr('Counted from the end of the every-day days, separated by commas, for example 3, 7, 14, 30. Leave it empty to go straight into the older revision cycle.') + '</small></div>') + '</section>',
+    '<div class="field"><label for="f-steps">' + tr('Then review after (days)') + '</label><input class="inp" id="f-steps" type="text" inputmode="numeric" autocomplete="off" value="' + esc(f.srText) + '"><small class="hint">' + tr('Counted from the end of the every-day days, separated by commas, for example 3, 7, 14, 30. Leave it empty to go straight into the older revision cycle.') + '</small></div>') +
+    '<div class="field"><label for="f-hard">' + tr('Hard pages come back after (days)') + '</label><input class="inp" id="f-hard" type="text" inputmode="numeric" autocomplete="off" value="' + esc(f.hardText) + '"><small class="hint">' + tr('Days between each extra review, separated by commas. The usual is 1, 3, 7: the next day, then 3 days later, then 7 days later.') + '</small></div></section>',
 
     '<section class="card"><h2 class="h">' + tr('Study days') + '</h2>' +
     '<div class="field"><span class="lab" id="lab-days">' + tr('Days you study') + '</span><div class="chips" role="group" aria-labelledby="lab-days">' + chips + '</div><small class="hint">' + tr('Daily amounts are spread over these days only.') + '</small></div></section>'];
@@ -2735,7 +2750,8 @@ function draftDirty(){
   var P = cur(), f = clone(draft);
   if (String(f.name || '').trim() !== P.name) return true;
   if (String(f.srText || '').replace(/\s+/g, '') !== srSteps(P.settings).join(',')) return true;
-  delete f.name; delete f.srText; delete f._wTouched;
+  if (f.hardText != null && (hardParse(f.hardText).steps || []).join(',') !== hardSteps(P.settings).join(',')) return true;
+  delete f.name; delete f.srText; delete f.hardText; delete f._wTouched;
   return JSON.stringify(f) !== JSON.stringify(P.settings);
 }
 function leaveSettingsOk(){
@@ -2819,6 +2835,10 @@ document.addEventListener('click', function(e){
     if (sd.key === 'o' && p[sd.t] > 0){ q = Math.ceil(p[sd.t] * 1e4) / 1e4; openDone[viewDate + ':o'] = true; }
     if (sd.key === 'r' && p[sd.t] > 0) q = Math.ceil(p[sd.t] * 1e4) / 1e4;
     if (sd.key === 'n' && cur().settings.newUnit === 'lines'){ q = Math.max(1, Math.round(p[sd.t] * LINES)) / LINES; }
+    // Anything already logged above the target is kept.
+    if (sd.key !== 'o') q = Math.max(q, num((cur().logs[viewDate] || {})[sd.key]));
+    // The card folds up again once it is done.
+    if (sd.key !== 'o') openDone[viewDate + ':' + sd.key] = false;
     setLog(t.dataset.k, q);
   }
   else if (a === 'toggleday'){
@@ -2984,7 +3004,7 @@ document.addEventListener('click', function(e){
     if (a === 'hardrm') H2.splice(H2.indexOf(hx), 1);
     if (a !== 'hardrm'){ var HL = hardLogOf(cur()); HL[todayIso()] = (HL[todayIso()] || 0) + 1; }
     if (a === 'hardagain'){ hx.st = 0; hx.m = todayIso(); hx.last = null; }
-    else if (a === 'hardok'){ hx.st++; hx.last = todayIso(); if (hx.st >= HARD_STEPS.length) H2.splice(H2.indexOf(hx), 1); }
+    else if (a === 'hardok'){ hx.st = hardSt(hx) + 1; hx.last = todayIso(); if (hx.st >= hardSteps().length) H2.splice(H2.indexOf(hx), 1); }
     touch(); render();
   }
   else if (a === 'updays'){ upDays = [3, 7, 14].indexOf(Number(t.dataset.n)) >= 0 ? Number(t.dataset.n) : 3; render(); }
@@ -3002,6 +3022,7 @@ document.addEventListener('click', function(e){
     var f = clone(draft); var nm = String(f.name || '').trim().slice(0, 24); delete f.name; delete f._wTouched;
     f.pauses = clone(pausesOf(cur().settings)); f.breaks = clone(breaksOf(cur().settings)); f.ramadan = clone(cur().settings.ramadan || null);
     var spp = srParse(f.srText); if (spp.steps) f.srSteps = spp.steps; delete f.srText;
+    var hpp = hardParse(f.hardText); if (f.hardText != null && hpp.steps) f.hardSteps = hpp.steps; delete f.hardText;
     if (isHafidh(f, cur().logs)) f.goalPages = PAGES;
     f.base = normIv(f.base); f.startPages = Math.round(measure(f.base) * 100) / 100; f.goalPages = Math.round(f.goalPages);
     f.cycleDays = Math.round(f.cycleDays);
@@ -3045,7 +3066,7 @@ document.addEventListener('click', function(e){
 
 var FIELDS = {
   'f-name': ['name', function(v){ return v; }], 'f-goal': ['goalPages', parseFloat], 'f-date': ['goalDate', function(v){ return v; }],
-  'f-weekly': ['weeklyAmount', parseFloat], 'f-cycle': ['cycleDays', parseFloat], 'f-steps': ['srText', function(v){ return v; }], 'f-daily': ['srDaily', parseFloat]
+  'f-weekly': ['weeklyAmount', parseFloat], 'f-cycle': ['cycleDays', parseFloat], 'f-steps': ['srText', function(v){ return v; }], 'f-hard': ['hardText', function(v){ return v; }], 'f-daily': ['srDaily', parseFloat]
 };
 document.addEventListener('input', function(e){
   var id = e.target.id, m = FIELDS[id];
