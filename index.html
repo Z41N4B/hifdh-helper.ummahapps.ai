@@ -1133,7 +1133,8 @@ function cycleDay(st, logs, k, before){
   var notDone = subtractIv(pool, done), to = dayTargets(st, logs, k).to;
   // Fewer pages left in this cycle than the day's target: the list carries on from the start of the next cycle.
   var nd = measure(notDone), nextPool = subtractIv(pool, notDone);
-  var plan = takeIv(notDone, 0, to > 0 ? to : 0), o = num(l.o), ox = Array.isArray(l.ox) ? normIv(l.ox) : [];
+  // Pages marked by hand that were already done earlier in this cycle are not counted again for the day.
+  var plan = takeIv(notDone, 0, to > 0 ? to : 0), o = num(l.o), ox = Array.isArray(l.ox) ? subtractIv(normIv(l.ox), done) : [];
   if (to > nd + EPS) plan = plan.concat(takeIv(nextPool, 0, to - nd));
   var cover = dropSliver(takeIv(notDone, 0, o)), rev = unionIv(cover, ox), amount = Math.max(o, measure(rev));
   var after = unionIv(done, unionIv(cover, subtractIv(pool, subtractIv(pool, ox)))), passAfter = pass, completed = false;
@@ -2851,8 +2852,11 @@ document.addEventListener('click', function(e){
     if (oxr.f !== '' && oxr.t === '') ot = of;
     cyc.open = true; oxr.pages = true;
     if (!(of >= 1 && ot <= PAGES && of <= ot)){ oxr.msg = tr('Enter the pages you revised, from 1 to {n}, with the first page not after the last.', { n: PAGES }); render(); return; }
+    // Pages already done earlier in this cycle are not counted again, the same as tapping a surah.
+    var cx = cycleAt(cur().settings, cur().logs, viewDate), restX = cx.total > EPS ? subtractIv([[of - 1, ot]], subtractIv(cx.pool, cx.notDone)) : [[of - 1, ot]];
+    if (measure(restX) < EPS){ oxr.msg = tr('Those pages are already done in this cycle, so they are not counted again.'); render(); return; }
     var Lx = cur().logs[viewDate] || (cur().logs[viewDate] = { n: 0, r: 0, o: 0 });
-    Lx.ox = unionIv(Lx.ox || [], [[of - 1, ot]]);
+    Lx.ox = unionIv(Lx.ox || [], restX);
     oxr.msg = ''; oxr.f = ''; oxr.t = ''; touch(); render();
   }
   else if (a === 'brk'){
