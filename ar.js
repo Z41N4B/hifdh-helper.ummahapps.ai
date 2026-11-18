@@ -581,6 +581,7 @@ window.HH_AR = {
 "+ Add person": "+ أضف شخصًا",
 "Your changes in Settings are not saved yet. Leave without saving them?": "لم تحفظ تغييراتك في الإعدادات بعد. هل تخرج دون حفظ؟",
 "Enter the pages you revised, from 1 to {n}, with the first page not after the last.": "أدخل الصفحات التي راجعتها من 1 إلى {n}، والصفحة الأولى قبل الأخيرة أو مثلها.",
+"Those pages are already done in this cycle, so they are not counted again.": "هذه الصفحات تمت مراجعتها في هذه الدورة، فلا تُحسب مرة أخرى.",
 "Choose a start page that is not after the end page, between 1 and {n}.": "اختر صفحة بداية بين 1 و{n}، لا تأتي بعد صفحة النهاية.",
 
 // Install
