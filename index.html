@@ -91,7 +91,7 @@
         "Memorise forward, or backwards surah by surah from Juz Amma, each surah from its first page",
         "Juz-by-juz progress, current pace and projected finish date",
         "Daily reading tick with a streak",
-        "Optional teacher preparation: add the pages set for the next class and prepare them over the week, over 3 days, the day before or on the day",
+        "Optional revision preparation for a teacher: choose class days, log the pages on each class day, and tick off each day's surahs, which are marked revised too",
         "Several people on one device, such as a family or a class, each with their own colour theme"
       ]
     },
@@ -131,8 +131,8 @@
         },
         {
           "@type": "Question",
-          "name": "Can it help me prepare pages for my teacher?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Turn on Preparing for your teacher in Settings, under Order of the Today page. Add the class day and the pages your teacher set, and choose when to prepare them: over the week before, over 3 days before, the day before or on the day. Today then shows the pages to prepare each day, and pages you miss carry over to the next day." }
+          "name": "Can it help me prepare revision for my teacher?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Turn on Preparing revision for your teacher in Settings (it is also the last step when you first set up), choose your class days and when to prepare: spread over the days until the class, over the 3 days before, the day before or on the class day. On each class day, Today asks for the pages or surahs for your next class. Then each day it shows the surahs to prepare. A surah you tick there is marked revised on the Revision card too, and anything you revise on the Revision card is ticked there. Pages you miss carry over to the next day. With more than one class a week, each class day asks for the pages for the next class." }
         },
         {
           "@type": "Question",
@@ -331,6 +331,14 @@ h1,h2,p,ul,dl{margin:0}
 .plist li{display:flex; justify-content:space-between; gap:10px; padding:3px 0; font-variant-numeric:tabular-nums}
 .plist li.cur{font-weight:700}
 .plist li b{font-weight:600; color:var(--ci)}
+.prepc{display:flex; flex-direction:column; gap:10px}
+.prepc + .prepc{border-top:1px solid var(--line); padding-top:12px}
+.plist2{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px}
+.plist2 .pst{display:flex; justify-content:space-between; gap:10px; width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); font:inherit; text-align:start}
+button.pst{cursor:pointer}
+.plist2 li.ok .pst{border-color:var(--ci); color:var(--ci)}
+.plist2 .pst b{font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap}
+.prepnews .hrow{flex:none}
 .brkpart + .brkpart, .brkpart + .muted{border-top:1px solid var(--line); padding-top:12px; margin-top:12px}
 .brkpart > .btn{margin-top:10px}
 .rng3{display:grid; grid-template-columns:minmax(0,1fr) 76px 64px; gap:8px}
@@ -634,7 +642,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <li>See how much of your revision cycle is done in Your plan, and how many cycles a month you are on pace for.</li>
       <li>Memorise forward, or backwards surah by surah from Juz Amma.</li>
       <li>A daily reading tick with a streak, for reading pages not yet memorised.</li>
-      <li>Preparing for your teacher (optional): add the pages set for the next class and choose to prepare them over the week, over 3 days, the day before or on the day. Today shows the pages for each day.</li>
+      <li>Preparing revision for your teacher (optional): choose your class days and when to prepare. On each class day, log the pages for the next class; each day shows the surahs to prepare, and ticking them marks them revised too.</li>
       <li>Juz-by-juz progress, your current pace and a projected finish date.</li>
       <li>Several people on one device, for a family or a class, each with their own colour theme.</li>
     </ul>
@@ -649,7 +657,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <div><h3>What happens if I do more or less than my target?</h3><p>For new hifdh the week has a set amount, so doing extra one day makes the following days lighter. For revision the daily target stays the same, and each day’s list starts from the first pages you have not revised yet in this cycle, so nothing is repeated or missed.</p></div>
       <div><h3>Can I mark revision of surahs that were not on today’s list?</h3><p>Yes. On the Revision card, tap any surah you revised that is not done yet, or enter page numbers. It counts towards the day, each page is counted once, and you can see which surahs are done in the current cycle, juz by juz.</p></div>
       <div><h3>Is there a Ramadan mode?</h3><p>Yes. Set it up in Settings. Choose the first day of Ramadan (worked out from the Umm al-Qura calendar, and easy to change), how many full readings of the Qur’an you want to finish, and the page to start from. Each day shows how many pages to read and from where, and a Ramadan tracker shows the pages read each day. You can also keep revision and new hifdh as normal, stop them, or do more each day.</p></div>
-      <div><h3>Can it help me prepare pages for my teacher?</h3><p>Yes. Turn on Preparing for your teacher in Settings, under Order of the Today page. Add the class day and the pages your teacher set, and choose when to prepare them: over the week before, over 3 days before, the day before or on the day. Today then shows the pages to prepare each day, and pages you miss carry over to the next day.</p></div>
+      <div><h3>Can it help me prepare revision for my teacher?</h3><p>Yes. Turn on Preparing revision for your teacher in Settings (it is also the last step when you first set up), choose your class days and when to prepare: spread over the days until the class, over the 3 days before, the day before or on the class day. On each class day, Today asks for the pages or surahs for your next class. Then each day it shows the surahs to prepare. A surah you tick there is marked revised on the Revision card too, and anything you revise on the Revision card is ticked there. Pages you miss carry over to the next day. With more than one class a week, each class day asks for the pages for the next class.</p></div>
       <div><h3>What if I am sick, travelling or on my period?</h3><p>Choose it in Settings. Sick pauses everything while you rest, though you can still add anything you do. Travelling pauses new hifdh, and you choose whether to keep revision as normal, reduce it or stop it. On your period you choose, for revision, reading and new hifdh, whether to keep it as normal, stop it, or do more each day. You can also be sick or travelling during your period.</p></div>
       <div><h3>Can I memorise from the end of the Qur’an, such as Juz Amma?</h3><p>Yes. Mark what you have already memorised, then choose to go backwards. New hifdh then goes surah by surah towards Al-Fatihah, learning each surah from its first page, and skips anything already known.</p></div>
       <div><h3>Can I track more than one person?</h3><p>Yes. Add a person for each child or student. Each person has their own goal, schedule, logs and colour theme.</p></div>
@@ -684,7 +692,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <li>في «خطتك» ترى كم أنجزت من دورة المراجعة، وكم دورة تُتم في الشهر بمعدلك الحالي.</li>
       <li>احفظ من أول المصحف، أو بالعكس سورةً سورةً من جزء عمّ.</li>
       <li>علامة قراءة يومية للصفحات التي لم تحفظها بعد، مع عدد الأيام المتتالية.</li>
-      <li>التحضير للمعلم (اختياري): أدخل صفحات الدرس القادم، واختر أن تحضّرها خلال الأسبوع، أو خلال 3 أيام، أو في اليوم السابق، أو في يوم الدرس، فترى في «اليوم» صفحات كل يوم.</li>
+      <li>تحضير المراجعة للمعلم (اختياري): اختر أيام دروسك ومتى تحضّر. في كل يوم درس سجّل صفحات الدرس القادم، فترى كل يوم السور التي تحضّرها، وما تضع عليه علامة يُسجَّل في المراجعة أيضًا.</li>
       <li>تقدمك جزءًا جزءًا، ومعدلك الحالي، وموعد الإنهاء المتوقع.</li>
       <li>عدة أشخاص على جهاز واحد، لعائلة أو حلقة، لكل منهم لونه.</li>
     </ul>
@@ -699,7 +707,7 @@ button.rv:not(.ok):not(.part){border-style:dashed; color:var(--ink)}
       <div><h3>ماذا لو فعلت أكثر من هدفي أو أقل؟</h3><p>للحفظ الجديد مقدار لكل أسبوع، فإذا زدت يومًا خفّت الأيام التالية. أما المراجعة فهدفها اليومي ثابت، وتبدأ قائمة كل يوم من أول صفحة لم تراجعها في هذه الدورة، فلا يتكرر شيء ولا يفوتك شيء.</p></div>
       <div><h3>هل أستطيع تسجيل مراجعة سور ليست في قائمة اليوم؟</h3><p>نعم. في بطاقة المراجعة اضغط على أي سورة راجعتها ولم تكتمل، أو أدخل أرقام الصفحات. تُحسب لذلك اليوم، وكل صفحة تُحسب مرة واحدة، وترى أي السور اكتملت في هذه الدورة.</p></div>
       <div><h3>هل يوجد وضع لرمضان؟</h3><p>نعم، من الإعدادات. اختر أول يوم من رمضان (محسوب بتقويم أم القرى، ويمكنك تغييره)، وكم ختمة تريد، والصفحة التي تبدأ منها. يعرض لك كل يوم كم تقرأ ومن أين، ويتابع ما قرأته كل يوم. ويمكنك إبقاء المراجعة والحفظ الجديد كالمعتاد، أو إيقافهما، أو الزيادة فيهما.</p></div>
-      <div><h3>هل يساعدني على تحضير ما يطلبه المعلم؟</h3><p>نعم. فعّل «التحضير للمعلم» من الإعدادات، في «ترتيب صفحة اليوم». أدخل يوم الدرس والصفحات المطلوبة، واختر متى تحضّرها: خلال الأسبوع قبله، أو خلال 3 أيام قبله، أو في اليوم السابق له، أو في يوم الدرس. فتظهر لك في «اليوم» صفحات كل يوم، وما فاتك ينتقل إلى اليوم التالي.</p></div>
+      <div><h3>هل يساعدني على تحضير المراجعة للمعلم؟</h3><p>نعم. فعّل «تحضير المراجعة للمعلم» من الإعدادات (وهو أيضًا آخر خطوة عند الإعداد أول مرة)، واختر أيام دروسك ومتى تحضّر: موزعة على الأيام حتى الدرس، أو خلال 3 أيام قبله، أو في اليوم السابق له، أو في يوم الدرس. في كل يوم درس تسألك صفحة «اليوم» عن صفحات درسك القادم أو سوره، ثم تعرض كل يوم السور التي تحضّرها. وما تضع عليه علامة هناك يُسجَّل في بطاقة المراجعة أيضًا، وما تراجعه في بطاقة المراجعة يُعلَّم هناك. وما فاتك ينتقل إلى اليوم التالي. وإن كان لك أكثر من درس في الأسبوع، ففي كل يوم درس تُسأل عن صفحات الدرس الذي يليه.</p></div>
       <div><h3>ماذا لو كنت مريضًا أو مسافرًا أو في أيام الحيض؟</h3><p>اختر ذلك من الإعدادات. المرض يوقف كل شيء لترتاح، ويمكنك أن تضيف أي شيء تقوم به. والسفر يوقف الحفظ الجديد فقط. وفي أيام الحيض تختارين للمراجعة والقراءة والحفظ الجديد: كالمعتاد، أو إيقافها، أو الزيادة فيها. ويمكن أيضًا تسجيل المرض أو السفر في أيام الحيض.</p></div>
       <div><h3>هل أستطيع الحفظ من آخر القرآن، مثل جزء عمّ؟</h3><p>نعم. سجّل ما حفظته، ثم اختر الحفظ بالعكس. عندها تحفظ سورةً سورةً نحو الفاتحة، كل سورة من أولها، ويُتخطّى ما حفظته من قبل.</p></div>
       <div><h3>هل أستطيع متابعة أكثر من شخص؟</h3><p>نعم. أضف شخصًا لكل طفل أو طالب، ولكل شخص هدفه وجدوله وسجلاته ولونه.</p></div>
@@ -1460,6 +1468,7 @@ function normPerson(p, i){
   s.mushaf = MUSHAF;
   if (src.hidePeriod === undefined) s.hidePeriod = !breaksOf(src).some(function(b){ return b && b.mode === 'period'; });
   if (!s.offSec || typeof s.offSec !== 'object') s.offSec = {};
+  s.prep = normPrepSet(s.prep);
   if (!Array.isArray(s.days) || s.days.length !== 7) s.days = defaults().days;
   // One-time update: "every day for the last few days" became every day that week, then straight into the older cycle.
   if (s.revMode === 'window'){ s.srSteps = []; s.srDaily = 0; }
@@ -1586,7 +1595,7 @@ function moveMushaf(P, to){
     if (Array.isArray(l.ox)) l.ox = miv(l.ox);
   });
   (P.hard || []).forEach(function(x){ x.pg = mpg(x.pg); });
-  (P.prep || []).forEach(function(c){ c.a = mpg(c.a); c.b = Math.max(c.a, mpg(c.b)); });
+  (P.prep || []).forEach(function(c){ c.a = mpg(c.a); c.b = Math.max(c.a, mpg(c.b)); if (c.x1 > c.x0){ c.x0 = mx(c.x0); c.x1 = Math.max(c.x0 + 1 / B.lines, mx(c.x1)); } });
   prepUI = null;
   Object.keys(P.rlog || {}).forEach(function(d){ P.rlog[d] = amt(P.rlog[d], 10); });
 }
@@ -1807,10 +1816,14 @@ function listenCard(P, d, t){
   return tickCard(listensOf(P), d, t, P.settings.weekStart, { id: 'listen', title: tr('Listening'), doneToday: tr('✓ Listened today'), doneOn: tr('✓ Listened on {d}'), keep: tr('{n} {u} in a row. Listen today to keep it going.'), act: 'listentick', ask: tr('I have listened to my new hifdh'),
     why: tr('Listen to your new hifdh recited, as many times as you can. No pages to count, just a tick.') });
 }
-// Preparing for a teacher: the pages set for the next class, spread over the days before it.
-// P.prep: [{ id, date: the class day, a and b: first and last page, how: when to prepare (see PREP_HOW),
-//            made: the day it was added (no preparing before that), done: { 'YYYY-MM-DD': true } days ticked }]
-var PREP_HOW = [['week', 'Over the week before'], ['three', 'Over 3 days before'], ['before', 'The day before'], ['same', 'On the day']];
+// Preparing revision for a teacher. Settings (st.prep): the class days of the week and when to prepare.
+// Each class day asks for the pages for the next class, which are then shared out over the days before it.
+// P.prep: [{ id, date: the class day, a and b: first and last page, x0 and x1: the exact stretch on the page scale
+//            (to the line, so a surah chosen by name is just that surah), how: when to prepare, made: the day the pages
+//            were logged (no preparing before that), done: ticks kept from the first version, no longer used }]
+// A surah ticked here is marked revised on the Revision card that day (the day's ox), and anything revised on the
+// Revision card counts here too, so the two always agree.
+var PREP_HOW = [['week', 'Spread over the days until the class'], ['three', 'Over the 3 days before'], ['before', 'The day before'], ['same', 'On the class day']];
 var PREP_BACK = { week: 7, three: 3, before: 1, same: 0 };
 // Runs while saved data loads, before the lines above have run, so it must not use PREP_HOW or PREP_BACK.
 function normPrep(a){
@@ -1819,97 +1832,184 @@ function normPrep(a){
     if (!c || !day.test(c.date)) return;
     var x = Math.round(num(c.a)), y = Math.round(num(c.b));
     if (!(x >= 1) || !(y >= x)) return;
-    out.push({ id: String(c.id || ('c' + i)), date: c.date, a: x, b: y, how: /^(week|three|before|same)$/.test(c.how) ? c.how : 'week',
+    var x0 = num(c.x0), x1 = num(c.x1);
+    // Saved before the exact stretch was kept: the whole pages.
+    if (!(c.x1 > c.x0) || x0 < x - 1 - 1e-6 || x1 > y + 1e-6){ x0 = x - 1; x1 = y; }
+    out.push({ id: String(c.id || ('c' + i)), date: c.date, a: x, b: y, x0: x0, x1: x1, how: /^(week|three|before|same)$/.test(c.how) ? c.how : 'week',
                made: day.test(c.made) ? c.made : c.date, done: normReads(c.done) });
   });
   return out.sort(function(x, y){ return x.date < y.date ? -1 : x.date > y.date ? 1 : 0; });
 }
+// The settings: class days (0 Sunday to 6 Saturday) and when to prepare. Also runs while saved data loads.
+function normPrepSet(o){
+  var d = o && Array.isArray(o.days) ? o.days.filter(function(x, i, a){ return Number.isInteger(x) && x >= 0 && x <= 6 && a.indexOf(x) === i; }).sort() : [];
+  return { days: d, how: o && /^(week|three|before|same)$/.test(o.how) ? o.how : 'week' };
+}
 function prepOf(P){ return Array.isArray(P.prep) ? P.prep : (P.prep = []); }
-// The days to prepare on: the chosen days before the class, but none before the day it was added.
+function prepSet(st){ return st.prep && Array.isArray(st.prep.days) ? st.prep : (st.prep = normPrepSet(st.prep)); }
+// The first class day after d.
+function nextClass(st, d){
+  var days = prepSet(st).days; if (!days.length) return null;
+  for (var i = 1; i <= 7; i++){ var x = iso(addDays(parse(d), i)); if (days.indexOf(parse(x).getDay()) >= 0) return x; }
+  return null;
+}
+function isClassDay(st, d){ return prepSet(st).days.indexOf(parse(d).getDay()) >= 0; }
+// The days to prepare on: the chosen days before the class, but none before the day the pages were logged.
 function prepDays(c){
   var back = PREP_BACK[c.how], out = [];
   if (!back) return [c.date];
   for (var i = back; i >= 1; i--){ var x = iso(addDays(parse(c.date), -i)); if (x >= c.made) out.push(x); }
   return out.length ? out : [c.made < c.date ? c.made : c.date];
 }
-// The pages for each of those days, shared out as evenly as possible. A day with b < a has no new pages.
+// Each preparing day's share, as stretches on the page scale (it can be empty). The pages are cut only where a
+// page or a surah ends, and shared as evenly as that allows, earlier days first.
 function prepPlan(c){
-  var days = prepDays(c), n = c.b - c.a + 1, k = days.length;
-  return days.map(function(x, i){ return { d: x, a: c.a + Math.ceil(n * i / k), b: c.a + Math.ceil(n * (i + 1) / k) - 1 }; });
+  var days = prepDays(c), k = days.length, cuts = [c.x0, c.x1];
+  for (var pg = Math.floor(c.x0 + EPS) + 1; pg < c.x1 - EPS; pg++) cuts.push(pg);
+  for (var i = 0; i < 114; i++){ var ss = surStart(i); if (ss > c.x0 + GAP && ss < c.x1 - GAP) cuts.push(ss); }
+  cuts = cuts.sort(function(x, y){ return x - y; }).filter(function(x, j, a){ return !j || x - a[j - 1] > GAP; });
+  var total = c.x1 - c.x0, from = c.x0;
+  return days.map(function(x, j){
+    var aim = c.x0 + total * (j + 1) / k, to = from;
+    if (j === k - 1) to = c.x1; else for (var q = 0; q < cuts.length; q++) if (cuts[q] >= aim - GAP){ to = Math.max(from, cuts[q]); break; }
+    var iv = to - from > GAP ? [[from, to]] : []; from = to;
+    return { d: x, iv: iv };
+  });
 }
-// The class a day belongs to (one of its preparing days, or the class day itself), else the next class after it.
-function prepFor(P, d){
-  var L = prepOf(P);
-  for (var i = 0; i < L.length; i++) if (L[i].date === d || prepDays(L[i]).indexOf(d) >= 0) return L[i];
-  for (var j = 0; j < L.length; j++) if (L[j].date > d) return L[j];
-  return null;
+function prepIv(c){ return [[c.x0, c.x1]]; }
+// Pages revised on day k: marked by hand (a surah tapped here or on the Revision card) or covered by the day's list.
+function revisedOn(P, k){
+  var l = P.logs[k]; if (!l) return [];
+  var ox = Array.isArray(l.ox) ? normIv(l.ox) : [];
+  return num(l.o) > 0 || ox.length ? unionIv(ox, cycleAt(P.settings, P.logs, k).rev) : ox;
 }
-// What to prepare on day d. On today, pages from earlier days that were not ticked come too.
-function prepTodo(c, d, t){
-  return prepPlan(c).filter(function(x){ return x.b >= x.a && (x.d === d || (d === t && x.d < d && !c.done[x.d])); });
+// Everything revised for a class from the day its pages were logged up to day d.
+function prepCovered(P, c, d){
+  var out = [], end = d < c.date ? d : c.date;
+  for (var k = c.made; k <= end; k = iso(addDays(parse(k), 1))) out = unionIv(out, revisedOn(P, k));
+  return out;
+}
+// The classes being prepared for on day d, or held on it.
+function prepActive(P, d){ return prepOf(P).filter(function(c){ return c.date === d || prepDays(c).indexOf(d) >= 0; }); }
+// What to prepare on day d: that day's share, and on today also what is left from earlier days.
+function prepToday(P, c, d, t){
+  var plan = prepPlan(c), mine = plan.filter(function(x){ return x.d === d; })[0], iv = mine ? mine.iv.slice() : [];
+  if (d === t){ var cov = prepCovered(P, c, t); plan.forEach(function(x){ if (x.d < d) iv = iv.concat(subtractIv(x.iv, cov)); }); }
+  return { mine: mine, iv: normIv(iv) };
+}
+// A class day with no pages logged yet for the next class: Today asks for them.
+function prepNeeded(P, t){
+  var st = P.settings; if (secOff(st, 'prep')) return null;
+  var nx = nextClass(st, t); if (!nx) return null;
+  return prepOf(P).some(function(c){ return c.date === nx; }) ? null : nx;
 }
 var prepUI = null;
-function prepFresh(P){
-  var L = prepOf(P), last = L[L.length - 1], t = todayIso(), st = P.settings;
-  if (last){
-    var d = last.date, n = last.b - last.a + 1;
-    while (d <= t) d = iso(addDays(parse(d), 7));
-    var a = Math.min(PAGES, last.b + 1);
-    return { id: null, date: d, a: a, b: Math.min(PAGES, a + n - 1), how: last.how };
-  }
-  var pg = Math.min(PAGES, Math.max(1, Math.floor(num(st.next && st.next.x)) + 1));
-  return { id: null, date: iso(addDays(parse(t), 7)), a: pg, b: pg, how: 'week' };
+// Pages for a new class: carry on after the last class's pages, the same amount; or from the first page memorised.
+function prepFresh(P, date){
+  var L = prepOf(P), last = L[L.length - 1];
+  if (last){ var x0 = last.x1 >= PAGES - EPS ? 0 : last.x1, x1 = Math.min(PAGES, x0 + (last.x1 - last.x0)); return prepForm(date, x0, x1); }
+  var known = allKnown(P.settings, P.logs), k0 = known.length ? Math.floor(known[0][0] + EPS) : 0;
+  return prepForm(date, k0, k0 + 1);
 }
-function prepFormHtml(P){
-  var u = prepUI, f = { weekday: 'short', day: 'numeric', month: 'short' };
-  var c = { date: u.date, a: Math.min(u.a, u.b), b: Math.max(u.a, u.b), how: u.how, made: u.made || todayIso() };
-  var days = prepDays(c), n = c.b - c.a + 1;
-  var hint = c.how === 'same' ? tr('All on the class day.')
-    : days.length === 1 ? tr('All on {d}.', { d: fmtDate(days[0], f) })
-    : tr('{p} shared over {n} {u}: {days}.', { p: cnt(n, n === 1 ? 'page' : 'pages'), n: days.length, u: plu(days.length, 'days'), days: days.map(dowShort).join(SEP) });
+// Form values: the stretch, and the pages and surahs shown for it.
+function prepForm(date, x0, x1, id){
+  return { id: id || null, date: date, x0: x0, x1: x1, a: Math.floor(x0 + EPS) + 1, b: Math.max(Math.floor(x0 + EPS) + 1, Math.ceil(x1 - EPS)) };
+}
+function prepFormHtml(P, u){
+  var long = { weekday: 'long', day: 'numeric', month: 'long' };
   var pick = function(k, pg, lab){
     return '<div class="field"><span class="lab">' + tr(lab) + '</span><div class="rng2">' +
-      '<select class="inp" id="pr-' + k + 's" aria-label="' + tr(lab + ' surah') + '">' + surahOptions(surahIdxOfPage(pg)) + '</select>' +
+      '<select class="inp" id="pr-' + k + 's" aria-label="' + tr(lab + ' surah') + '">' + surahOptions(k === 'f' ? surahAtX(u.x0 + GAP) : surahAtX(u.x1 - GAP)) + '</select>' +
       '<input class="inp" id="pr-' + k + 'p" type="number" inputmode="numeric" min="1" max="' + PAGES + '" step="1" value="' + pg + '" aria-label="' + tr(lab + ' page') + '"></div></div>';
   };
-  return '<div class="field"><label for="pr-date">' + tr('Class day') + '</label><input class="inp" id="pr-date" type="date" value="' + u.date + '"></div>' +
+  var how = prepSet(P.settings).how, howName = PREP_HOW.filter(function(h){ return h[0] === how; })[0][1];
+  return '<p class="why"><b>' + tr('Pages for your class on {d}', { d: fmtDate(u.date, long) }) + '</b></p>' +
     pick('f', u.a, 'From') + pick('t', u.b, 'To') +
-    '<div class="field"><span class="lab" id="lab-prhow">' + tr('When to prepare') + '</span><div class="chips" role="group" aria-labelledby="lab-prhow">' +
-    PREP_HOW.map(function(h){ return '<button type="button" class="chip" data-a="prephow" data-v="' + h[0] + '" aria-pressed="' + (u.how === h[0]) + '">' + tr(h[1]) + '</button>'; }).join('') + '</div>' +
-    '<small class="hint">' + hint + '</small></div>' +
-    '<div class="hrow"><button class="btn solid" data-a="prepsave">' + tr(u.id ? 'Save changes' : 'Add class') + '</button>' +
-    (u.id || prepOf(P).length ? '<button class="btn" data-a="prepcancel">' + tr('Cancel') + '</button>' : '') + '</div>';
+    '<small class="hint">' + tr('Prepared: {x}.', { x: tr(howName) }) + ' <button class="linkb" data-a="tab" data-tab="settings" data-focus="prepSet">' + tr('Change in Settings') + '</button></small>' +
+    '<div class="hrow"><button class="btn solid" data-a="prepsave" data-date="' + u.date + '" data-x0="' + u.x0 + '" data-x1="' + u.x1 + '">' + tr(u.id ? 'Save changes' : 'Save pages') + '</button>' +
+    (u.id ? '<button class="btn" data-a="prepcancel">' + tr('Cancel') + '</button>' : '') + '</div>';
 }
-function prepCard(P, d, t, c){
-  var h = '<section class="card s-read" id="prepCard" aria-labelledby="h-prep"><div class="card-h"><div class="ttl"><h2 id="h-prep">' + tr('Preparing for your teacher') + '</h2></div></div>';
-  if (prepUI) return h + prepFormHtml(P) + '</section>';
-  if (!c) return h + '<p class="why">' + tr('Add the pages your teacher set for the next class and choose when to prepare them. Each day, this shows the pages to prepare.') + '</p>' +
-    '<button class="btn wide" data-a="prepnew">' + tr('Add the next class') + '</button></section>';
+// One class on Today: today's surahs, each with a tick that is shared with Revision.
+function prepClassHtml(P, c, d, t){
   var long = { weekday: 'long', day: 'numeric', month: 'long' }, short = { weekday: 'short', day: 'numeric', month: 'short' };
-  var plan = prepPlan(c), n = c.b - c.a + 1, mine = plan.filter(function(x){ return x.d === d; })[0];
-  h += '<p class="why"><b>' + (c.date === d ? tr('Class today') : tr('Class on {d}', { d: fmtDate(c.date, long) })) + ':</b> ' + fmtR([c.a, c.b]) + ' · ' + cnt(n, n === 1 ? 'page' : 'pages') + ' · ' + esc(namesIn([[c.a - 1, c.b]])) + '</p>';
-  var todo = prepTodo(c, d, t), late = todo.some(function(x){ return x.d !== d; });
-  if (todo.length) h += whereHtml(pageRanges(todo.map(function(x){ return [x.a - 1, x.b]; })), late ? tr('Prepare today, with missed days') : d === t ? tr('Prepare today') : tr('Prepare on this day'));
-  else if (mine) h += '<p class="wnote">' + (plan.some(function(x){ return x.d < d && x.b >= x.a; }) ? tr('No new pages today. Go over what you have prepared.') : tr('No pages today.')) + '</p>';
+  var all = prepIv(c), cov = prepCovered(P, c, d);
+  var leftAll = measure(subtractIv(all, cov)), plan = prepPlan(c), td = prepToday(P, c, d, t), canTap = d <= t;
+  var h = '<div class="prepc"><p class="why"><b>' + (c.date === d ? tr('Class today') : tr('For your class on {d}', { d: fmtDate(c.date, long) })) + ':</b> ' +
+    esc(namesIn(all)) + ' · ' + fmtR([c.a, c.b]) + ' · ' + qp(c.x1 - c.x0) + '</p>';
+  if (c.date === d && !td.iv.length) h += '<p class="wnote">' + (leftAll < EPS ? tr('All prepared, alhamdulillah.') : tr('{n} still to prepare.', { n: qp(leftAll) })) + '</p>';
+  if (td.iv.length){
+    var parts = surahParts(td.iv), mineOx = P.logs[d] && Array.isArray(P.logs[d].ox) ? normIv(P.logs[d].ox) : [];
+    var late = td.mine ? measure(subtractIv(td.iv, td.mine.iv)) > EPS : true;
+    h += '<div class="where"><div class="where-h"><span class="label">' + (late && d === t ? tr('Prepare today, with missed days') : d === t ? tr('Prepare today') : tr('Prepare on this day')) + '</span><span>' + qp(measure(td.iv)) + '</span></div><ul class="plist2">' +
+      parts.map(function(x){
+        var iv = [[x.a, x.b]], done = measure(subtractIv(iv, cov)) < EPS, mine = measure(subtractIv(iv, mineOx)) < EPS;
+        var inner = '<span>' + (done ? '✓ ' : '') + esc(NAMES[x.i]) + '</span><b>' + fmtLines(x.a, x.b) + '</b>';
+        if (!canTap || (done && !mine)) return '<li class="' + (done ? 'ok' : '') + '"><span class="pst">' + inner + '</span></li>';
+        return '<li class="' + (done ? 'ok' : '') + '"><button type="button" class="pst" data-a="prepx" data-x0="' + x.a + '" data-x1="' + x.b + '" aria-pressed="' + done + '">' + inner + '</button></li>';
+      }).join('') + '</ul></div>';
+    var rest = subtractIv(td.iv, cov);
+    if (canTap && measure(rest) > EPS) h += '<button class="btn wide read" data-a="prepall" data-id="' + esc(c.id) + '">' + tr('Mark all prepared') + '</button>';
+    else if (canTap) h += '<p class="wnote">' + tr('Done for today. These are marked revised on the Revision card too.') + '</p>';
+  } else if (td.mine) h += '<p class="wnote">' + (plan.some(function(x){ return x.d < d && x.iv.length; }) ? tr('No new pages today. Go over what you have prepared.') : tr('No pages today.')) + '</p>';
   else if (d < plan[0].d) h += '<p class="wnote">' + tr('You start preparing on {d}.', { d: fmtDate(plan[0].d, long) }) + '</p>';
-  // The tick shows on a preparing day, and on any day with missed pages to catch up (such as the class day).
-  if (mine || todo.length || c.done[d]){
-    var on = !!c.done[d], future = d > t;
-    h += '<button class="btn wide read' + (on ? ' solid' : '') + '" data-a="preptick" aria-pressed="' + on + '"' + (future ? ' disabled' : '') + '>' +
-      (on ? tr('✓ Prepared') : future ? tr('Not yet') : tr('I have prepared these pages')) + '</button>';
-  }
-  if (plan.length > 1 || plan[0].d !== c.date) h += '<details class="fold"><summary>' + tr('Day by day') + '</summary><ul class="plist">' + plan.map(function(x){
-    return '<li' + (x.d === d ? ' class="cur"' : '') + '><span>' + fmtDate(x.d, short) + '</span><b>' + (x.b >= x.a ? fmtR([x.a, x.b]) : tr('Go over')) + (c.done[x.d] ? ' ✓' : '') + '</b></li>';
+  if (plan.length > 1) h += '<details class="fold"><summary>' + tr('Day by day') + '</summary><ul class="plist">' + plan.map(function(x){
+    var ok = x.iv.length && measure(subtractIv(x.iv, cov)) < EPS;
+    return '<li' + (x.d === d ? ' class="cur"' : '') + '><span>' + fmtDate(x.d, short) + '</span><b>' + (x.iv.length ? esc(namesIn(x.iv)) + ' · ' + fmtR(pageRanges(x.iv)[0]) : tr('Go over')) + (ok ? ' ✓' : '') + '</b></li>';
   }).join('') + '</ul></details>';
-  return h + '<div class="hrow">' + (d >= c.date ? '<button class="btn sm solid" data-a="prepnew">' + tr('Add the next class') + '</button>' : '') +
-    '<button class="btn sm" data-a="prepedit" data-id="' + esc(c.id) + '">' + tr('Change') + '</button><button class="btn sm" data-a="prepdel" data-id="' + esc(c.id) + '">' + tr('Remove') + '</button></div></section>';
+  return h + '<div class="hrow"><button class="btn sm" data-a="prepedit" data-id="' + esc(c.id) + '">' + tr('Change pages') + '</button><button class="btn sm" data-a="prepdel" data-id="' + esc(c.id) + '">' + tr('Remove') + '</button></div></div>';
 }
-// On Today: folds to one line once the day is ticked, or when there is nothing to prepare that day.
+function prepCard(P, d, t){
+  var st = P.settings, h = '<section class="card s-read" id="prepCard" aria-labelledby="h-prep"><div class="card-h"><div class="ttl"><h2 id="h-prep">' + tr('Preparing revision for your teacher') + '</h2></div></div>';
+  if (!prepSet(st).days.length) return h + '<p class="why">' + tr('Choose your class days in Settings, and this will ask for the pages to prepare.') + '</p>' +
+    '<button class="btn wide" data-a="tab" data-tab="settings" data-focus="prepSet">' + tr('Choose class days') + '</button></section>';
+  var acts = prepActive(P, d).filter(function(c){ return !prepUI || c.id !== prepUI.id; }), need = d === t ? prepNeeded(P, t) : null;
+  if (prepUI) h += prepFormHtml(P, prepUI);
+  else if (need) h += '<div class="prepask">' + (isClassDay(st, t) ? '<p class="why">' + tr('Class day. Log the pages your teacher set for your next class.') + '</p>' : '') + prepFormHtml(P, prepFresh(P, need)) + '</div>';
+  h += acts.map(function(c){ return prepClassHtml(P, c, d, t); }).join('');
+  if (!acts.length && !need && !prepUI){
+    var nx = prepOf(P).filter(function(c){ return c.date > d; })[0];
+    h += '<p class="wnote">' + (nx ? tr('You start preparing on {d}.', { d: fmtDate(prepDays(nx)[0], { weekday: 'long', day: 'numeric', month: 'long' }) }) : tr('Nothing to prepare on this day.')) + '</p>';
+  }
+  return h + '</section>';
+}
+// On Today: folds to one line once the day's pages are all prepared, or when there is nothing to do that day.
 function prepSection(P, d, t){
-  var c = prepUI ? null : prepFor(P, d), html = prepCard(P, d, t, c);
-  if (!c) return html;
-  var tick = prepPlan(c).some(function(x){ return x.d === d; }) || prepTodo(c, d, t).length > 0 || !!c.done[d];
-  return fold('prep', tr('Preparing for your teacher'), d <= t && tick && !!c.done[d], html, !tick && d !== c.date);
+  var html = prepCard(P, d, t);
+  if (prepUI || !prepSet(P.settings).days.length || (d === t && prepNeeded(P, t))) return html;
+  var acts = prepActive(P, d), todo = 0, any = false;
+  acts.forEach(function(c){ var td = prepToday(P, c, d, t); if (td.iv.length){ any = true; todo += measure(subtractIv(td.iv, prepCovered(P, c, d))); } });
+  return fold('prep', tr('Preparing revision for your teacher'), d <= t && any && todo < EPS, html, !any && !acts.some(function(c){ return c.date === d; }));
+}
+// At the top of Today: a class day still waiting for the next class's pages, and once, for people already using the app, news of this section.
+function prepBanner(P, d, t){
+  var st = P.settings; if (d !== t || !st.setupDone) return '';
+  if (secOff(st, 'prep') && !st.prepSeen) return '<div class="note prepnews"><span><b>' + tr('New: prepare revision for your teacher.') + '</b> ' + tr('If you revise pages for a class, Hifdh Helper can share them out over the days before it, and tick them off in Revision as you go.') + '</span>' +
+    '<span class="hrow"><button class="btn sm solid" data-a="prepyes">' + tr('Set it up') + '</button><button class="btn sm" data-a="prepno">' + tr('No thanks') + '</button></span></div>';
+  var need = prepNeeded(P, t);
+  if (need && isClassDay(st, t)) return '<div class="note"><span>' + tr('Class day: log the pages to prepare for your next class, on {d}.', { d: fmtDate(need, { weekday: 'long' }) }) + '</span>' +
+    '<button class="btn sm solid" data-a="tab" data-tab="today" data-focus="prepCard">' + tr('Log pages') + '</button></div>';
+  return '';
+}
+// The card in Settings, and as the last step the first time. Takes effect straight away, without Save.
+function prepSetCard(f){
+  var on = !secOff(f, 'prep'), ps = normPrepSet(f.prep), dayNames = [0, 1, 2, 3, 4, 5, 6].map(function(i){ return fmtDate(iso(addDays(parse('2023-01-01'), i)), { weekday: IS_AR ? 'long' : 'short' }); });
+  var ws = Number.isInteger(f.weekStart) ? f.weekStart : 1, order = [0, 1, 2, 3, 4, 5, 6].map(function(i){ return (ws + i) % 7; });
+  var h = '<section class="card" id="prepSet"><h2 class="h">' + tr('Preparing revision for your teacher') + '</h2>' +
+    '<p class="muted">' + tr('If you revise pages for a teacher or class, Hifdh Helper can share them out over the days before each class. Surahs you tick there are marked revised in Revision too.') + '</p>' +
+    '<div class="field"><span class="lab" id="lab-prepon">' + tr('Do you prepare revision for a class?') + '</span><div class="chips" role="group" aria-labelledby="lab-prepon">' +
+    '<button type="button" class="chip" data-a="prepon" data-v="1" aria-pressed="' + on + '">' + tr('Yes') + '</button><button type="button" class="chip" data-a="prepon" data-v="0" aria-pressed="' + !on + '">' + tr('No') + '</button></div></div>';
+  if (!on) return h + '</section>';
+  h += '<div class="field"><span class="lab" id="lab-prepdays">' + tr('Class days') + '</span><div class="chips" role="group" aria-labelledby="lab-prepdays">' +
+    order.map(function(i){ return '<button type="button" class="chip" data-a="prepday" data-i="' + i + '" aria-pressed="' + (ps.days.indexOf(i) >= 0) + '">' + dayNames[i] + '</button>'; }).join('') + '</div>' +
+    '<small class="hint">' + (ps.days.length > 1 ? tr('Each class day asks for the pages for the next class, so each set of pages is prepared before its own class.') : tr('On your class day, Today asks for the pages for the next class.')) + '</small></div>' +
+    '<div class="field"><span class="lab" id="lab-prephow">' + tr('When to prepare') + '</span><div class="chips" role="group" aria-labelledby="lab-prephow">' +
+    PREP_HOW.map(function(x){ return '<button type="button" class="chip" data-a="prephow" data-v="' + x[0] + '" aria-pressed="' + (ps.how === x[0]) + '">' + tr(x[1]) + '</button>'; }).join('') + '</div></div>';
+  return h + '</section>';
+}
+// Settings for this section are saved straight away, and kept in the draft too so Save does not undo them.
+function prepEdit(fn){
+  [cur().settings].concat(draft ? [draft] : []).forEach(function(x){ x.prep = normPrepSet(x.prep); fn(x); });
+  touch(); render();
 }
 // A card with one tick a day and a week of dots: daily reading and listening.
 function tickCard(R, d, t, ws, o){
@@ -2226,10 +2326,10 @@ function breakStrip(st){
     '<button class="linkb" data-a="tab" data-tab="settings" data-focus="breakCard">' + (openBreak(st, 'period') ? tr('Period choices') : openBreak(st, 'travel') ? tr('Travel choices') : tr('More')) + '</button></div>';
 }
 // Sections on Today, in the order each person chose. The Ramadan card takes the place of Daily reading in Ramadan.
-var SECTIONS = [['n', tr('New hifdh')], ['r', tr('New revision')], ['hard', tr('Hard pages')], ['o', tr('Revision')], ['read', tr('Daily reading')], ['listen', tr('Listening')], ['prep', tr('Preparing for your teacher')]];
+var SECTIONS = [['n', tr('New hifdh')], ['r', tr('New revision')], ['hard', tr('Hard pages')], ['o', tr('Revision')], ['read', tr('Daily reading')], ['listen', tr('Listening')], ['prep', tr('Preparing revision for your teacher')]];
 // The sections that can show on Today for this person.
 function shownSections(st){ var full = isHafidh(st, cur().logs); return sectionOrder(st).filter(function(k){ return !full || (k !== 'n' && k !== 'listen' && (k !== 'r' || !noNewRev(st, cur().logs))); }); }
-// Daily reading, Listening and Preparing for your teacher are optional. Preparing is off until it is turned on.
+// Daily reading, Listening and Preparing revision for your teacher are optional. Preparing is off until it is turned on.
 function secOff(st, k){ var v = st.offSec && st.offSec[k]; return k === 'prep' ? v !== false : !!v; }
 function sectionOrder(st){
   var o = (Array.isArray(st.order) ? st.order : []).filter(function(k, i, a){ return a.indexOf(k) === i && SECTIONS.some(function(s){ return s[0] === k; }); });
@@ -2272,6 +2372,7 @@ function viewToday(){
     '<p>' + tr('Set up your personal plan in {n} simple steps. Based on your goals and current memorisation level, Hifdh Helper will create a daily schedule showing you what to memorise, what to revise from your recent learning, and what to review from your older memorisation.', { n: SETUP_STEPS.length }) + '</p>' +
     '<p class="muted">' + tr('The schedule below is just an example. Once you’ve set up your plan, it will be replaced with your own daily schedule.') + '</p>' +
     '<button class="btn solid wide" data-a="tab" data-tab="settings">' + tr('Set up my plan') + '</button></section>');
+  banner += prepBanner(P, d, t);
 
   // Paused areas are left off the front page (unless something was logged that day anyway). When sick, everything
   // is paused but the cards stay, so anything done can still be added.
@@ -2543,7 +2644,7 @@ function syncStart(){ draft.startPages = Math.round(measure(draft.base) * 100) /
 
 // The first time, Settings goes one step at a time; after that every card shows at once.
 var setupStep = 0;
-var SETUP_STEPS = ['Mushaf', 'Name', 'Memorised', 'Start', 'Goal', 'Revision', 'Study days'].map(function(n){ return tr(n); });
+var SETUP_STEPS = ['Mushaf', 'Name', 'Memorised', 'Start', 'Goal', 'Revision', 'Study days', 'Teacher'].map(function(n){ return tr(n); });
 var GOAL_JUZ = [1, 2, 3, 5, 10];
 function viewSettings(){
   if (!draft){ draft = clone(cur().settings); draft.name = cur().name; draft.srText = srSteps(draft).join(', '); draft.hardText = hardSteps(draft).join(', '); }
@@ -2633,6 +2734,7 @@ function viewSettings(){
 
     '<section class="card"><h2 class="h">' + tr('Study days') + '</h2>' +
     '<div class="field"><span class="lab" id="lab-days">' + tr('Days you study') + '</span><div class="chips" role="group" aria-labelledby="lab-days">' + chips + '</div><small class="hint">' + tr('Daily amounts are spread over these days only.') + '</small></div></section>'];
+  if (first) parts.push(prepSetCard(f));
   if (full) parts.splice(3, 2); // Where to start from, and Targets.
   var finish = '<section class="card"><h2 class="h">' + tr('What this means') + '</h2><div id="preview"></div></section>' +
     '<ul class="errs" id="formErr" role="alert"></ul>';
@@ -2646,7 +2748,7 @@ function viewSettings(){
   return parts.join('') + finish +
     '<button class="btn solid wide" id="saveBtn" data-a="save">' + tr('Save changes') + '</button>' +
     '<h2 class="sect">' + tr('Changes straight away') + '</h2><p class="muted sectp">' + tr('Everything below takes effect as soon as you tap it, without Save.') + '</p>' +
-    breakCard(cur().settings) + orderCard(cur().settings) + ramadanSetCard(cur().settings) +
+    breakCard(cur().settings) + orderCard(cur().settings) + prepSetCard(cur().settings) + ramadanSetCard(cur().settings) +
     '<section class="card"><h2 class="h">' + tr('Logs') + '</h2><p class="muted">' + tr(full ? 'Clearing removes every day logged for {name}. What you have already memorised stays as set.' : 'Clearing removes every day logged for {name}, including the pages those days added. What you have already memorised and where your new hifdh starts from stay as set.', { name: esc(pname(cur())) }) + '</p>' +
     '<button class="btn wide" data-a="reset">' + (resetArmed ? tr('Tap again to erase all logs') : tr('Clear all logs')) + '</button></section>' +
     removeCard() + (full ? '' : pauseCard(cur().settings));
@@ -2675,7 +2777,7 @@ function breakCard(st){
 }
 function orderCard(st){
   var ord = shownSections(st), name = function(k){ return SECTIONS.filter(function(s){ return s[0] === k; })[0][1]; };
-  return '<section class="card" id="orderCard"><h2 class="h">' + tr('Order of the Today page') + '</h2><p class="muted">' + tr('Move sections up or down. Daily reading, Listening and Preparing for your teacher are optional, so you can turn them on or off.') + '</p><ul class="olist">' +
+  return '<section class="card" id="orderCard"><h2 class="h">' + tr('Order of the Today page') + '</h2><p class="muted">' + tr('Move sections up or down. Daily reading, Listening and Preparing revision for your teacher are optional, so you can turn them on or off.') + '</p><ul class="olist">' +
     ord.map(function(k, i){
       var opt = k === 'read' || k === 'listen' || k === 'prep', off = secOff(st, k);
       return '<li' + (off ? ' class="secoff"' : '') + '><span>' + name(k) + (k === 'read' ? ' <small>(' + tr('Ramadan reading in Ramadan') + ')</small>' : '') + '</span>' +
@@ -3090,30 +3192,42 @@ document.addEventListener('click', function(e){
     }
     render();
   }
-  else if (a === 'prepnew'){ prepUI = prepFresh(cur()); render(); var pd = $('#pr-date'); if (pd) pd.focus(); }
+  else if (a === 'prepon'){ var pon = t.dataset.v === '1'; prepEdit(function(x){ var o = Object.assign({}, x.offSec); o.prep = !pon; x.offSec = o; x.prepSeen = true; }); }
+  else if (a === 'prepday'){ var pdi = Number(t.dataset.i); prepEdit(function(x){ var ds = x.prep.days.slice(), k0 = ds.indexOf(pdi); if (k0 >= 0) ds.splice(k0, 1); else ds.push(pdi); x.prep = normPrepSet({ days: ds, how: x.prep.how }); }); }
+  else if (a === 'prephow'){ var phw = t.dataset.v; prepEdit(function(x){ x.prep.how = phw; }); }
+  else if (a === 'prepyes'){ prepEdit(function(x){ x.prepSeen = true; var o = Object.assign({}, x.offSec); o.prep = false; x.offSec = o; }); goTab('settings'); var ps0 = $('#prepSet'); if (ps0) ps0.scrollIntoView(); }
+  else if (a === 'prepno'){ prepEdit(function(x){ x.prepSeen = true; }); }
   else if (a === 'prepedit'){
     var ce = prepOf(cur()).filter(function(x){ return x.id === t.dataset.id; })[0]; if (!ce) return;
-    prepUI = { id: ce.id, date: ce.date, a: ce.a, b: ce.b, how: ce.how, made: ce.made }; render();
+    prepUI = prepForm(ce.date, ce.x0, ce.x1, ce.id); render();
   }
   else if (a === 'prepcancel'){ prepUI = null; render(); }
-  else if (a === 'prephow'){ if (prepUI){ prepUI.how = t.dataset.v; render(); } }
   else if (a === 'prepsave'){
-    if (!prepUI || !/^\d{4}-\d\d-\d\d$/.test(prepUI.date)) return;
-    var Lp = prepOf(cur()), pa = Math.min(prepUI.a, prepUI.b), pb = Math.max(prepUI.a, prepUI.b);
-    var old = prepUI.id && Lp.filter(function(x){ return x.id === prepUI.id; })[0];
-    if (old){ old.date = prepUI.date; old.a = pa; old.b = pb; old.how = prepUI.how; }
-    else Lp.push({ id: 'c' + Date.now().toString(36), date: prepUI.date, a: pa, b: pb, how: prepUI.how, made: todayIso(), done: {} });
+    // A new class's pages come from the form shown on a class day; its date is on the button.
+    var u = prepUI || prepForm(t.dataset.date, Number(t.dataset.x0), Number(t.dataset.x1));
+    if (!/^\d{4}-\d\d-\d\d$/.test(u.date || '') || !(u.x1 > u.x0)) return;
+    var Lp = prepOf(cur()), old = u.id && Lp.filter(function(x){ return x.id === u.id; })[0];
+    if (old){ old.a = u.a; old.b = u.b; old.x0 = u.x0; old.x1 = u.x1; }
+    else Lp.push({ id: 'c' + Date.now().toString(36), date: u.date, a: u.a, b: u.b, x0: u.x0, x1: u.x1, how: prepSet(cur().settings).how, made: todayIso(), done: {} });
     cur().prep = normPrep(Lp); prepUI = null; touch(); render();
   }
   else if (a === 'prepdel'){
-    if (!confirm(tr('Remove this class and its ticks?'))) return;
-    cur().prep = prepOf(cur()).filter(function(x){ return x.id !== t.dataset.id; }); touch(); render();
+    if (!confirm(tr('Remove the pages for this class? What you revised stays in Revision.'))) return;
+    cur().prep = prepOf(cur()).filter(function(x){ return x.id !== t.dataset.id; }); prepUI = null; touch(); render();
   }
-  else if (a === 'preptick'){
-    var tt = todayIso(); if (viewDate > tt) return;
-    var cp = prepFor(cur(), viewDate); if (!cp) return;
-    if (cp.done[viewDate]) delete cp.done[viewDate];
-    else prepTodo(cp, viewDate, tt).concat([{ d: viewDate }]).forEach(function(x){ cp.done[x.d] = true; });
+  // Ticking a surah marks it revised that day, as tapping it on the Revision card does; ticking again undoes it.
+  else if (a === 'prepx' || a === 'prepall'){
+    if (viewDate > todayIso()) return;
+    var Px = cur(), Lx = Px.logs[viewDate] || (Px.logs[viewDate] = { n: 0, r: 0, o: 0 }), have = Array.isArray(Lx.ox) ? normIv(Lx.ox) : [];
+    if (a === 'prepx'){
+      var piv = [[Number(t.dataset.x0), Number(t.dataset.x1)]];
+      if (t.getAttribute('aria-pressed') === 'true') Lx.ox = subtractIv(have, piv); else Lx.ox = unionIv(have, piv);
+    } else {
+      var cx = prepOf(Px).filter(function(x){ return x.id === t.dataset.id; })[0]; if (!cx) return;
+      Lx.ox = unionIv(have, subtractIv(prepToday(Px, cx, viewDate, todayIso()).iv, prepCovered(Px, cx, viewDate)));
+    }
+    if (!Lx.ox.length) delete Lx.ox;
+    if (!Lx.n && !Lx.r && !Lx.o && !Lx.ox) delete Px.logs[viewDate];
     touch(); render();
   }
   else if (a === 'listentick'){
@@ -3179,6 +3293,7 @@ document.addEventListener('click', function(e){
     f.cycleDays = Math.round(f.cycleDays);
     // The first time, the start date shown (today) is saved, so weeks start on the day you begin.
     if (!f.setupDone && !f.startDate){ f.startDate = todayIso(); f.weekStart = parse(f.startDate).getDay(); }
+    if (!f.setupDone) f.prepSeen = true;
     f.setupDone = true;
     cur().settings = f; cur().name = nm; draft = null; touch(); goTab('today');
   }
@@ -3246,12 +3361,15 @@ document.addEventListener('change', function(e){
   var id = e.target.id;
   if (e.target.classList && e.target.classList.contains('num')){ if (typing && typing.el === e.target){ clearTimeout(typing.timer); typing = null; } var ev = parseFloat(e.target.value) || 0; if (e.target.dataset.u === 'lines') ev = Math.round(ev) / LINES; setLog(e.target.dataset.k, ev, pressing); return; }
   if (id === 'ram-done'){ setRam(parseFloat(e.target.value) || 0, pressing); return; }
-  if (/^pr-(date|fs|fp|ts|tp)$/.test(id) && prepUI){
+  if (/^pr-(fs|fp|ts|tp)$/.test(id)){
+    // The class-day form keeps what has been chosen once anything in it changes.
+    if (!prepUI){ var psb = $('[data-a="prepsave"]'); if (!psb) return; prepUI = prepForm(psb.dataset.date, Number(psb.dataset.x0), Number(psb.dataset.x1)); }
     var pv = e.target.value, pn = parseInt(pv, 10);
-    if (id === 'pr-date'){ if (/^\d{4}-\d\d-\d\d$/.test(pv)) prepUI.date = pv; }
-    else if (id === 'pr-fs'){ prepUI.a = STARTS[Number(pv)] || 1; if (prepUI.b < prepUI.a) prepUI.b = ENDS[Number(pv)] || prepUI.a; }
-    else if (id === 'pr-ts'){ prepUI.b = ENDS[Number(pv)] || prepUI.b; if (prepUI.a > prepUI.b) prepUI.a = STARTS[Number(pv)] || 1; }
-    else if (pn >= 1 && pn <= PAGES){ if (id === 'pr-fp') prepUI.a = pn; else prepUI.b = pn; }
+    var u0 = prepUI.x0, u1 = prepUI.x1, si = Number(pv);
+    if (id === 'pr-fs'){ u0 = surStart(si); if (u1 <= u0 + GAP) u1 = surEnd(si); }
+    else if (id === 'pr-ts'){ u1 = surEnd(si); if (u0 >= u1 - GAP) u0 = surStart(si); }
+    else if (pn >= 1 && pn <= PAGES){ if (id === 'pr-fp'){ u0 = pn - 1; if (u1 <= u0 + GAP) u1 = pn; } else { u1 = pn; if (u0 >= u1 - GAP) u0 = pn - 1; } }
+    prepUI = prepForm(prepUI.date, u0, u1, prepUI.id);
     render(); var back = $('#' + id); if (back) back.focus(); return;
   }
   if (/^ram-(from|k|s|p|rev|nw)$/.test(id)){
