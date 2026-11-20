@@ -23,6 +23,7 @@
 - Free to use, works in any modern browser on phone, tablet or computer, and can be added to the home screen.
 - About and FAQs have their own About tab.
 - Listening: a daily tick for listening to your new hifdh, with a week of dots and a streak, like daily reading.
+- Preparing for your teacher (optional, off until turned on in Settings under Order of the Today page): add the class day and the pages your teacher set, and choose to prepare them over the week before, over 3 days before, the day before or on the day. Today shows the pages to prepare each day; pages not ticked carry over to the next day, and the next class can be added straight after a class.
 - Sections that are done for the day fold down to one line and can be opened again. Each person can move the sections on the Today page up or down in Settings.
 - Sick, travelling or on your period can be turned on and off with one tap on the Today page, and the period option can be hidden.
 - Setting up: the first time, Settings goes one step at a time (mushaf, name, what you have already memorised, where to start, goal, revision, study days). The goal shows how much is memorised so far, with quick buttons to add 1, 2, 3, 5 or 10 juz to it, or to aim for the whole Qur’an, and the pace starts at 1 page a week.

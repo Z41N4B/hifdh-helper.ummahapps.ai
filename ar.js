@@ -600,9 +600,40 @@ window.HH_AR = {
 "Abu Dawud 792, Ibn Majah 910": "أبو داود 792، ابن ماجه 910",
 "Ibn Majah 3846": "ابن ماجه 3846",
 "Al-Baqarah 2:201 · the Prophet’s most frequent dua, Bukhari 6389, Muslim 2690": "البقرة: 201 · أكثر دعاء النبي ﷺ، البخاري 6389، مسلم 2690",
-"“When you ask Allah, ask Him for al-Firdaws”, Bukhari 2790": "«فإذا سألتم الله فاسألوه الفردوس»، البخاري 2790",
+"“When you ask Allah, ask Him for al-Firdaws”, Bukhari 2790": "«فإذا سألتم الله فاسألوه الفردوس»، البخاري 2790"
+,
 "of cycle {n} done": "أُنجز من الدورة {n}",
 "{a} of {b} pages revised.": "راجعت {a} من {b} {u}.",
 "At your pace that is about {n} a month. Your plan is {p} a month.": "بهذا المعدل تُتم نحو {n} في الشهر. وخطتك {p} في الشهر.",
-"Revise for a few days to see how many cycles a month you are on track for.": "راجع بضعة أيام لترى كم دورة تُتم في الشهر."
+"Revise for a few days to see how many cycles a month you are on track for.": "راجع بضعة أيام لترى كم دورة تُتم في الشهر.",
+
+// Preparing for your teacher
+"Preparing for your teacher": "التحضير للمعلم",
+"Move sections up or down. Daily reading, Listening and Preparing for your teacher are optional, so you can turn them on or off.": "حرّك الأقسام إلى الأعلى أو الأسفل. القراءة اليومية والاستماع والتحضير للمعلم اختيارية، ويمكنك تشغيلها أو إيقافها.",
+"Add the pages your teacher set for the next class and choose when to prepare them. Each day, this shows the pages to prepare.": "أدخل الصفحات التي حددها المعلم للدرس القادم، واختر متى تحضّرها. وستظهر هنا صفحات كل يوم.",
+"Add the next class": "أضف الدرس القادم",
+"Class day": "يوم الدرس",
+"When to prepare": "متى تحضّر",
+"Over the week before": "خلال الأسبوع قبله",
+"Over 3 days before": "خلال 3 أيام قبله",
+"The day before": "في اليوم السابق له",
+"On the day": "في يوم الدرس",
+"All on the class day.": "كلها في يوم الدرس.",
+"All on {d}.": "كلها يوم {d}.",
+"{p} shared over {n} {u}: {days}.": "{p} موزعة على {n} {u}: {days}.",
+"Add class": "أضف الدرس",
+"Cancel": "إلغاء",
+"Class today": "الدرس اليوم",
+"Class on {d}": "الدرس يوم {d}",
+"Prepare today": "حضّر اليوم",
+"Prepare today, with missed days": "حضّر اليوم، مع ما فاتك",
+"Prepare on this day": "حضّر في هذا اليوم",
+"No new pages today. Go over what you have prepared.": "لا صفحات جديدة اليوم. راجع ما حضّرته.",
+"No pages today.": "لا صفحات اليوم.",
+"You start preparing on {d}.": "تبدأ التحضير يوم {d}.",
+"I have prepared these pages": "حضّرت هذه الصفحات",
+"✓ Prepared": "✓ تم التحضير",
+"Day by day": "يومًا بيوم",
+"Go over": "راجع ما سبق",
+"Remove this class and its ticks?": "أتحذف هذا الدرس وما سجّلته فيه؟"
 };
