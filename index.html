@@ -1366,6 +1366,15 @@ function dayTargets(st, logs, dateIso){
   var e = p.fx = dayEffects(st, dateIso);
   p.newPaused = e.nw === 'none'; p.revOff = e.rev === 'none';
   p.tn = active && !p.newPaused ? p.n + (p.state === 'done' ? 0 : e.nwMore) : 0;
+  // Today's new hifdh is shown to the quarter page (or to the line, counting in lines), so that much is the target and
+  // Mark done reaches it; what is left over moves to the next study days. On the week's last study day it rounds up,
+  // so the week's amount is still finished, but never past what is left to memorise. A sliver too small to show stays as it is.
+  if (p.tn > 0){
+    var gq = st.newUnit === 'lines' ? 1 / LINES : 0.25, lastDay = p.wk && p.wk.left === 1;
+    var rt = (lastDay ? Math.ceil(p.tn / gq - 1e-6) : Math.round(p.tn / gq)) * gq;
+    if (num(p.remaining) > 0) rt = Math.min(rt, Math.max(p.tn, num(p.remaining) + (p.state === 'done' ? 0 : e.nwMore)));
+    if (rt > EPS) p.tn = Math.round(rt * 1e4) / 1e4;
+  }
   p.tr = active && !p.revOff ? p.r : 0;
   p.to = active && !p.revOff ? p.o + e.revMore : 0;
   if (e.revCap) p.to = Math.min(p.to, e.revCap);
@@ -2084,7 +2093,7 @@ function ramCard(P, d, t){
       (got > 0 ? ' ' + tr('Next page: {p}.', { p: pgL(ramPage(R, s.before + got)) }) : '');
   var dis = future ? ' disabled' : '';
   return '<section class="card s-read" aria-labelledby="h-ram"><div class="card-h"><div class="ttl"><h2 id="h-ram">' + tr('Ramadan reading') + '</h2></div>' +
-    '<div class="target"><span class="tl">' + (d === t ? tr('Today’s target') : tr('Target')) + '</span><div class="tv"><b>' + tgt + '</b><span>' + plu(tgt, 'pages') + '</span></div>' +
+    '<div class="target"><span class="tl">' + (d === t ? tr('Today’s target') : tr('Target')) + '</span><div class="tv"><b>' + tgt + '</b><span>' + plu(tgt, tgt === '1' ? 'page' : 'pages') + '</span></div>' +
     '<span class="tdn">' + (d === t ? tr('Read today: ') : tr('Read: ')) + '<b>' + fmt1(got) + '</b></span></div></div>' +
     '<p class="why must">' + why + '</p>' +
     '<div class="bar" role="progressbar" aria-label="' + tr('Ramadan reading today') + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(pr * 100) + '"><i style="width:' + (pr * 100) + '%"></i></div>' +
@@ -2292,7 +2301,7 @@ function card(sd, target, done, why, active, extra, noAdd, lines, also){
   var k = sd.key;
   return '<section class="card s-' + sd.cls + '" aria-labelledby="h-' + k + '">' +
     '<div class="card-h"><div class="ttl"><h2 id="h-' + k + '">' + sd.name + '</h2></div>' +
-    '<div class="target"><span class="tl">' + (viewDate === todayIso() ? tr('Today’s target') : tr('Target')) + '</span><div class="tv"><b>' + (active ? fq(target) : '—') + '</b><span>' + plu(active ? fq(target) : '', uw) + '</span></div>' +
+    '<div class="target"><span class="tl">' + (viewDate === todayIso() ? tr('Today’s target') : tr('Target')) + '</span><div class="tv"><b>' + (active ? fq(target) : '—') + '</b><span>' + plu(active ? fq(target) : '', active && fq(target) === '1' ? uw.slice(0, -1) : uw) + '</span></div>' +
     '<span class="tdn">' + (viewDate === todayIso() ? tr('Done today: ') : tr('Done: ')) + '<b>' + fq(tot) + '</b></span></div></div>' +
     '<p class="why">' + why + '</p>' + (extra || '') +
     '<div class="bar" role="progressbar" aria-label="' + tr('{x} today', { x: sd.name }) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(pr * 100) + '"><i style="width:' + (pr * 100) + '%"></i></div>' +
@@ -3058,7 +3067,8 @@ document.addEventListener('click', function(e){
     // Mark done on Revision means the day's list is done; pages also tapped are not counted twice.
     if (sd.key === 'o' && p[sd.t] > 0){ q = Math.ceil(p[sd.t] * 1e4) / 1e4; openDone[viewDate + ':o'] = true; }
     if (sd.key === 'r' && p[sd.t] > 0) q = Math.ceil(p[sd.t] * 1e4) / 1e4;
-    if (sd.key === 'n' && cur().settings.newUnit === 'lines'){ q = Math.max(1, Math.round(p[sd.t] * LINES)) / LINES; }
+    // New hifdh's target is already rounded to what the card shows, so Mark done logs exactly that.
+    if (sd.key === 'n' && p[sd.t] > 0) q = Math.ceil(p[sd.t] * 1e4) / 1e4;
     // Anything already logged above the target is kept.
     if (sd.key !== 'o') q = Math.max(q, num((cur().logs[viewDate] || {})[sd.key]));
     // The card folds up again once it is done.
